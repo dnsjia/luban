@@ -5,19 +5,13 @@ __pycache__/
 
 # C extensions
 *.so
-<<<<<<< HEAD
 .idea/
-=======
 
->>>>>>> e698242d1e6087993e746e5e9f2365243833a8a2
 # Distribution / packaging
 .Python
 build/
 develop-eggs/
-<<<<<<< HEAD
-=======
 dist/
->>>>>>> e698242d1e6087993e746e5e9f2365243833a8a2
 downloads/
 eggs/
 .eggs/
