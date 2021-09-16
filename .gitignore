@@ -1,2 +1,17 @@
 /config.yaml
 .idea/
+
+pigs_fe/dist
+pigs_fe/node_modules
+
+# Log files
+pigs_fe/npm-debug.log*
+pigs_fe/yarn-debug.log*
+pigs_fe/yarn-error.log*
+pigs_fe/pnpm-debug.log*
+
+log/*.log
+
+.DS_Store
+.vscode
+*.sw?
