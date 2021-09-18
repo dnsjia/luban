@@ -18,3 +18,8 @@ type User struct {
 func (u User) TableName() string {
 	return u.GModel.TableName("users")
 }
+
+type LoginUser struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

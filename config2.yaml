@@ -22,3 +22,9 @@ mysql:
   max-open-conns: 100
   log-mode: false
   log-zap: ""
+
+# system configuration
+system:
+  env: 'public'  # Change to "develop" to skip authentication for development mode,  public auth
+  addr: 8999
+  db-type: 'mysql'

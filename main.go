@@ -33,6 +33,7 @@ func main() {
 func InitServer() {
 	r := gin.Default()
 	gin.ForceConsoleColor()
+	r.Use(middleware.Cors())
 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		// 你的自定义格式
 		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",

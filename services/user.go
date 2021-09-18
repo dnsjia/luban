@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"pigs/common"
 	"pigs/model"
@@ -20,17 +19,9 @@ func UserRegister(u model.User) (userInter model.User, err error) {
 	return u, err
 }
 
-func Login(l model.User) (model.User, error) {
+func Login(l model.LoginUser) (model.User, error) {
 	var user model.User
-
-	//_ = common.GVA_DB.Where("username = ?", l.UserName).First(&user)
-	_ = common.GVA_DB.Preload("Role").Where("username = ?", l.UserName).First(&user)
-	if user.UserName == "" {
-		return model.User{}, errors.New(fmt.Sprintf("user %v does not exists", l.UserName))
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(l.Password)); err != nil {
-		return model.User{}, errors.New("密码验证失败")
-	}
-
-	return user, nil
+	fmt.Printf("查询Email: %v", l.Email)
+	err := common.GVA_DB.Preload("Role").Where("email = ?", l.Email).First(&user).Error
+	return user, err
 }
