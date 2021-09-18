@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"pigs/common"
@@ -11,10 +12,10 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 获取authorization header
-		tokenString := c.GetHeader("Authorization")
+		tokenString := c.GetHeader("token")
 		// token 前缀为 jwt 用空格分开
 		if tokenString == "" || !strings.HasPrefix(tokenString, "jwt") {
-			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "未携带token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "未登录或非法访问"})
 			c.Abort()
 			return
 		}
@@ -23,16 +24,17 @@ func AuthMiddleware() gin.HandlerFunc {
 		token, claims, err := common.ParseToken(tokenString)
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "token 失效了"})
+			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "授权已过期"})
 			c.Abort()
 			return
 		}
 
 		// 验证通过之后 获取 claim中的userId
-		userId := claims.UserId
+		userId := claims.ID
 		var user model.User
-		common.GVA_DB.First(&user, userId)
-
+		//common.GVA_DB.First(&user, userId)
+		common.GVA_DB.Preload("Role").First(&user, userId)
+		fmt.Printf("角色名称：%v\n", user.Role.Name)
 		// 判断用户是否存在
 		if user.UserName == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "认证失败"})
@@ -41,7 +43,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 用户存在, 将用户的信息写入 context
+		fmt.Printf("claims---------:%v\n", claims)
+		fmt.Printf("user---------:%v\n", user)
 		c.Set("user", user)
+		c.Set("claims", claims)
 		c.Next()
 	}
 

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"pigs/common"
+	"pigs/middleware"
 	"pigs/routers"
 	"pigs/tools"
 	"time"
@@ -33,7 +34,6 @@ func InitServer() {
 	r := gin.Default()
 	gin.ForceConsoleColor()
 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-
 		// 你的自定义格式
 		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
 			param.ClientIP,
@@ -47,10 +47,19 @@ func InitServer() {
 			param.ErrorMessage,
 		)
 	}))
-	r.Use(gin.Recovery())
+	PublicGroup := r.Group("")
+	{
+		routers.User(PublicGroup) // 注册基础功能路由 不做鉴权
+	}
+	PrivateGroup := r.Group("")
+	PrivateGroup.Use(gin.Recovery()).Use(middleware.AuthMiddleware()).Use(middleware.CasBinHandler())
+	{
+		routers.InitUserRouter(PrivateGroup)
+		routers.InitCasBinRouter(PrivateGroup) // 权限相关路由
+	}
 
-	routers.User(r)
-	err := r.Run(":8999")
+	address := fmt.Sprintf(":%d", common.GVA_CONFIG.System.Addr)
+	err := r.Run(address)
 
 	if err != nil {
 		panic(fmt.Sprintf("start server err: %v", err))

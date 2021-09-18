@@ -22,7 +22,7 @@ func Register(c *gin.Context) {
 	// 创建用户的时候加密用户的密码
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errcdoe": 500, "errmsg": "密码加密错误"})
+		c.JSON(http.StatusInternalServerError, gin.H{"errcode": 500, "errmsg": "密码加密错误"})
 		return
 	}
 	user.Password = string(hashPassword)
@@ -55,6 +55,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		common.GVA_LOG.Error("登录失败", zap.Any("err", err))
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		return
 	}
 
 	// 发放Token
@@ -69,8 +70,8 @@ func Login(c *gin.Context) {
 
 }
 
-func UserInfo(c *gin.Context)  {
+func UserInfo(c *gin.Context) {
 
 	user, _ := c.Get("user")
-	c.JSON(http.StatusOK, gin.H{"errcode": 0, "data": gin.H{"user": user,}})
+	c.JSON(http.StatusOK, gin.H{"errcode": 0, "data": gin.H{"user": user}})
 }

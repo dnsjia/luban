@@ -5,11 +5,10 @@ import (
 	"os"
 )
 
-
 func PathExists(path string) (bool, error) {
 	/*
 		文件目录是否存在
-	 */
+	*/
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -23,8 +22,8 @@ func PathExists(path string) (bool, error) {
 func CreateDir(dirs ...string) (err error) {
 	/*
 		批量创建文件夹
-	https://github.com/piexlmax
-	 */
+		https://github.com/piexlmax
+	*/
 	for _, v := range dirs {
 		exist, err := PathExists(v)
 		if err != nil {

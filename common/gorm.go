@@ -17,12 +17,10 @@ type Mysql struct {
 	LogZap       string `mapstructure:"log-zap" json:"logZap" yaml:"log-zap"`
 }
 
-//@function: gormConfig
-//@description: 根据配置决定是否开启日志
-//@param: mod bool
-//@return: *gorm.Config
-
 func gormConfig(mod bool) *gorm.Config {
+	/*
+		根据配置决定是否开启日志
+	*/
 	switch GVA_CONFIG.Mysql.LogZap {
 	case "Silent":
 		return &gorm.Config{

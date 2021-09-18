@@ -5,26 +5,33 @@ import (
 	"pigs/model"
 	"time"
 )
+
 var jwtKey = []byte("a_secret_creat")
 
-type Claims struct {
-	UserId uint
+type CustomClaims struct {
+	ID         uint
+	Username   string
+	NickName   string
+	Role       string
+	BufferTime int64
 	jwt.StandardClaims
 }
 
 func ReleaseToken(u model.User) (string, error) {
 	/*
-	创建token
-	 */
+		创建token
+	*/
 	expirationTime := time.Now().Add(7 * 24 * time.Hour)
-	claims := &Claims{
-		UserId: u.ID,
+	claims := &CustomClaims{
+		ID:       u.ID,
+		Username: u.UserName,
+		NickName: u.NickName,
+		Role:     u.Role.Name,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
-			IssuedAt: time.Now().Unix(),
-			Issuer: "oceanlearn.tech",
-			Subject: "user token",
-
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "pigs",
+			Subject:   "user token",
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -36,12 +43,11 @@ func ReleaseToken(u model.User) (string, error) {
 	return tokenString, nil
 }
 
-
-func ParseToken(token string) (*jwt.Token, *Claims, error)  {
+func ParseToken(token string) (*jwt.Token, *CustomClaims, error) {
 	/*
-	解析token
-	 */
-	claims := &Claims{}
+		解析token
+	*/
+	claims := &CustomClaims{}
 	tk, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})

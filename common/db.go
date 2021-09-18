@@ -19,7 +19,7 @@ func GormMysql() *gorm.DB {
 		SkipInitializeWithVersion: false, // 根据版本自动配置
 	}
 	if db, err := gorm.Open(mysql.New(mysqlConfig), gormConfig(m.LogMode)); err != nil {
-		GVA_LOG.Error("MySQL启动异常", zap.Any("err", err))
+		GVA_LOG.Error("mysql connection failed", zap.Any("err", err))
 		os.Exit(0)
 		return nil
 	} else {

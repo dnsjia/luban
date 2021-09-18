@@ -9,8 +9,6 @@ import (
 	"pigs/model"
 )
 
-
-
 func UserRegister(u model.User) (userInter model.User, err error) {
 	var user model.User
 
@@ -25,7 +23,8 @@ func UserRegister(u model.User) (userInter model.User, err error) {
 func Login(l model.User) (model.User, error) {
 	var user model.User
 
-	_ = common.GVA_DB.Where("username = ?", l.UserName).First(&user)
+	//_ = common.GVA_DB.Where("username = ?", l.UserName).First(&user)
+	_ = common.GVA_DB.Preload("Role").Where("username = ?", l.UserName).First(&user)
 	if user.UserName == "" {
 		return model.User{}, errors.New(fmt.Sprintf("user %v does not exists", l.UserName))
 	}

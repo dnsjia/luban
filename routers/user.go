@@ -3,14 +3,20 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"pigs/controller"
-	"pigs/middleware"
 )
 
-func User(r *gin.Engine) {
-	user := r.Group("/user")
+func User(r *gin.RouterGroup) {
+	user := r.Group("user")
 	{
 		user.POST("/register", controller.Register)
 		user.POST("/login", controller.Login)
-		user.GET("/:id", middleware.AuthMiddleware(), controller.UserInfo)
+
+	}
+}
+
+func InitUserRouter(Router *gin.RouterGroup) {
+	UserRouter := Router.Group("user")
+	{
+		UserRouter.GET("info", controller.UserInfo)
 	}
 }

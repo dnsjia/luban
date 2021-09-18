@@ -7,15 +7,15 @@ import (
 	"pigs/model"
 )
 
-// MysqlTables
-//@function: MysqlTables
-//@description: 注册数据库表专用
-//@param: db *gorm.DB
-
 func MysqlTables(db *gorm.DB) {
+	/*
+		注册数据库表专用
+	*/
 	err := db.AutoMigrate(
 		model.User{},
-
+		model.Menu{},
+		model.Role{},
+		model.Dept{},
 	)
 	if err != nil {
 		GVA_LOG.Error("register table failed", zap.Any("err", err))
