@@ -53,11 +53,13 @@
 </template>
 
 <script>
+// import { message } from 'ant-design-vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
-import { defineComponent, reactive, ref, toRaw } from 'vue';
+import { defineComponent, reactive, ref, inject } from 'vue';
 import { login } from '@/api/user'
 export default defineComponent({
   name: "Login",
+  // const { inject } = Vue;
   setup() {
     const formRef = ref();
     const formState = reactive({
@@ -85,16 +87,22 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(() => {
-          console.log('values', formState, toRaw(formState));
-          console.log(formState.email)
-          login().then(formState)
+          login({"email": formState.email, "password": formState.password}).then(res => {
+            if (res.errCode === 0) {
 
-
+              message.success("登录成功")
+            }else {
+              message.warning(res.errMsg)
+            }
+          })
         })
         .catch(error => {
           console.log('error', error);
         });
     };
+
+    const message = inject('$message');
+
     return {
       formRef,
       labelCol: {
@@ -108,53 +116,15 @@ export default defineComponent({
       onSubmit,
       remember: ref(false),
       widthVar: "0px",
+
+      // warning,
+      // success,
     };
   },
   components: {
     UserOutlined,
     LockOutlined
   },
-  // methods: {
-  //   dcode(){
-  //     dingConfig({}).then(_data => {
-  //       const _this = this;
-  //       const {errcode} = _data;
-  //       const appId = _data.data.app_id
-  //       // 后端返回的钉钉配置信息
-  //       if (errcode === 0) {
-  //         const _url = encodeURIComponent(this.$ENV.homeURL + '/user/login');
-  //         const goto = encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=' + appId +
-  //             '&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=' + _url);
-  //         const obj = DDLogin({
-  //           id: "login_container",
-  //           goto: goto,
-  //           style: "border:none;background-color:#FFFFFF;",
-  //           width: "310",
-  //           height: "310"
-  //         });
-  //         const handleMessage = function (event) {
-  //           const origin = event.origin;
-  //           if (origin === "https://login.dingtalk.com") {
-  //             const loginTmpCode = event.data;
-  //             const url2 = 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=' + appId +
-  //                 '&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=' +
-  //                 _url + "&loginTmpCode=" + loginTmpCode;
-  //             window.location.href = url2;
-  //           }
-  //         };
-  //         if (typeof window.addEventListener !== 'undefined') {
-  //           window.addEventListener('message', handleMessage, false);
-  //         } else if (typeof window.attachEvent !== 'undefined') {
-  //           window.attachEvent('onmessage', handleMessage);
-  //         }
-  //       }
-  //       else {
-  //         this.$msgerror("服务器钉钉配置错误")
-  //       }
-  //     });
-  //     },
-  //
-  // },
 
 })
 </script>

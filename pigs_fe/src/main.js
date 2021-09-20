@@ -7,5 +7,9 @@ import store from "@/store/index";
 import Antd from 'ant-design-vue';
 import "ant-design-vue/dist/antd.css";
 
+import { message } from 'ant-design-vue'
 
-createApp(App).use(router).use(Antd).use(store).mount('#app')
+
+const app = createApp(App)
+app.provide('$message', message)
+app.use(router).use(Antd).use(store).mount('#app')
