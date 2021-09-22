@@ -15,11 +15,11 @@ type User struct {
 	Dept     Dept   `gorm:"foreignkey:DeptId" json:"dept"`
 }
 
-func (u User) TableName() string {
-	return u.GModel.TableName("users")
-}
-
 type LoginUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+func (u User) TableName() string {
+	return u.GModel.TableName("users")
 }

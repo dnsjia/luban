@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"pigs/common"
 	"pigs/controller/response"
@@ -15,48 +14,42 @@ import (
 
 func Register(c *gin.Context) {
 	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
-		common.GVA_LOG.Warn(fmt.Sprintf("解析参数出错：%v", err.Error()))
-		c.JSON(http.StatusBadRequest, gin.H{"errcode": 500, "errmsg": err.Error()})
+	err := CheckParams(c, &user)
+	if err != nil {
 		return
 	}
 	// 创建用户的时候加密用户的密码
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errcode": 500, "errmsg": "密码加密错误"})
-		return
-	}
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hashPassword)
 	u, err := services.UserRegister(user)
 	if err != nil {
-		common.GVA_LOG.Error("注册失败", zap.Any("err", err))
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		common.GVA_LOG.Error(fmt.Sprintf("用户：%v, 注册失败", user.UserName), zap.Any("err", err))
+		response.FailWithMessage(response.UserRegisterFail, err.Error(), c)
 	} else {
-		c.JSON(http.StatusOK, gin.H{"msg": "注册成功", "data": u})
+		response.ResultOk(0, u, "注册成功", c)
 	}
 }
 
 func Login(c *gin.Context) {
 	var user model.LoginUser
-
-	if err := c.ShouldBindJSON(&user); err != nil {
-		common.GVA_LOG.Warn(fmt.Sprintf("解析参数出错：%v", err.Error()))
-		//response.FailWithDetailed(gin.H{}, response.ParamError, "", c)
-		response.FailWithMessage(response.ParamError, "", c)
+	fmt.Println(c.Request.Body)
+	//user, _ = CheckLoginParams(c, user)
+	err := CheckParams(c, &user)
+	if err != nil {
 		return
 	}
 	if user.Email == "" {
-		c.JSON(http.StatusOK, gin.H{"errcode": 400, "errmsg": "用户不能为空"})
+		response.FailWithMessage(response.UserNameEmpty, "", c)
 		return
 	}
 	if user.Password == "" {
-		c.JSON(http.StatusOK, gin.H{"errcode": 400, "errmsg": "密码不能为空"})
+		response.FailWithMessage(response.UserPassEmpty, "", c)
 		return
 	}
 	u, err := services.Login(user)
 	if err != nil {
-		common.GVA_LOG.Error("查询用户失败", zap.Any("err", err))
-		response.FailWithMessage(response.InternalServerError, "", c)
+		common.GVA_LOG.Error("用户登录失败", zap.Any("err", err))
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
 
@@ -69,12 +62,12 @@ func Login(c *gin.Context) {
 	// 发放Token
 	token, err := common.ReleaseToken(u)
 	if err != nil {
-		log.Printf("token generate err: %v", err)
-		response.FailWithMessage(response.InternalServerError, "xxxxxxxx", c)
+		common.GVA_LOG.Error(fmt.Sprintf("token generate err: %v", err))
+		response.FailWithMessage(response.InternalServerError, fmt.Sprintf("token generate err：%v", err), c)
 		return
 	}
-	c.SetCookie("username", u.UserName, 7*24, "/", "*", true, false)
-	response.OkWithDetailed(gin.H{"token": token}, "登录成功", c)
+	c.SetCookie("username", u.UserName, 7*24, "/", "/", true, false)
+	response.OkWithDetailed(gin.H{"token": token, "username": u.UserName, "role": u.Role, "email": u.Email}, "登录成功", c)
 	return
 
 }

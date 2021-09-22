@@ -10,8 +10,8 @@ pigs_fe/yarn-debug.log*
 pigs_fe/yarn-error.log*
 pigs_fe/pnpm-debug.log*
 
-log/*.log
-
+logs/*.log
+*.log
 .DS_Store
 .vscode
 *.sw?

@@ -28,7 +28,7 @@ func CasBinHandler() gin.HandlerFunc {
 		if common.GVA_CONFIG.System.Env == "develop" || success {
 			c.Next()
 		} else {
-			response.FailWithDetailed(gin.H{}, response.Forbidden, "权限不足", c)
+			c.JSON(response.Forbidden, gin.H{"errCode": 403, "errMsg": "权限不足", "data": gin.H{}, "msg": ""})
 			c.Abort()
 			return
 		}

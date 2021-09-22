@@ -21,7 +21,6 @@ func UserRegister(u model.User) (userInter model.User, err error) {
 
 func Login(l model.LoginUser) (model.User, error) {
 	var user model.User
-	fmt.Printf("查询Email: %v", l.Email)
 	err := common.GVA_DB.Preload("Role").Where("email = ?", l.Email).First(&user).Error
 	return user, err
 }
