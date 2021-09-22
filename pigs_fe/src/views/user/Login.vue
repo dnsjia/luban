@@ -56,7 +56,9 @@
 // import { message } from 'ant-design-vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { defineComponent, reactive, ref, inject } from 'vue';
+import { useCookie } from 'vue-cookie-next'
 import { login } from '@/api/user'
+import router from "../../router";
 export default defineComponent({
   name: "Login",
   // const { inject } = Vue;
@@ -82,15 +84,19 @@ export default defineComponent({
         },
       ],
     };
-
+    const { setCookie } = useCookie()
     const onSubmit = () => {
       formRef.value
         .validate()
         .then(() => {
           login({"email": formState.email, "password": formState.password}).then(res => {
             if (res.errCode === 0) {
-
+              setCookie('email',res.data.email)
+              setCookie("token", res.data.token, 60 * 60 * 4, "/") //2小时过期
+              setCookie('username', res.data.username)
+              localStorage.setItem("onLine", 1)
               message.success("登录成功")
+              router.push("/")
             }else {
               message.warning(res.errMsg)
             }
