@@ -1,4 +1,4 @@
-package model
+package models
 
 type Menu struct {
 	GModel

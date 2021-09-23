@@ -1,4 +1,4 @@
-package model
+package models
 
 type Dept struct {
 	GModel

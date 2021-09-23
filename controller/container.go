@@ -5,12 +5,12 @@ import (
 	"go.uber.org/zap"
 	"pigs/common"
 	"pigs/controller/response"
-	"pigs/model"
+	"pigs/models"
 	"pigs/services"
 )
 
 func CreateK8SCluster(c *gin.Context) {
-	var K8sCluster model.K8SCluster
+	var K8sCluster models.K8SCluster
 	err := CheckParams(c, &K8sCluster)
 	if err != nil {
 		return

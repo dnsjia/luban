@@ -1,4 +1,4 @@
-package model
+package models
 
 type K8SCluster struct {
 	ID             uint    `json:"id" gorm:"primarykey;AUTO_INCREMENT" form:"id"`
