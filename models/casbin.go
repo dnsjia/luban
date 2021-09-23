@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	_ "github.com/go-sql-driver/mysql"
@@ -23,5 +23,5 @@ type CasBinInReceive struct {
 }
 
 type Casbin struct {
-	ModelPath string `mapstructure:"model-path" json:"modelPath" yaml:"model-path"`
+	ModelPath string `mapstructure:"models-path" json:"modelPath" yaml:"models-path"`
 }

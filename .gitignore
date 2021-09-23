@@ -16,3 +16,4 @@ logs/*.log
 .vscode
 *.sw?
 gin.log
+/latest_log

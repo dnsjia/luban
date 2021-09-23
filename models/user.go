@@ -1,10 +1,12 @@
-package model
+package models
+
 
 type User struct {
 	GModel
+	UId      int64  `gorm:"column:uid;comment:'用戶uid'" json:"uid"`
 	UserName string `gorm:"column:username;comment:'用户名';size:128;uniqueIndex:uk_username" json:"username" binding:"required"`
 	Password string `gorm:"column:password;comment:'用户密码';size:128" json:"password" binding:"required"`
-	Phone    uint64 `gorm:"column:phone;comment:'手机号码';size:11" json:"phone"`
+	Phone    string `gorm:"column:phone;comment:'手机号码';size:11" json:"phone"`
 	Email    string `gorm:"column:email;comment:'邮箱';size:128" json:"email"`
 	NickName string `gorm:"column:nick_name;comment:'用户昵称';size:128" json:"nick_name"`
 	Avatar   string `gorm:"column:avatar;default:http://qmplusimg.henrongyi.top/head.png;comment:'用户头像';size:128" json:"avatar"`
@@ -13,6 +15,7 @@ type User struct {
 	Role     Role   `gorm:"foreignkey:RoleId" json:"role"`
 	DeptId   uint   `gorm:"comment:'部门id外键'" json:"dept_id"`
 	Dept     Dept   `gorm:"foreignkey:DeptId" json:"dept"`
+	CreateBy string `gorm:"column:create_by;comment:'创建来源'" json:"create_by"`
 }
 
 type LoginUser struct {
@@ -23,3 +26,4 @@ type LoginUser struct {
 func (u User) TableName() string {
 	return u.GModel.TableName("users")
 }
+

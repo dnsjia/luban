@@ -1,15 +1,24 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"pigs/common"
+	"pigs/http"
+	//"pigs/models"
 	"pigs/middleware"
+	"pigs/models"
 	"pigs/routers"
 	"pigs/tools"
-	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/toolkits/pkg/logger"
 )
 
 func main() {
@@ -27,6 +36,8 @@ func main() {
 	db, _ := common.GVA_DB.DB()
 	defer db.Close()
 
+	parseConf()
+	models.InitLdap(common.Config.LDAP)
 	InitServer()
 }
 
@@ -69,4 +80,29 @@ func InitServer() {
 	if err != nil {
 		panic(fmt.Sprintf("start server err: %v", err))
 	}
+
+	_, cancelFunc := context.WithCancel(context.Background())
+	endingProc(cancelFunc)
+}
+
+func parseConf() {
+	if err := common.Parse(); err != nil {
+		fmt.Println("cannot parse configuration file:", err)
+		os.Exit(1)
+	}
+}
+
+func endingProc(cancelFunc context.CancelFunc) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	<-c
+	fmt.Printf("stop signal caught, stopping... pid=%d\n", os.Getpid())
+
+	// 执行清理工作
+	cancelFunc()
+	logger.Close()
+	http.Shutdown()
+
+	fmt.Println("process stopped successfully")
 }

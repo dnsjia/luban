@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"pigs/model"
+	"pigs/models"
 	"time"
 )
 
@@ -17,7 +17,7 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-func ReleaseToken(u model.User) (string, error) {
+func ReleaseToken(u models.User) (string, error) {
 	/*
 		创建token
 	*/
