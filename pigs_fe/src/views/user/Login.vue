@@ -1,7 +1,6 @@
 <template>
-  <div>
     <div class="login_bg">
-      <img src="../../assets/login_bg.jpg" />
+<!--      <img src="../../assets/login_bg.jpg" />-->
       <div class="login">
 <!--        <h3 style="z-index:1;text-align:center;"><img src="../../assets/logo.png" width="120" height="80"></h3>-->
         <br/>
@@ -48,8 +47,6 @@
 
       </div>
     </div>
-
-  </div>
 </template>
 
 <script>
@@ -137,10 +134,10 @@ export default defineComponent({
 
 <style scoped>
 .login_bg {
-    width: 100%;
-    height: 900px;
-    overflow: hidden;
-    position: relative;
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/login_bg.jpg") no-repeat;
+  /*background-size: 100% 100%;*/
 }
 .login {
     position: absolute;

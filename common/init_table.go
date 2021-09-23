@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"os"
-	"pigs/model"
+	"pigs/models"
 )
 
 func MysqlTables(db *gorm.DB) {
@@ -12,10 +12,10 @@ func MysqlTables(db *gorm.DB) {
 		注册数据库表专用
 	*/
 	err := db.AutoMigrate(
-		model.User{},
-		model.Menu{},
-		model.Role{},
-		model.Dept{},
+		models.User{},
+		models.Menu{},
+		models.Role{},
+		models.Dept{},
 	)
 	if err != nil {
 		GVA_LOG.Error("register table failed", zap.Any("err", err))
