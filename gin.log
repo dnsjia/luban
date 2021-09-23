@@ -6,5 +6,17 @@
 
 [GIN-debug] POST   /user/register            --> pigs/controller.Register (5 handlers)
 [GIN-debug] POST   /user/login               --> pigs/controller.Login (5 handlers)
-[GIN-debug] GET    /user/:id                 --> pigs/controller.UserInfo (6 handlers)
+[GIN-debug] GET    /user/info                --> pigs/controller.UserInfo (8 handlers)
+[GIN-debug] POST   /k8s/cluster              --> pigs/controller.CreateK8SCluster (8 handlers)
 [GIN-debug] Listening and serving HTTP on :8999
+[GIN] 2021/09/23 - 18:29:20 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/user/login"
+::1 - [2021-09-23T18:29:20+08:00] "POST /user/login HTTP/1.1 200 2.9907ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/23 - 18:29:20 |[97;42m 200 [0m|      2.9907ms |             ::1 |[97;46m POST    [0m "/user/login"
+[GIN] 2021/09/23 - 18:29:25 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/user/login"
+::1 - [2021-09-23T18:29:25+08:00] "POST /user/login HTTP/1.1 200 1.0308ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/23 - 18:29:25 |[97;42m 200 [0m|      1.0308ms |             ::1 |[97;46m POST    [0m "/user/login"
+::1 - [2021-09-23T18:29:30+08:00] "POST /user/login HTTP/1.1 200 2.9804ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/23 - 18:29:30 |[97;42m 200 [0m|      2.9804ms |             ::1 |[97;46m POST    [0m "/user/login"
+[GIN] 2021/09/23 - 18:30:49 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/user/login"
+::1 - [2021-09-23T18:30:49+08:00] "POST /user/login HTTP/1.1 200 70.8113ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/23 - 18:30:49 |[97;42m 200 [0m|     70.8113ms |             ::1 |[97;46m POST    [0m "/user/login"
