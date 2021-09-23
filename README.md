@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# pigs
-小飞猪运维平台3.0
-
-Vue 3.x Golang 1.15.x
-=======
 ## 项目简介
 
 > pigs 小飞猪运维平台3.0， 本项目使用Go1.15.x、 Gin、Gorm开发， 前端使用的是Vue3+Ant Design2.2.x框架。
@@ -60,4 +54,3 @@ mysql:
 ## License
 Everything is Apache License 2.0.
 
->>>>>>> 695df6e26757cb346bb007ae2836b1d03b723242
