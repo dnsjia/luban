@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"pigs/common"
 	"pigs/controller/response"
-	"pigs/model"
+	"pigs/models"
 	"pigs/services"
 )
 
 func Register(c *gin.Context) {
-	var user model.User
+	var user models.User
 	err := CheckParams(c, &user)
 	if err != nil {
 		return
@@ -31,7 +31,7 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	var user model.LoginUser
+	var user models.LoginUser
 	fmt.Println(c.Request.Body)
 	//user, _ = CheckLoginParams(c, user)
 	err := CheckParams(c, &user)

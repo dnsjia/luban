@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"pigs/common"
-	"pigs/model"
+	"pigs/models"
 	"strings"
 )
 
@@ -31,7 +31,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// 验证通过之后 获取 claim中的userId
 		userId := claims.ID
-		var user model.User
+		var user models.User
 		//common.GVA_DB.First(&user, userId)
 		common.GVA_DB.Preload("Role").First(&user, userId)
 		fmt.Printf("角色名称：%v\n", user.Role.Name)
