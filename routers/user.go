@@ -14,8 +14,8 @@ func User(r *gin.RouterGroup) {
 	}
 }
 
-func InitUserRouter(Router *gin.RouterGroup) {
-	UserRouter := Router.Group("user")
+func InitUserRouter(r *gin.RouterGroup) {
+	UserRouter := r.Group("user")
 	{
 		UserRouter.GET("info", controller.UserInfo)
 	}

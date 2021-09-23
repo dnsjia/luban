@@ -26,6 +26,8 @@ const (
 
 	Forbidden           = http.StatusForbidden
 	InternalServerError = http.StatusInternalServerError
+
+	CreateK8SClusterError = 2000
 )
 
 const (
@@ -42,6 +44,8 @@ const (
 
 	ForbiddenMsg           = "无权访问该资源"
 	InternalServerErrorMsg = "服务器内部错误"
+
+	CreateK8SClusterErrorMsg = "创建K8S集群失败"
 )
 
 var CustomError = map[int]string{
@@ -58,6 +62,8 @@ var CustomError = map[int]string{
 
 	Forbidden:           ForbiddenMsg,
 	InternalServerError: InternalServerErrorMsg,
+
+	CreateK8SClusterError: CreateK8SClusterErrorMsg,
 }
 
 func ResultFail(code int, data interface{}, msg string, c *gin.Context) {

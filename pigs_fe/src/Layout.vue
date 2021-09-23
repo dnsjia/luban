@@ -1,16 +1,31 @@
 <template>
   <a-layout class="layout">
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
-      <div class="logo" />
+      <div class="logo" >小飞猪运维平台</div>
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
         <a-menu-item key="1">
-          <icon-font type="icon-twitter" />
-          <span class="nav-text">仪表盘</span>
+          <router-link :to="{path: '/'}">
+          <IconFont type="pigs-icon-dashboard1"/>
+            <span class="nav-text">仪表盘</span>
+          </router-link>
+
+
         </a-menu-item>
-        <a-menu-item key="2">
-          <video-camera-outlined />
-          <span class="nav-text">nav 2</span>
-        </a-menu-item>
+
+          <a-sub-menu key="2">
+            <template #icon>
+              <IconFont type="pigs-icon-rongqifuwu"/>
+            </template>
+            <template #title>容器管理</template>
+
+            <a-menu-item key="21">
+              <router-link :to="{path: '/k8s/cluster'}">
+                集群管理
+              </router-link>
+            </a-menu-item>
+          </a-sub-menu>
+
+
         <a-menu-item key="3">
           <upload-outlined />
           <span class="nav-text">nav 3</span>
@@ -70,104 +85,14 @@
       </a-layout-header>
 
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
-
-          ...
-          <br />
-          Really
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          long
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          content
-        </div>
+          <router-view></router-view>
+<!--        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">-->
+<!--          &lt;!&ndash;这里是view渲染后的内容&ndash;&gt;-->
+<!--          ...-->
+<!--          <br />-->
+<!--          Really-->
+<!--          content-->
+<!--        </div>-->
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         <a href="">官网</a>
@@ -180,7 +105,7 @@
 </template>
 <script>
 import {
-  VideoCameraOutlined,
+  // VideoCameraOutlined,
   UploadOutlined,
   BarChartOutlined,
   CloudOutlined,
@@ -195,11 +120,12 @@ import {
 
 } from '@ant-design/icons-vue';
 import { defineComponent, ref } from 'vue';
+import router from "./router";
 
 
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js',
+  scriptUrl: '//at.alicdn.com/t/font_2828790_dsubcd9pff7.js',
 });
 export default defineComponent({
   setup() {
@@ -209,13 +135,15 @@ export default defineComponent({
        alert('来了老弟')
       },
       Logout(){
-        alert('退出')
+        localStorage.removeItem('onLine')
+        router.push('/user/login')
+
       }
     };
   },
 
   components: {
-    VideoCameraOutlined,
+    // VideoCameraOutlined,
     UploadOutlined,
     BarChartOutlined,
     CloudOutlined,
@@ -229,7 +157,7 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .layout .logo {
   height: 32px;
   line-height: 32px;

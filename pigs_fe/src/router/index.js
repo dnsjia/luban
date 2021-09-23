@@ -17,6 +17,16 @@ const routes = [
                     title: '仪表盘',
                 }
             },
+            {
+                path: 'k8s/cluster',
+                name: 'K8S',
+                component: () => import('../views/container/K8SClusterManage.vue'),
+                meta: {
+                    title: '集群管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {

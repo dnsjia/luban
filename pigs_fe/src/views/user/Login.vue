@@ -92,7 +92,7 @@ export default defineComponent({
           login({"email": formState.email, "password": formState.password}).then(res => {
             if (res.errCode === 0) {
               setCookie('email',res.data.email)
-              setCookie("token", res.data.token, 60 * 60 * 4, "/") //2小时过期
+              setCookie("token", res.data.token, {expire: '1d', path: '/', domain: ''}) // 24小时过期
               setCookie('username', res.data.username)
               localStorage.setItem("onLine", 1)
               message.success("登录成功")

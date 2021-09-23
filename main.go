@@ -50,13 +50,17 @@ func InitServer() {
 	}))
 	PublicGroup := r.Group("")
 	{
-		routers.User(PublicGroup) // 注册基础功能路由 不做鉴权
+		// 注册基础功能路由 不做鉴权
+		routers.User(PublicGroup)
 	}
 	PrivateGroup := r.Group("")
 	PrivateGroup.Use(gin.Recovery()).Use(middleware.AuthMiddleware()).Use(middleware.CasBinHandler())
 	{
 		routers.InitUserRouter(PrivateGroup)
-		routers.InitCasBinRouter(PrivateGroup) // 权限相关路由
+		// 权限相关路由
+		routers.InitCasBinRouter(PrivateGroup)
+		// 容器相关
+		routers.InitContainerRouter(PrivateGroup)
 	}
 
 	address := fmt.Sprintf(":%d", common.GVA_CONFIG.System.Addr)
