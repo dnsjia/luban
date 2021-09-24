@@ -18,12 +18,12 @@ const (
 
 	ParamError = 8000
 
-	AuthError        = 1000
-	UserForbidden    = 1002
-	UserRegisterFail = 1003
-	UserNameEmpty    = 1004
-	UserPassEmpty    = 1005
-
+	AuthError           = 1000
+	UserForbidden       = 1002
+	UserRegisterFail    = 1003
+	UserNameEmpty       = 1004
+	UserPassEmpty       = 1005
+	UserDisable         = 1006
 	Forbidden           = http.StatusForbidden
 	InternalServerError = http.StatusInternalServerError
 
@@ -36,12 +36,12 @@ const (
 
 	ParamErrorMsg = "参数绑定失败, 请检查数据类型"
 
-	LoginCheckErrorMsg  = "用户名或密码错误"
-	UserForbiddenMsg    = "用户已被禁用"
-	UserRegisterFailMsg = "用户注册失败"
-	UserNameEmptyMsg    = "用户不能为空"
-	UserPassEmptyMsg    = "密码不能为空"
-
+	LoginCheckErrorMsg     = "用户名或密码错误"
+	UserForbiddenMsg       = "用户已被禁用"
+	UserRegisterFailMsg    = "用户注册失败"
+	UserNameEmptyMsg       = "用户不能为空"
+	UserPassEmptyMsg       = "密码不能为空"
+	UserDisableMsg         = "用户已被禁用"
 	ForbiddenMsg           = "无权访问该资源"
 	InternalServerErrorMsg = "服务器内部错误"
 
@@ -54,12 +54,12 @@ var CustomError = map[int]string{
 
 	ParamError: ParamErrorMsg,
 
-	AuthError:        LoginCheckErrorMsg,
-	UserForbidden:    UserForbiddenMsg,
-	UserRegisterFail: UserRegisterFailMsg,
-	UserNameEmpty:    UserNameEmptyMsg,
-	UserPassEmpty:    UserPassEmptyMsg,
-
+	AuthError:           LoginCheckErrorMsg,
+	UserForbidden:       UserForbiddenMsg,
+	UserRegisterFail:    UserRegisterFailMsg,
+	UserNameEmpty:       UserNameEmptyMsg,
+	UserPassEmpty:       UserPassEmptyMsg,
+	UserDisable:         UserDisableMsg,
 	Forbidden:           ForbiddenMsg,
 	InternalServerError: InternalServerErrorMsg,
 

@@ -46,6 +46,33 @@ func Login(c *gin.Context) {
 		response.FailWithMessage(response.UserPassEmpty, "", c)
 		return
 	}
+	// 判断是否以LDAP方式登录
+	if user.LdapEnable {
+		user, err1 := services.PassLogin(user.Email, user.Password)
+		if err1 == nil {
+			if !*user.Status {
+				response.FailWithMessage(response.UserDisable, "", c)
+				return
+			}
+
+			c.Set("username", user.UserName)
+			return
+		}
+
+		// password login fail, try ldap
+		if common.Config.LDAP.Enable {
+			user, err2 := services.LdapLogin(user.UserName, user.Password)
+			if err2 == nil {
+				if !*user.Status {
+					response.FailWithMessage(response.UserDisable, "", c)
+					return
+				}
+				c.Set("username", user.UserName)
+				return
+			}
+		}
+	}
+
 	u, err := services.Login(user)
 	if err != nil {
 		common.GVA_LOG.Error("用户登录失败", zap.Any("err", err))
