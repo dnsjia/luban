@@ -1,6 +1,8 @@
 package common
 
 import (
+	"errors"
+	"github.com/toolkits/pkg/logger"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,4 +30,14 @@ func GormMysql() *gorm.DB {
 		sqlDB.SetMaxOpenConns(m.MaxOpenConns)
 		return db
 	}
+}
+
+func DBInsertOne(bean interface{}) error {
+	err := GVA_DB.Create(bean)
+	if err != nil {
+		logger.Errorf("mysql.error: insert fail: %v, to insert object: %+v", err, bean)
+		return errors.New("Internal server error, try again later please")
+	}
+
+	return nil
 }

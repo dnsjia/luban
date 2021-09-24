@@ -64,6 +64,7 @@ export default defineComponent({
     const formState = reactive({
       email: '',
       password: '',
+      ldap_enable: ''
     });
     const rules = {
       email: [
@@ -86,7 +87,11 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(() => {
-          login({"email": formState.email, "password": formState.password}).then(res => {
+          login({
+            "email": formState.email,
+            "password": formState.password,
+            "ldap_enable": true,
+          }).then(res => {
             if (res.errCode === 0) {
               setCookie('email',res.data.email)
               setCookie("token", res.data.token, {expire: '1d', path: '/', domain: ''}) // 24小时过期

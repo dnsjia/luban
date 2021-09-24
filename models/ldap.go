@@ -23,9 +23,10 @@ type LdapSection struct {
 }
 
 type ldapAttributes struct {
-	Nickname string `yaml:"nickname"`
-	Phone    string `yaml:"phone"`
-	Email    string `yaml:"email"`
+	Nickname   string `yaml:"nickname"`
+	Phone      string `yaml:"phone"`
+	Email      string `yaml:"email"`
+	Department string `yaml:"department"`
 }
 
 var LDAP LdapSection
@@ -49,7 +50,7 @@ func genLdapAttributeSearchList() []string {
 	return ldapAttributes
 }
 
-func ldapReq(user, pass string) (*ldap.SearchResult, error) {
+func LdapReq(user, pass string) (*ldap.SearchResult, error) {
 	var conn *ldap.Conn
 	var err error
 	lc := LDAP
