@@ -23,5 +23,5 @@ type CasBinInReceive struct {
 }
 
 type Casbin struct {
-	ModelPath string `mapstructure:"models-path" json:"modelPath" yaml:"models-path"`
+	ModelPath string `mapstructure:"model-path" json:"modelPath" yaml:"model-path"`
 }
