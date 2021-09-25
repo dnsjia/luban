@@ -2,8 +2,8 @@ package models
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
-
 	"github.com/go-ldap/ldap/v3"
 	"github.com/toolkits/pkg/logger"
 )
@@ -26,6 +26,7 @@ type ldapAttributes struct {
 	Nickname string `yaml:"nickname"`
 	Phone    string `yaml:"phone"`
 	Email    string `yaml:"email"`
+	UID      string `yaml:"uid"`
 }
 
 var LDAP LdapSection
@@ -46,10 +47,13 @@ func genLdapAttributeSearchList() []string {
 	if attrs.Phone != "" {
 		ldapAttributes = append(ldapAttributes, attrs.Phone)
 	}
+	if attrs.UID != "" {
+		ldapAttributes = append(ldapAttributes, attrs.UID)
+	}
 	return ldapAttributes
 }
 
-func ldapReq(user, pass string) (*ldap.SearchResult, error) {
+func LdapReq(user, pass string) (*ldap.SearchResult, error) {
 	var conn *ldap.Conn
 	var err error
 	lc := LDAP
@@ -93,6 +97,7 @@ func ldapReq(user, pass string) (*ldap.SearchResult, error) {
 	)
 
 	sr, err := conn.Search(searchRequest)
+
 	if err != nil {
 		logger.Errorf("ldap.error: ldap search fail: %v", err)
 		return nil, internalServerError
@@ -100,7 +105,9 @@ func ldapReq(user, pass string) (*ldap.SearchResult, error) {
 
 	if len(sr.Entries) == 0 {
 		logger.Infof("ldap auth fail, no such user: %s", user)
-		return nil, loginFailError
+		return nil, errors.New(fmt.Sprintf("ldap auth fail, no such user: %s", user))
+
+		//return nil, loginFailError
 	}
 
 	if len(sr.Entries) > 1 {
@@ -110,7 +117,7 @@ func ldapReq(user, pass string) (*ldap.SearchResult, error) {
 
 	if err := conn.Bind(sr.Entries[0].DN, pass); err != nil {
 		logger.Infof("ldap auth fail, password error, user: %s", user)
-		return nil, loginFailError
+		return nil, errors.New("ldap auth fail, password error")
 	}
 	return sr, nil
 }
