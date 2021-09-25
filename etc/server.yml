@@ -14,20 +14,22 @@ http:
   listen: 0.0.0.0:8000
 
 ldap:
-  enable: false
-  host: ldap.example.org
+  enable: true
+  host: ldap.pigs.com
   port: 389
-  baseDn: "dc=example,dc=org"
+  baseDn: "cn=admin,dc=pigs,dc=com"
   # AD: manange@example.org
-  bindUser: "cn=manager,dc=example,dc=org"
-  bindPass: "*******"
+  bindUser: "cn=admin,dc=pigs,dc=com"
+  bindPass: "123456"
   # openldap: (&(uid=%s))
   # AD: (&(sAMAccountName=%s))
-  authFilter: "(&(uid=%s))"
+  #authFilter: "(&(uid=%s))"
+  authFilter: "(&(objectClass=posixAccount)(mail=%s))"
   attributes:
     nickname: "cn"
     email: "mail"
     phone: "mobile"
+    uid: "uidNumber"
   coverAttributes: false
   autoRegist: true
   tls: false

@@ -27,9 +27,10 @@
                 </a-form-item>
 
                 <a-form-item>
-                    <a-checkbox v-model:checked="remember">
+                    <a-checkbox v-model:checked="formState.ldap_enable">
                         LDAP登录
                     </a-checkbox>
+
                     <a class="login-form-forgot" href="/user/forgotPwd">
                       忘记密码
                     </a>
@@ -64,6 +65,7 @@ export default defineComponent({
     const formState = reactive({
       email: '',
       password: '',
+      ldap_enable: false
     });
     const rules = {
       email: [
@@ -86,7 +88,11 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(() => {
-          login({"email": formState.email, "password": formState.password}).then(res => {
+          login({
+            "email": formState.email,
+            "password": formState.password,
+            "ldap_enable": formState.ldap_enable,
+          }).then(res => {
             if (res.errCode === 0) {
               setCookie('email',res.data.email)
               setCookie("token", res.data.token, {expire: '1d', path: '/', domain: ''}) // 24小时过期
@@ -118,7 +124,7 @@ export default defineComponent({
       formState,
       rules,
       onSubmit,
-      remember: ref(false),
+      // ldap_enable: ref(false),
       widthVar: "0px",
 
       // warning,

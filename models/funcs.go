@@ -18,7 +18,7 @@ func _e(format string, a ...interface{}) error {
 	return fmt.Errorf(format, a...)
 }
 
-// CryptoPass crypto password use salt
+//CryptoPass crypto password use salt
 //func CryptoPass(raw string) (string, error) {
 //	salt, err := ConfigsGet("salt")
 //	if err != nil {
