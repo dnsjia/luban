@@ -17,18 +17,19 @@ ldap:
   enable: true
   host: ldap.pigs.com
   port: 389
-  baseDn: "dc=pigs,dc=com"
+  baseDn: "cn=admin,dc=pigs,dc=com"
   # AD: manange@example.org
   bindUser: "cn=admin,dc=pigs,dc=com"
   bindPass: "123456"
   # openldap: (&(uid=%s))
   # AD: (&(sAMAccountName=%s))
-  authFilter: "(&(uid=%s))"
+  #authFilter: "(&(uid=%s))"
+  authFilter: "(&(objectClass=posixAccount)(mail=%s))"
   attributes:
     nickname: "cn"
     email: "mail"
     phone: "mobile"
-    department: "department"
+    uid: "uidNumber"
   coverAttributes: false
   autoRegist: true
   tls: false
