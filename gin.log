@@ -1,0 +1,30 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/pigs/ping            --> pigs/routers.User.func1 (5 handlers)
+[GIN-debug] GET    /api/pigs/pid             --> pigs/routers.User.func2 (5 handlers)
+[GIN-debug] GET    /api/pigs/addr            --> pigs/routers.User.func3 (5 handlers)
+[GIN-debug] POST   /user/register            --> pigs/controller.Register (5 handlers)
+[GIN-debug] POST   /user/login               --> pigs/controller.Login (5 handlers)
+[GIN-debug] GET    /user/info                --> pigs/controller.UserInfo (8 handlers)
+[GIN-debug] POST   /k8s/cluster              --> pigs/controller.CreateK8SCluster (8 handlers)
+[GIN-debug] GET    /k8s/cluster              --> pigs/controller.ListK8SCluster (8 handlers)
+[GIN-debug] Listening and serving HTTP on :8999
+[GIN] 2021/09/25 - 23:51:39 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-25T23:51:39+08:00] "GET /k8s/cluster HTTP/1.1 200 143.6159ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/25 - 23:51:39 |[97;42m 200 [0m|    143.6159ms |             ::1 |[97;44m GET     [0m "/k8s/cluster"
+[GIN] 2021/09/25 - 23:54:07 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-25T23:54:07+08:00] "GET /k8s/cluster HTTP/1.1 200 192.6058ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/25 - 23:54:07 |[97;42m 200 [0m|    192.6058ms |             ::1 |[97;44m GET     [0m "/k8s/cluster"
+[GIN] 2021/09/25 - 23:54:53 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-25T23:54:53+08:00] "POST /k8s/cluster HTTP/1.1 200 334.6215ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/25 - 23:54:53 |[97;42m 200 [0m|    334.6215ms |             ::1 |[97;46m POST    [0m "/k8s/cluster"
+[GIN] 2021/09/25 - 23:54:58 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-25T23:54:59+08:00] "GET /k8s/cluster HTTP/1.1 200 225.6827ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/25 - 23:54:59 |[97;42m 200 [0m|    225.6827ms |             ::1 |[97;44m GET     [0m "/k8s/cluster"
+[GIN] 2021/09/25 - 23:56:51 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-25T23:56:52+08:00] "GET /k8s/cluster HTTP/1.1 200 171.9034ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/25 - 23:56:52 |[97;42m 200 [0m|    171.9034ms |             ::1 |[97;44m GET     [0m "/k8s/cluster"
