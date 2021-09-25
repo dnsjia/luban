@@ -37,7 +37,7 @@ func PassLogin(username, pass string) (*models.User, error) {
 	// 校验加密后密码是否一致
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass)); err != nil {
 		logger.Infof("password auth fail, password error, user: %s", username)
-		return nil, errors.New("Login fail, check your username and password")
+		return nil, errors.New("login fail, check your username and password")
 	}
 
 	return user, nil
@@ -45,15 +45,16 @@ func PassLogin(username, pass string) (*models.User, error) {
 
 func LdapLogin(username, pass string) (*models.User, error) {
 	// 从ldap查询用户信息
-	sr, err := models.LdapReq(username, pass)
-	if err != nil {
-		return nil, err
+	sr, e := models.LdapReq(username, pass)
+
+	if e != nil {
+		return nil, e // ldap auth fail, no such user: admin
 	}
 
-	user, err := UserGetByUsername(username)
-	if err != nil {
-		return nil, err
-	}
+	user, _ := UserGetByUsername(username)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	if user == nil {
 		// default user settings
@@ -75,6 +76,10 @@ func LdapLogin(username, pass string) (*models.User, error) {
 		user.Phone = sr.Entries[0].GetAttributeValue(attrs.Phone)
 	}
 
+	if attrs.UID != "" {
+		user.UID = sr.Entries[0].GetAttributeValue(attrs.UID)
+	}
+
 	if user.ID > 0 {
 		if models.LDAP.CoverAttributes {
 			err := common.GVA_DB.Where("id=?", user.ID).Updates(&user)
@@ -88,10 +93,13 @@ func LdapLogin(username, pass string) (*models.User, error) {
 
 	//now := time.Now().Unix()
 	//
-	////user.Password = "******"
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	user.Password = string(hashPassword)
+
+	//user.Password = pass
 	//user.CreatedAt = now
 	user.CreateBy = "ldap"
 
-	err = common.DBInsertOne(&user)
+	err := common.DBInsertOne(user)
 	return user, err
 }
