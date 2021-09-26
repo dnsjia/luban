@@ -2,7 +2,6 @@ package models
 
 import (
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/toolkits/pkg/logger"
@@ -105,9 +104,9 @@ func LdapReq(user, pass string) (*ldap.SearchResult, error) {
 
 	if len(sr.Entries) == 0 {
 		logger.Infof("ldap auth fail, no such user: %s", user)
-		return nil, errors.New(fmt.Sprintf("ldap auth fail, no such user: %s", user))
+		//return nil, errors.New(fmt.Sprintf("ldap auth fail, no such user: %s", user))
 
-		//return nil, loginFailError
+		return nil, loginFailError
 	}
 
 	if len(sr.Entries) > 1 {
@@ -117,7 +116,7 @@ func LdapReq(user, pass string) (*ldap.SearchResult, error) {
 
 	if err := conn.Bind(sr.Entries[0].DN, pass); err != nil {
 		logger.Infof("ldap auth fail, password error, user: %s", user)
-		return nil, errors.New("ldap auth fail, password error")
+		return nil, loginFailError
 	}
 	return sr, nil
 }

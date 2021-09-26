@@ -11,7 +11,6 @@ import (
 
 	"pigs/common"
 	"pigs/http"
-	//"pigs/models"
 	"pigs/middleware"
 	"pigs/models"
 	"pigs/routers"
@@ -38,6 +37,7 @@ func main() {
 
 	parseConf()
 	models.InitLdap(common.Config.LDAP)
+	models.InitError()
 	InitServer()
 }
 
