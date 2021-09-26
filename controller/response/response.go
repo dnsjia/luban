@@ -28,6 +28,9 @@ const (
 	InternalServerError = http.StatusInternalServerError
 
 	CreateK8SClusterError = 2000
+
+	LDAPUserLoginFailed = 3000
+	LDAPUserNotFound    = 3001
 )
 
 const (
@@ -46,6 +49,9 @@ const (
 	InternalServerErrorMsg = "服务器内部错误"
 
 	CreateK8SClusterErrorMsg = "创建K8S集群失败"
+
+	LDAPUserLoginFailedMsg = "登录失败，请检查您的用户名和密码!"
+	LDAPUserNotFoundMsg    = "用户不存在"
 )
 
 var CustomError = map[int]string{
@@ -64,6 +70,9 @@ var CustomError = map[int]string{
 	InternalServerError: InternalServerErrorMsg,
 
 	CreateK8SClusterError: CreateK8SClusterErrorMsg,
+
+	LDAPUserLoginFailed: LDAPUserLoginFailedMsg,
+	LDAPUserNotFound:    LDAPUserNotFoundMsg,
 }
 
 func ResultFail(code int, data interface{}, msg string, c *gin.Context) {
