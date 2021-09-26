@@ -1,0 +1,18 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/pigs/ping            --> pigs/routers.User.func1 (5 handlers)
+[GIN-debug] GET    /api/pigs/pid             --> pigs/routers.User.func2 (5 handlers)
+[GIN-debug] GET    /api/pigs/addr            --> pigs/routers.User.func3 (5 handlers)
+[GIN-debug] POST   /user/register            --> pigs/controller.Register (5 handlers)
+[GIN-debug] POST   /user/login               --> pigs/controller.Login (5 handlers)
+[GIN-debug] GET    /user/info                --> pigs/controller.UserInfo (8 handlers)
+[GIN-debug] POST   /k8s/cluster              --> pigs/controller.CreateK8SCluster (8 handlers)
+[GIN-debug] GET    /k8s/cluster              --> pigs/controller.ListK8SCluster (8 handlers)
+[GIN-debug] Listening and serving HTTP on :8999
+[GIN] 2021/09/26 - 00:18:51 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/k8s/cluster"
+::1 - [2021-09-26T00:18:51+08:00] "GET /k8s/cluster HTTP/1.1 200 162.1145ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36 Edg/93.0.961.52" "
+[GIN] 2021/09/26 - 00:18:51 |[97;42m 200 [0m|    162.1145ms |             ::1 |[97;44m GET     [0m "/k8s/cluster"

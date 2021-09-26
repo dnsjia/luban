@@ -32,8 +32,6 @@ func Register(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	var user models.LoginUser
-	fmt.Println(c.Request.Body)
-	//user, _ = CheckLoginParams(c, user)
 	err := CheckParams(c, &user)
 	if err != nil {
 		return
@@ -46,6 +44,44 @@ func Login(c *gin.Context) {
 		response.FailWithMessage(response.UserPassEmpty, "", c)
 		return
 	}
+	// 判断前端是否以LDAP方式登录
+	if user.LdapEnable {
+		// 从数据库查询用户是否存在
+		u, err1 := services.PassLogin(user.Email, user.Password)
+		if err1 == nil {
+			if !*u.Status {
+				response.FailWithMessage(response.UserDisable, "", c)
+				return
+			}
+
+			c.Set("username", u.UserName)
+		}
+		// 如果数据库中用户不存在，开始从ldap获取信息
+		// password login fail, try ldap
+		if common.Config.LDAP.Enable {
+			//
+			user, err2 := services.LdapLogin(user.Email, user.Password)
+			if err2 == nil {
+				if !*user.Status {
+					response.FailWithMessage(response.UserDisable, "", c)
+					return
+				}
+				c.Set("username", user.UserName)
+				// 发放Token
+				token, err := common.ReleaseToken(*user)
+				if err != nil {
+					common.GVA_LOG.Error(fmt.Sprintf("token generate err: %v", err))
+					response.FailWithMessage(response.InternalServerError, fmt.Sprintf("token generate err：%v", err), c)
+					return
+				}
+				response.OkWithDetailed(gin.H{"token": token, "username": u.UserName, "role": u.Role, "email": u.Email}, "登录成功", c)
+				return
+			}
+			response.FailWithMessage(response.UserDisable, err2.Error(), c)
+			return
+		}
+	}
+
 	u, err := services.Login(user)
 	if err != nil {
 		common.GVA_LOG.Error("用户登录失败", zap.Any("err", err))
@@ -66,14 +102,12 @@ func Login(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, fmt.Sprintf("token generate err：%v", err), c)
 		return
 	}
-	c.SetCookie("username", u.UserName, 7*24, "/", "/", true, false)
 	response.OkWithDetailed(gin.H{"token": token, "username": u.UserName, "role": u.Role, "email": u.Email}, "登录成功", c)
 	return
 
 }
 
 func UserInfo(c *gin.Context) {
-
 	user, _ := c.Get("user")
 	c.JSON(http.StatusOK, gin.H{"errcode": 0, "data": gin.H{"user": user}})
 }
