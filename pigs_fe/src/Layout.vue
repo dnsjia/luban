@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="layout">
+  <a-layout class="layout" style="min-height: 100vh">
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
       <div class="logo" >小飞猪运维平台</div>
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
