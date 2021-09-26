@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import env from "@/store/env";
-import Watermark from '@/assets/watermark';
+// import Watermark from '@/assets/watermark';
 import NProgress from 'nprogress'
 
 const routes = [
@@ -89,11 +89,11 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
     NProgress.done();
     // 注释水印
-    const water = localStorage.getItem("email")
-    if (typeof (water) === "undefined" || !water){
-        // Watermark.set("小飞猪 - 运维平台")
-    }else{
-        Watermark.set(localStorage.getItem("email") + "(" + localStorage.getItem("name") + ")");
-    }
+    // const water = localStorage.getItem("email")
+    // if (typeof (water) === "undefined" || !water){
+    //     // Watermark.set("小飞猪 - 运维平台")
+    // }else{
+    //     Watermark.set(localStorage.getItem("email") + "(" + localStorage.getItem("name") + ")");
+    // }
 });
 export default router
