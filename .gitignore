@@ -14,7 +14,6 @@ logs/*.log
 .DS_Store
 .vscode
 *.sw?
-/gin.log
 /latest_log
 /config.yaml
-
+/gin.log

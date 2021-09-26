@@ -11,7 +11,6 @@ import (
 
 	"pigs/common"
 	"pigs/http"
-	//"pigs/models"
 	"pigs/middleware"
 	"pigs/models"
 	"pigs/routers"
@@ -38,6 +37,7 @@ func main() {
 
 	parseConf()
 	models.InitLdap(common.Config.LDAP)
+	models.InitError()
 	InitServer()
 }
 
@@ -59,12 +59,12 @@ func InitServer() {
 			param.ErrorMessage,
 		)
 	}))
-	PublicGroup := r.Group("")
+	PublicGroup := r.Group("/api/v1/")
 	{
 		// 注册基础功能路由 不做鉴权
 		routers.User(PublicGroup)
 	}
-	PrivateGroup := r.Group("")
+	PrivateGroup := r.Group("/api/v1/")
 	PrivateGroup.Use(gin.Recovery()).Use(middleware.AuthMiddleware()).Use(middleware.CasBinHandler())
 	{
 		routers.InitUserRouter(PrivateGroup)
