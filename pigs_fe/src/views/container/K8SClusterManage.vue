@@ -18,7 +18,9 @@
     <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
-        :data-source="data"
+        :data-source="state.data"
+        :pagination="false"
+        rowKey="id"
     />
 
     <a-modal v-model:visible="createK8SClusterVisible" title="添加新集群" @ok="onSubmit" @cancel="resetForm" cancelText="取消"
@@ -33,6 +35,7 @@
         <a-form-item ref="k8sClusterName" label="集群名称" name="k8sClusterName">
           <a-input v-model:value="formState.k8sClusterName" placeholder="请输入集群名称"/>
         </a-form-item>
+
         <a-form-item label="集群版本" name="k8sClusterVersion">
           <a-select v-model:value="formState.k8sClusterVersion" placeholder="请选择集群版本">
             <a-select-option value="shanghai">Zone one</a-select-option>
@@ -44,15 +47,34 @@
           <a-textarea v-model:value="formState.k8sClusterConfig" placeholder="请粘贴KubeConfig内容"
                       style="width: 100%; height: 300px"/>
         </a-form-item>
+
       </a-form>
     </a-modal>
+
+    <div class="float-right" style="padding: 10px 0;">
+
+      <a-pagination size="md" :show-total="total => `共 ${total} 条数据`" :v-model="state.total"
+                    :page-size-options="state.pageSizeOptions"
+                    :total="state.total"
+                    show-size-changer
+                    :pageSize="state.pageSize"
+                    show-less-items align="right"
+                    @showSizeChange="onShowSizeChange"
+                    @change="onChange"
+      >
+<!--        <template slot="buildOptionText" slot-scope="props">-->
+          <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
+          <span v-if="props.value === '50'">全部</span>
+<!--        </template>-->
+      </a-pagination>
+    </div>
 
 
   </div>
 </template>
 
 <script>
-import {computed, onMounted, defineComponent, inject, reactive, ref, toRaw, toRefs} from 'vue';
+import {computed, onMounted, defineComponent, inject, reactive, ref, toRaw} from 'vue';
 import {k8sCluster, fetchK8SCluster} from '@/api/k8s'
 
 const columns = [
@@ -82,6 +104,10 @@ export default defineComponent({
       // Check here to configure the default column
       loading: false,
       data: [],
+      pageSize: 2,
+      current: null,
+      total: null,
+      pageSizeOptions: ['10', '20', '30', '40'],
     });
     const hasSelected = computed(() => state.selectedRowKeys.length > 0);
 
@@ -154,6 +180,7 @@ export default defineComponent({
                 message.success(res.msg)
                 createK8SClusterVisible.value = false;
                 resetForm()
+                getK8SCluster()
               } else {
                 message.error(res.errMsg)
               }
@@ -170,23 +197,46 @@ export default defineComponent({
     const message = inject('$message');
 
 
-    const getK8SCluster = async () => {
-      const { data } = await fetchK8SCluster()
-      console.log("data:------", data)
-      state.data = data
+    const getK8SCluster = async (pageSize) => {
+      const { data } = await fetchK8SCluster({size: pageSize})
+      state.data = data.Data
+      state.total = data.Total
+      state.pageSize = data.Size
     }
+    // 翻页
+    const onChange = async (pageNumber) => {
+      fetchK8SCluster({
+        page: pageNumber,
+        size: state.pageSize
+      }).then(res => {
+        if (res.errCode === 0) {
+          state.data = res.data.Data
+          // state.total = res.Total
+          // state.pageSize = res.Size
+        }
+      });
 
+    };
+    // 显示条数
+    const onShowSizeChange = async (current, pageSize) => {
+
+      const { data } = await fetchK8SCluster({
+        size: pageSize,
+      })
+      state.data = data.Data
+      state.total = data.Total
+      state.pageSize = data.Size
+      state.current = 1
+    };
 
     onMounted(getK8SCluster)
 
-    // onMounted(() => {
-    //   getK8SCluster
-    // })
 
     return {
       columns,
       hasSelected,
-      ...toRefs(state),
+      // ...toRefs(state),
+      state,
       // func
       start,
       onSelectChange,
@@ -207,6 +257,8 @@ export default defineComponent({
         span: 19,
       },
 
+      onShowSizeChange,
+      onChange,
 
     };
   },
