@@ -1,4 +1,3 @@
-/config.yaml
 .idea/
 
 pigs_fe/dist
@@ -15,5 +14,7 @@ logs/*.log
 .DS_Store
 .vscode
 *.sw?
-gin.log
+/gin.log
 /latest_log
+/config.yaml
+
