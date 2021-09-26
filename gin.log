@@ -106,3 +106,6 @@
 [GIN] 2021/09/26 - 20:46:48 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/api/v1/k8s/cluster?size=30"
 ::1 - [2021-09-26T20:46:48+08:00] "GET /api/v1/k8s/cluster?size=30 HTTP/1.1 200 21.0092ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "
 [GIN] 2021/09/26 - 20:46:48 |[97;42m 200 [0m|     21.0092ms |             ::1 |[97;44m GET     [0m "/api/v1/k8s/cluster?size=30"
+[GIN] 2021/09/26 - 20:59:46 |[97;42m 204 [0m|            0s |             ::1 |[90;47m OPTIONS [0m "/api/v1/k8s/cluster"
+::1 - [2021-09-26T20:59:47+08:00] "GET /api/v1/k8s/cluster HTTP/1.1 200 428.5202ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" "
+[GIN] 2021/09/26 - 20:59:47 |[97;42m 200 [0m|    428.5202ms |             ::1 |[97;44m GET     [0m "/api/v1/k8s/cluster"
