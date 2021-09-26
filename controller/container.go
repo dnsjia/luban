@@ -26,11 +26,22 @@ func CreateK8SCluster(c *gin.Context) {
 }
 
 func ListK8SCluster(c *gin.Context) {
+	query := models.PaginationQ{}
+	if c.ShouldBindQuery(&query) != nil {
+		response.FailWithMessage(response.ParamError, response.ParamErrorMsg, c)
+		return
+	}
+
 	var K8sCluster []models.K8SCluster
-	if err := services.ListK8SCluster(&K8sCluster); err != nil {
-		common.GVA_LOG.Error(response.CreateK8SClusterErrorMsg, zap.Any("err", err))
-		response.FailWithMessage(response.CreateK8SClusterError, "", c)
+	data := make(map[string]interface{})
+	if err := services.ListK8SCluster(&query, &K8sCluster); err != nil {
+		common.GVA_LOG.Error("获取集群失败", zap.Any("err", err))
+		response.FailWithMessage(response.InternalServerError, "获取集群失败", c)
 	} else {
-		response.OkWithDetailed(K8sCluster, "获取集群成功", c)
+		data["Data"] = K8sCluster
+		data["Total"] = query.Total
+		data["Size"] = query.Size
+		data["Page"] = query.Page
+		response.OkWithDetailed(data, "获取集群成功", c)
 	}
 }
