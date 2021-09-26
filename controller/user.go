@@ -32,7 +32,6 @@ func Register(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	var user models.LoginUser
-
 	err := CheckParams(c, &user)
 	if err != nil {
 		return

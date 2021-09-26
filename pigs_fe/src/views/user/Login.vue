@@ -98,6 +98,7 @@ export default defineComponent({
               setCookie("token", res.data.token, {expire: '1d', path: '/', domain: ''}) // 24小时过期
               setCookie('username', res.data.username)
               localStorage.setItem("onLine", 1)
+              localStorage.setItem("token", res.data.token)
               message.success("登录成功")
               router.push("/")
             }else {
