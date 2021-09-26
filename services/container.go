@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"pigs/common"
 	"pigs/models"
 )
@@ -11,9 +10,31 @@ func CreateK8SCluster(cluster models.K8SCluster) (err error) {
 	return
 }
 
-func ListK8SCluster(cluster *[]models.K8SCluster) (err error) {
+func ListK8SCluster(p *models.PaginationQ, k *[]models.K8SCluster) (err error) {
 
-	result := common.GVA_DB.Find(&cluster)
-	fmt.Printf("条数:%d", result.RowsAffected)
-	return
+	if p.Page < 1 {
+		p.Page = 1
+	}
+	if p.Size < 1 {
+		p.Size = 10
+	}
+
+	offset := p.Size * (p.Page - 1)
+	tx := common.GVA_DB
+	if p.Keyword != "" {
+		tx = common.GVA_DB.Where("cluster_name like ?", "%"+p.Keyword+"%").Limit(p.Size).Offset(offset).Find(&k)
+	} else {
+		tx = common.GVA_DB.Limit(p.Size).Offset(offset).Find(&k)
+
+	}
+
+	var total int64
+	tx.Count(&total)
+	//p.Total = tx.RowsAffected
+	p.Total = total
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	return nil
 }

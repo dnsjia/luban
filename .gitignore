@@ -17,3 +17,4 @@ logs/*.log
 gin.log
 /latest_log
 /config.yaml
+/gin.log

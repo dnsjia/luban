@@ -161,13 +161,9 @@
 
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
           <router-view></router-view>
-<!--        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">-->
-<!--          &lt;!&ndash;这里是view渲染后的内容&ndash;&gt;-->
-<!--          ...-->
-<!--          <br />-->
-<!--          Really-->
-<!--          content-->
+<!--        <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">-->
 <!--        </div>-->
+
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         <a href="">官网</a>
@@ -175,6 +171,9 @@
         <a href="">文档</a><br/>
         Ant Design ©2018 Created by Ant UED
       </a-layout-footer>
+
+
+
     </a-layout>
   </a-layout>
 </template>
@@ -184,7 +183,7 @@ import {
   LogoutOutlined,
   UserOutlined,
   createFromIconfontCN,
-  GithubOutlined,
+  // GithubOutlined,
 
 
 } from '@ant-design/icons-vue';
@@ -215,7 +214,7 @@ export default defineComponent({
     IconFont,
     LogoutOutlined,
     UserOutlined,
-    GithubOutlined,
+    // GithubOutlined,
   },
 });
 </script>
