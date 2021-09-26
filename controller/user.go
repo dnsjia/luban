@@ -77,7 +77,7 @@ func Login(c *gin.Context) {
 				response.OkWithDetailed(gin.H{"token": token, "username": u.UserName, "role": u.Role, "email": u.Email}, "登录成功", c)
 				return
 			}
-			response.FailWithMessage(response.UserDisable, err2.Error(), c)
+			response.FailWithMessage(response.LDAPUserLoginFailed, "", c)
 			return
 		}
 	}
@@ -94,7 +94,10 @@ func Login(c *gin.Context) {
 		response.FailWithMessage(response.AuthError, "", c)
 		return
 	}
-
+	if !*u.Status {
+		response.FailWithMessage(response.UserDisable, "", c)
+		return
+	}
 	// 发放Token
 	token, err := common.ReleaseToken(u)
 	if err != nil {
