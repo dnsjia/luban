@@ -1,4 +1,3 @@
-/config.yaml
 .idea/
 
 pigs_fe/dist
@@ -17,3 +16,4 @@ logs/*.log
 *.sw?
 gin.log
 /latest_log
+/config.yaml

@@ -12,6 +12,7 @@ import (
 func CreateK8SCluster(c *gin.Context) {
 	var K8sCluster models.K8SCluster
 	err := CheckParams(c, &K8sCluster)
+
 	if err != nil {
 		return
 	}
@@ -21,5 +22,15 @@ func CreateK8SCluster(c *gin.Context) {
 		response.FailWithMessage(response.CreateK8SClusterError, "", c)
 	} else {
 		response.OkWithMessage("创建集群成功", c)
+	}
+}
+
+func ListK8SCluster(c *gin.Context) {
+	var K8sCluster []models.K8SCluster
+	if err := services.ListK8SCluster(&K8sCluster); err != nil {
+		common.GVA_LOG.Error(response.CreateK8SClusterErrorMsg, zap.Any("err", err))
+		response.FailWithMessage(response.CreateK8SClusterError, "", c)
+	} else {
+		response.OkWithDetailed(K8sCluster, "获取集群成功", c)
 	}
 }
