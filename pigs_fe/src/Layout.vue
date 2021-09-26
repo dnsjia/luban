@@ -5,51 +5,126 @@
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
         <a-menu-item key="1">
           <router-link :to="{path: '/'}">
-          <IconFont type="pigs-icon-dashboard1"/>
+          <IconFont type="pigs-icon-ziyuan"/>
             <span class="nav-text">仪表盘</span>
           </router-link>
-
-
         </a-menu-item>
 
-          <a-sub-menu key="2">
-            <template #icon>
-              <IconFont type="pigs-icon-rongqifuwu"/>
-            </template>
-            <template #title>容器管理</template>
+        <a-sub-menu key="2">
+          <template #icon>
+            <IconFont type="pigs-icon-fuwuqi1"/>
+          </template>
+          <template #title>资产管理</template>
+          <a-menu-item key="21">
+            <router-link :to="{path: '/cmdb/server'}">
+              服务器
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
 
-            <a-menu-item key="21">
-              <router-link :to="{path: '/k8s/cluster'}">
-                集群管理
-              </router-link>
-            </a-menu-item>
-          </a-sub-menu>
+        <a-sub-menu key="3">
+          <template #icon>
+            <IconFont type="pigs-icon-Kubernetes"/>
+          </template>
+          <template #title>容器管理</template>
+
+          <a-menu-item key="31">
+            <router-link :to="{path: '/k8s/cluster'}">
+              集群管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="32">
+            <router-link :to="{path: '/k8s/cluster'}">
+              节点池
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="33">
+            <router-link :to="{path: '/k8s/cluster'}">
+              工作负载
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="34">
+            <router-link :to="{path: '/k8s/cluster'}">
+              存储管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="35">
+            <router-link :to="{path: '/k8s/cluster'}">
+              网络管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="36">
+            <router-link :to="{path: '/k8s/cluster'}">
+              事件中心
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
+
+        <a-sub-menu key="4">
+          <template #icon>
+            <IconFont type="pigs-icon-yunweipeizhiguanli"/>
+          </template>
+          <template #title>作业配置</template>
+
+          <a-menu-item key="41">
+            <router-link :to="{path: '/task/execute'}">
+              执行任务
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="42">
+            <router-link :to="{path: '/task/template'}">
+              任务模板
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
+
+        <a-sub-menu key="5">
+          <template #icon>
+            <IconFont type="pigs-icon-gengduoyingyong"/>
+          </template>
+          <template #title>应用发布</template>
+
+          <a-menu-item key="41">
+            <router-link :to="{path: '/application/apps/manage'}">
+              应用管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="42">
+            <router-link :to="{path: '/application/environment'}">
+              环境管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="42">
+            <router-link :to="{path: '/application/apps/deploy/approval'}">
+              发布申请
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
+
+        <a-sub-menu key="6">
+          <template #icon>
+            <IconFont type="pigs-icon-yonghuzhongxin_shezhizhongxin"/>
+          </template>
+          <template #title>个人中心</template>
+
+          <a-menu-item key="61">
+            <router-link :to="{path: '/user/change/password'}">
+              修改密码
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="62">
+            <router-link :to="{path: '/user/manage'}">
+              用户管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="63">
+            <router-link :to="{path: '/system/settings'}">
+              系统设置
+            </router-link>
+          </a-menu-item>
+        </a-sub-menu>
 
 
-        <a-menu-item key="3">
-          <upload-outlined />
-          <span class="nav-text">nav 3</span>
-        </a-menu-item>
-        <a-menu-item key="4">
-          <bar-chart-outlined />
-          <span class="nav-text">nav 4</span>
-        </a-menu-item>
-        <a-menu-item key="5">
-          <cloud-outlined />
-          <span class="nav-text">nav 5</span>
-        </a-menu-item>
-        <a-menu-item key="6">
-          <appstore-outlined />
-          <span class="nav-text">nav 6</span>
-        </a-menu-item>
-        <a-menu-item key="7">
-          <team-outlined />
-          <span class="nav-text">nav 7</span>
-        </a-menu-item>
-        <a-menu-item key="8">
-          <shop-outlined />
-          <span class="nav-text">nav 8</span>
-        </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
@@ -106,12 +181,6 @@
 <script>
 import {
   // VideoCameraOutlined,
-  UploadOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  AppstoreOutlined,
-  TeamOutlined,
-  ShopOutlined,
   LogoutOutlined,
   UserOutlined,
   createFromIconfontCN,
@@ -125,7 +194,7 @@ import router from "./router";
 
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_2828790_dsubcd9pff7.js',
+  scriptUrl: '//at.alicdn.com/t/font_2828790_mybvy5yyuni.js',
 });
 export default defineComponent({
   setup() {
@@ -143,13 +212,6 @@ export default defineComponent({
   },
 
   components: {
-    // VideoCameraOutlined,
-    UploadOutlined,
-    BarChartOutlined,
-    CloudOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    ShopOutlined,
     IconFont,
     LogoutOutlined,
     UserOutlined,
