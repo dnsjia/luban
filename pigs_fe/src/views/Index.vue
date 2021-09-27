@@ -41,7 +41,7 @@
 
       <a-row :gutter="2">
         <a-col :span="24">
-          <a-card  title="一周部署情况" style="width: 100%">
+          <a-card title="一周部署情况" :hoverable="true" style="width: 100%">
             <div id="chars" ></div>
           </a-card>
         </a-col>
@@ -54,86 +54,109 @@
 </template>
 
 <script>
+import { getCountChart, getDeployChart } from "../api/dashboard";
 import { Chart } from '@antv/g2';
 import {onMounted} from "vue";
+import {message} from "ant-design-vue";
 
 export default {
   name: "Index",
   setup(){
+    // getCountChart()
+    // getDeployChart()
     onMounted(() => {
       const data = [
-        { month: 'Jan', city: 'Tokyo', temperature: 7 },
-        { month: 'Jan', city: 'London', temperature: 3.9 },
-        { month: 'Feb', city: 'Tokyo', temperature: 6.9 },
-        { month: 'Feb', city: 'London', temperature: 4.2 },
-        { month: 'Mar', city: 'Tokyo', temperature: 9.5 },
-        { month: 'Mar', city: 'London', temperature: 5.7 },
-        { month: 'Apr', city: 'Tokyo', temperature: 14.5 },
-        { month: 'Apr', city: 'London', temperature: 8.5 },
-        { month: 'May', city: 'Tokyo', temperature: 18.4 },
-        { month: 'May', city: 'London', temperature: 11.9 },
-        { month: 'Jun', city: 'Tokyo', temperature: 21.5 },
-        { month: 'Jun', city: 'London', temperature: 15.2 },
-        { month: 'Jul', city: 'Tokyo', temperature: 25.2 },
-        { month: 'Jul', city: 'London', temperature: 17 },
-        { month: 'Aug', city: 'Tokyo', temperature: 26.5 },
-        { month: 'Aug', city: 'London', temperature: 16.6 },
-        { month: 'Sep', city: 'Tokyo', temperature: 23.3 },
-        { month: 'Sep', city: 'London', temperature: 14.2 },
-        { month: 'Oct', city: 'Tokyo', temperature: 18.3 },
-        { month: 'Oct', city: 'London', temperature: 10.3 },
-        { month: 'Nov', city: 'Tokyo', temperature: 13.9 },
-        { month: 'Nov', city: 'London', temperature: 6.6 },
-        { month: 'Dec', city: 'Tokyo', temperature: 9.6 },
-        { month: 'Dec', city: 'London', temperature: 4.8 },
+        { id:1, days: '2020-10-01', deploy_status: '部署成功', count: 7 },
+        { id:2, days: '2020-10-01', deploy_status: '部署失败', count: 2 },
+        { id:3, days: '2020-10-02', deploy_status: '部署成功', count: 11 },
+        { id:4, days: '2020-10-02', deploy_status: '部署失败', count: 1 },
+        { id:5, days: '2020-10-03', deploy_status: '部署成功', count: 3 },
+        { id:6, days: '2020-10-03', deploy_status: '部署失败', count: 4 },
+        { id:7, days: '2020-10-04', deploy_status: '部署成功', count: 14 },
+        { id:8, days: '2020-10-04', deploy_status: '部署失败', count: 8 },
+        { id:9, days: '2020-10-05', deploy_status: '部署成功', count: 18 },
+        { id:10, days: '2020-10-05', deploy_status: '部署失败', count: 11 },
+
       ];
 
       const chart = new Chart({
+        type: 'line',
         container: 'chars',
         autoFit: true,
-        height: 500,
+        height: 400,
       });
-
       chart.data(data);
       chart.scale({
-        month: {
+        days: {
           range: [0, 1],
         },
-        temperature: {
+        count: {
           nice: true,
         },
       });
-
       chart.tooltip({
         showCrosshairs: true,
         shared: true,
       });
-
-      chart.axis('temperature', {
-        label: {
-          formatter: (val) => {
-            return val + ' °C';
-          },
-        },
-      });
-
       chart
-          .line()
-          .position('month*temperature')
-          .color('city')
-          .shape('smooth');
-
+          .area()
+          .adjust('stack')
+          .position('days*count')
+          .color('deploy_status');
       chart
           .point()
-          .position('month*temperature')
-          .color('city')
-          .shape('circle');
-
+          .adjust('stack')
+          .position('days*count')
+          .color('deploy_status');
       chart.render();
-
     })
+    return {
+      data: [],
+      serverCount: 0,
+      jobCount: 0,
+      appsCount: 0,
+      deployCount: 0,
+      dashLoading: false,
+      oneLoading: false,
+      chart: '',
+    }
+  },
+  methods: {
+    // 获取统计数据
+    async getCountChart() {
+      const res = await getCountChart()
+      if (res.errcode === 0){
+        this.serverCount = res.data.server_count
+        this.jobCount = res.data.job_count
+        this.appsCount = res.data.apps_count
+        // this.virtualHostCount = res.data.virtual_host
+        this.deployCount = res.data.deploy_count
+        this.dashLoading = false
+      } else{
+        message.error(res.errmsg, 5)
+      }
+
+    },
+    async getDeployChart(){
+      // 请求一周部署接口
+      const res = await getDeployChart()
+      if (res.errcode === 0) {
+        //console.log(res.data, 356)
+        this.data = [
+        ];
+        this.oneLoading = false
+        //this.chart.changeData(this.data.data)
+        // 重新渲染图表
+        this.chart.data(this.data)
+        this.chart.render();
+      } else {
+        message.error(res.errmsg)
+      }
+
+    }
 
   },
+
 
 
 

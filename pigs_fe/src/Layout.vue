@@ -160,7 +160,14 @@
       </a-layout-header>
 
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-          <router-view></router-view>
+        <!--面包屑-->
+        <a-breadcrumb  style="margin: 14px 0">
+          <a-breadcrumb-item>     首页</a-breadcrumb-item>
+          <a-breadcrumb-item v-if="$route.meta.module"><a href="">{{ $route.meta.module }}</a></a-breadcrumb-item>
+          <a-breadcrumb-item>{{ $route.meta.title }}</a-breadcrumb-item>
+        </a-breadcrumb>
+
+        <router-view></router-view>
 <!--        <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">-->
 <!--        </div>-->
 
