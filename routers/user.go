@@ -8,7 +8,7 @@ import (
 )
 
 func User(r *gin.RouterGroup) {
-	guest := r.Group("/api/pigs")
+	guest := r.Group("/pigs")
 	{
 		guest.GET("/ping", func(c *gin.Context) {
 			c.String(200, "pong")
