@@ -2,26 +2,29 @@
   <div>
 
     <div style="margin-bottom: 16px">
-      <a-button type="primary" @click="addK8SCluster">注册集群</a-button>
-
-      <a-button type="primary" danger :disabled="!hasSelected" :loading="loading" @click="start">
-        Reload
-      </a-button>
-
-      <span style="margin-left: 8px">
-        <template v-if="hasSelected">
-          {{ `Selected ${selectedRowKeys.length} items` }}
-        </template>
-      </span>
+      <a-space>
+        <a-button type="primary" @click="addK8SCluster">注册集群</a-button>
+        <a-button type="primary" danger :disabled="state.selectedRows.length<=0">批量删除</a-button>
+      </a-space>
     </div>
 
     <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :row-selection="rowSelection"
         :columns="columns"
         :data-source="state.data"
         :pagination="false"
         rowKey="id"
-    />
+    >
+
+      <template #ClusterVersion="{ text }">
+        <span>
+          <IconFont type="pigs-icon-logo"/> &nbsp;{{ text }}
+        </span>
+      </template>
+
+
+
+    </a-table>
 
     <a-modal v-model:visible="createK8SClusterVisible" title="添加新集群" @ok="onSubmit" @cancel="resetForm" cancelText="取消"
              okText="确定" :keyboard="false" :maskClosable="false">
@@ -62,10 +65,10 @@
                     @showSizeChange="onShowSizeChange"
                     @change="onChange"
       >
-<!--        <template slot="buildOptionText" slot-scope="props">-->
-          <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
-          <span v-if="props.value === '50'">全部</span>
-<!--        </template>-->
+        <!--        <template slot="buildOptionText" slot-scope="props">-->
+        <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
+        <span v-if="props.value === '50'">全部</span>
+        <!--        </template>-->
       </a-pagination>
     </div>
 
@@ -74,17 +77,20 @@
 </template>
 
 <script>
-import {computed, onMounted, defineComponent, inject, reactive, ref, toRaw} from 'vue';
-import {k8sCluster, fetchK8SCluster} from '@/api/k8s'
+import {defineComponent, inject, onMounted, reactive, ref} from 'vue';
+import {fetchK8SCluster, k8sCluster} from '@/api/k8s'
+import {createFromIconfontCN} from "@ant-design/icons-vue";
 
 const columns = [
   {
     title: '集群名称',
     dataIndex: 'clusterName',
+    slots: {customRender: 'cluster'},
   },
   {
     title: '集群版本',
     dataIndex: 'clusterVersion',
+    slots: {customRender: 'ClusterVersion'}
   },
   {
     title: '节点数量',
@@ -95,13 +101,14 @@ const columns = [
     dataIndex: 'kubeConfig',
   },
 ];
-
+const IconFont = createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_2828790_mybvy5yyuni.js',
+});
 export default defineComponent({
   name: "Manage",
   setup() {
     const state = reactive({
-      selectedRowKeys: [],
-      // Check here to configure the default column
+      selectedRows: [],
       loading: false,
       data: [],
       pageSize: 2,
@@ -109,23 +116,9 @@ export default defineComponent({
       total: null,
       pageSizeOptions: ['10', '20', '30', '40'],
     });
-    const hasSelected = computed(() => state.selectedRowKeys.length > 0);
-
-    const start = () => {
-      state.loading = true; // ajax request after empty completing
-
-      setTimeout(() => {
-        state.loading = false;
-        state.selectedRowKeys = [];
-      }, 1000);
-    };
-
-    const onSelectChange = selectedRowKeys => {
-      console.log('selectedRowKeys changed: ', selectedRowKeys);
-      state.selectedRowKeys = selectedRowKeys;
-    };
 
     const createK8SClusterVisible = ref(false);
+
     let addK8SCluster = () => {
       createK8SClusterVisible.value = true;
     }
@@ -170,7 +163,6 @@ export default defineComponent({
       formRef.value
           .validate()
           .then(() => {
-            console.log('values', formState, toRaw(formState));
             k8sCluster({
               "clusterName": formState.k8sClusterName,
               "kubeConfig": formState.k8sClusterConfig,
@@ -196,9 +188,8 @@ export default defineComponent({
     };
     const message = inject('$message');
 
-
     const getK8SCluster = async (pageSize) => {
-      const { data } = await fetchK8SCluster({size: pageSize})
+      const {data} = await fetchK8SCluster({size: pageSize})
       state.data = data.Data
       state.total = data.Total
       state.pageSize = data.Size
@@ -219,8 +210,7 @@ export default defineComponent({
     };
     // 显示条数
     const onShowSizeChange = async (current, pageSize) => {
-
-      const { data } = await fetchK8SCluster({
+      const {data} = await fetchK8SCluster({
         size: pageSize,
       })
       state.data = data.Data
@@ -229,21 +219,28 @@ export default defineComponent({
       state.current = 1
     };
 
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        state.selectedRows = selectedRows
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      },
+      onSelect: (record, selected, selectedRows) => {
+        console.log(11, record, selected, selectedRows);
+      },
+      onSelectAll: (selected, selectedRows, changeRows) => {
+        console.log(22, selected, selectedRows, changeRows);
+      },
+    };
+
     onMounted(getK8SCluster)
 
 
     return {
       columns,
-      hasSelected,
-      // ...toRefs(state),
       state,
-      // func
-      start,
-      onSelectChange,
 
       createK8SClusterVisible,
       addK8SCluster,
-
       formRef,
       formState,
       rules,
@@ -259,9 +256,12 @@ export default defineComponent({
 
       onShowSizeChange,
       onChange,
-
+      rowSelection,
     };
   },
+  components: {
+    IconFont,
+  }
 });
 </script>
 
