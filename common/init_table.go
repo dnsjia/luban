@@ -17,6 +17,8 @@ func MysqlTables(db *gorm.DB) {
 		models.Role{},
 		models.Dept{},
 		models.K8SCluster{},
+		models.CloudPlatform{},
+		models.VirtualMachine{},
 	)
 	if err != nil {
 		GVA_LOG.Error("register table failed", zap.Any("err", err))
