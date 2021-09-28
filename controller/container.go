@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"pigs/common"
@@ -44,4 +45,24 @@ func ListK8SCluster(c *gin.Context) {
 		data["Page"] = query.Page
 		response.OkWithDetailed(data, "获取集群成功", c)
 	}
+}
+
+func DelK8SCluster(c *gin.Context) {
+	var id models.ClusterIds
+	err := CheckParams(c, &id)
+	if err != nil {
+		return
+	}
+
+	err2 := services.DelCluster(id)
+
+	if err2 != nil {
+		username, _ := c.Get("username")
+		common.GVA_LOG.Error(fmt.Sprintf("用户：%s, 删除数据失败", username))
+		response.FailWithMessage(response.InternalServerError, "删除失败！", c)
+		return
+	}
+
+	response.Ok(c)
+	return
 }
