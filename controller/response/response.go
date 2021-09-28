@@ -12,6 +12,13 @@ type Response struct {
 	ErrMsg string      `json:"errMsg"`
 }
 
+type PageResult struct {
+	Data  interface{} `json:"data"`
+	Total int64       `json:"total"`
+	Page  int         `json:"page"`
+	Size  int         `json:"pageSize"`
+}
+
 const (
 	SUCCESS = 0
 	ERROR   = 7000
