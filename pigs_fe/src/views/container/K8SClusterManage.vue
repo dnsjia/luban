@@ -22,9 +22,30 @@
         </span>
       </template>
 
+      <template #nodeNumber="{ text }">
+        <span>
+          <a-tag color="cyan">{{ text }}</a-tag>
+        </span>
+      </template>
 
+      <template #kubeConfig="{ text }">
+        <a-tooltip placement="topLeft" title="查看凭证">
+          <a @click="ViewClusterConfig(text)"><IconFont type="pigs-icon-pingzheng"/></a>
+        </a-tooltip>
+      </template>
+
+      <template #action="{  }">
+        <span>
+          <a>查看</a>
+        </span>
+      </template>
 
     </a-table>
+    <a-modal v-model:visible="state.ClusterConfigVisible" title="查看集群凭证" :footer="null">
+
+      <a-textarea v-model:value="state.ClusterConfig" placeholder="请粘贴KubeConfig内容" style="width: 100%; height: 600px"/>
+    </a-modal>
+
 
     <a-modal v-model:visible="createK8SClusterVisible" title="添加新集群" @ok="onSubmit" @cancel="resetForm" cancelText="取消"
              okText="确定" :keyboard="false" :maskClosable="false">
@@ -39,12 +60,12 @@
           <a-input v-model:value="formState.k8sClusterName" placeholder="请输入集群名称"/>
         </a-form-item>
 
-        <a-form-item label="集群版本" name="k8sClusterVersion">
-          <a-select v-model:value="formState.k8sClusterVersion" placeholder="请选择集群版本">
-            <a-select-option value="shanghai">Zone one</a-select-option>
-            <a-select-option value="beijing">Zone two</a-select-option>
-          </a-select>
-        </a-form-item>
+<!--        <a-form-item label="集群版本" name="k8sClusterVersion">-->
+<!--          <a-select v-model:value="formState.k8sClusterVersion" placeholder="请选择集群版本">-->
+<!--            <a-select-option value="shanghai">Zone one</a-select-option>-->
+<!--            <a-select-option value="beijing">Zone two</a-select-option>-->
+<!--          </a-select>-->
+<!--        </a-form-item>-->
 
         <a-form-item label="集群凭证" name="k8sClusterConfig">
           <a-textarea v-model:value="formState.k8sClusterConfig" placeholder="请粘贴KubeConfig内容"
@@ -95,14 +116,25 @@ const columns = [
   {
     title: '节点数量',
     dataIndex: 'nodeNumber',
+    slots: {customRender: 'nodeNumber'}
   },
   {
     title: '集群凭证',
     dataIndex: 'kubeConfig',
+    slots: {customRender: 'kubeConfig'},
   },
+  {
+    title: '创建时间',
+    dataIndex: 'CreatedAt',
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    slots: {customRender: 'action'},
+  }
 ];
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_2828790_mybvy5yyuni.js',
+  scriptUrl: '//at.alicdn.com/t/font_2828790_vphs1aik0kn.js',
 });
 export default defineComponent({
   name: "Manage",
@@ -117,6 +149,8 @@ export default defineComponent({
       current: null,
       total: null,
       pageSizeOptions: ['10', '20', '30', '40'],
+      ClusterConfigVisible: false,
+      ClusterConfig: "",
     });
 
     const createK8SClusterVisible = ref(false);
@@ -128,7 +162,7 @@ export default defineComponent({
     const formRef = ref();
     const formState = reactive({
       k8sClusterName: undefined,
-      k8sClusterVersion: undefined,
+      k8sClusterVersion: "",
       k8sClusterConfig: undefined,
     });
     const rules = {
@@ -145,13 +179,13 @@ export default defineComponent({
           trigger: 'blur',
         },
       ],
-      k8sClusterVersion: [
-        {
-          required: true,
-          message: '请选择集群版本',
-          trigger: 'change',
-        },
-      ],
+      // k8sClusterVersion: [
+      //   {
+      //     required: true,
+      //     message: '请选择集群版本',
+      //     trigger: 'change',
+      //   },
+      // ],
       k8sClusterConfig: [
         {
           required: true,
@@ -243,6 +277,12 @@ export default defineComponent({
       });
 
     };
+    // 查看集群凭证
+    const ViewClusterConfig = (text) => {
+      state.ClusterConfig = text
+      state.ClusterConfigVisible = true
+    }
+
     onMounted(getK8SCluster)
 
 
@@ -269,6 +309,7 @@ export default defineComponent({
       onChange,
       rowSelection,
       removeCluster,
+      ViewClusterConfig,
     };
   },
   components: {
