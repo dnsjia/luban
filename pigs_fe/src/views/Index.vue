@@ -41,7 +41,7 @@
 
       <a-row :gutter="2">
         <a-col :span="24">
-          <a-card title="一周部署情况" :hoverable="true" style="width: 100%">
+          <a-card title="一周部署情况">
             <div id="chars" ></div>
           </a-card>
         </a-col>
