@@ -19,7 +19,7 @@
                 </a-form-item>
 
                 <a-form-item name="password">
-                  <a-input-password placeholder="密码" v-model:value="formState.password">
+                  <a-input-password placeholder="密码" v-model:value="formState.password" @pressEnter="enterLogin">
                     <template #prefix>
                       <lock-outlined type="password" />
                     </template>
@@ -112,7 +112,9 @@ export default defineComponent({
     };
 
     const message = inject('$message');
-
+    const enterLogin = () => {
+      onSubmit()
+    }
     return {
       formRef,
       labelCol: {
@@ -127,8 +129,7 @@ export default defineComponent({
       // ldap_enable: ref(false),
       widthVar: "0px",
 
-      // warning,
-      // success,
+      enterLogin
     };
   },
   components: {

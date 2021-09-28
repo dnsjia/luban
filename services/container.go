@@ -38,3 +38,24 @@ func ListK8SCluster(p *models.PaginationQ, k *[]models.K8SCluster) (err error) {
 
 	return nil
 }
+
+func DelCluster(ids models.ClusterIds) (err error) {
+	var k models.K8SCluster
+
+	//if reflect.TypeOf(id.Data).Kind() == reflect.Slice {
+	//	s := reflect.ValueOf(id.Data)
+	//	for i := 0; i < s.Len(); i++ {
+	//		err := common.GVA_DB.Where("id = ?", s.Index(i)).Delete(&models.K8SCluster{})
+	//		if err.Error != nil {
+	//			fmt.Println("删除出错", err.Error)
+	//		}
+	//	}
+	//}
+
+	err2 := common.GVA_DB.Delete(&k, ids.Data)
+	if err2.Error != nil {
+		return err2.Error
+	}
+	return nil
+
+}
