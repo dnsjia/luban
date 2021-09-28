@@ -19,3 +19,4 @@ gin.log
 /config.yaml
 /gin.log
 /gva.exe
+/server.exe
