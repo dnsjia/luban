@@ -37,6 +37,11 @@ mysql:
 - 用户登录、LDAP
 - 权限管理
 
+## Demo地址
+
+> [http://115.231.236.19](http://115.231.236.19:8822)
+> 
+> 账号: pigs@qq.com  密码: test1234
 
 ## 首页
 ![avatar](./docs/img/登录.jpg)
