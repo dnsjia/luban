@@ -13,6 +13,16 @@ func (ks K8SCluster) TableName() string {
 	return k.TableName("k8s_cluster")
 }
 
+type ClusterVersion struct {
+	GModel
+	Version string `json:"version"`
+}
+
+func (v ClusterVersion) TableName() string {
+	var k GModel
+	return k.TableName("k8s_cluster_version")
+}
+
 type PaginationQ struct {
 	Size    int    `form:"size" json:"size"`
 	Page    int    `form:"page" json:"page"`
