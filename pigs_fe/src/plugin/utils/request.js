@@ -166,5 +166,17 @@ export function post(url, params) {
     });
 }
 
+export function del(url, params) {
+    return new Promise((resolve, reject) => {
+        instance.delete(url, {params: params})
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err =>{
+                console.log(err)
+                reject(err.data)
+            })
+    });
+}
 
 export default instance;
