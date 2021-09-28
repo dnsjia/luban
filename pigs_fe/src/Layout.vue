@@ -173,10 +173,14 @@
 
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
-        <a href="">官网</a>
-        <GithubOutlined />
-        <a href="">文档</a><br/>
-        Ant Design ©2018 Created by Ant UED
+        <a-space :size="14">
+        <a href="#">官网</a>
+          <a href="https://github.com/small-flying-pigs/pigs">
+            <GithubOutlined/>
+          </a>
+        <a href="#">文档</a>
+        </a-space><br/>
+        Copyright ©2020 By Small Flying Pigs.
       </a-layout-footer>
 
 
@@ -190,7 +194,7 @@ import {
   LogoutOutlined,
   UserOutlined,
   createFromIconfontCN,
-  // GithubOutlined,
+  GithubOutlined,
 
 
 } from '@ant-design/icons-vue';
@@ -221,7 +225,7 @@ export default defineComponent({
     IconFont,
     LogoutOutlined,
     UserOutlined,
-    // GithubOutlined,
+    GithubOutlined,
   },
 });
 </script>
