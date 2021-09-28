@@ -39,6 +39,11 @@ func ListK8SCluster(p *models.PaginationQ, k *[]models.K8SCluster) (err error) {
 	return nil
 }
 
+func GetK8sCluster(id uint) (err error, K8sCluster models.K8SCluster) {
+	err = common.GVA_DB.Where("id = ?", id).First(&K8sCluster).Error
+	return
+}
+
 func DelCluster(ids models.ClusterIds) (err error) {
 	var k models.K8SCluster
 
