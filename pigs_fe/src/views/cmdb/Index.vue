@@ -65,9 +65,7 @@
 </template>
 
 <script>
-import {
-  createFromIconfontCN,
-} from "_@ant-design_icons-vue@6.0.1@@ant-design/icons-vue";
+import {createFromIconfontCN,} from "@ant-design/icons-vue";
 
 const IconFont = createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2828790_mybvy5yyuni.js',
