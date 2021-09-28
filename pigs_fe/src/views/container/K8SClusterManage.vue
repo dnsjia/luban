@@ -4,7 +4,7 @@
     <div style="margin-bottom: 16px">
       <a-space>
         <a-button type="primary" @click="addK8SCluster">注册集群</a-button>
-        <a-button type="primary" danger :disabled="state.selectedRows.length<=0">批量删除</a-button>
+        <a-button type="primary" danger :disabled="state.selectedRows.length<=0" @click="removeCluster()">批量删除</a-button>
       </a-space>
     </div>
 
@@ -78,7 +78,7 @@
 
 <script>
 import {defineComponent, inject, onMounted, reactive, ref} from 'vue';
-import {fetchK8SCluster, k8sCluster} from '@/api/k8s'
+import {fetchK8SCluster, k8sCluster, delK8SCluster} from '@/api/k8s'
 import {createFromIconfontCN} from "@ant-design/icons-vue";
 
 const columns = [
@@ -107,8 +107,10 @@ const IconFont = createFromIconfontCN({
 export default defineComponent({
   name: "Manage",
   setup() {
+    let selectedRowKeys;
     const state = reactive({
       selectedRows: [],
+      selectedRowKeys,
       loading: false,
       data: [],
       pageSize: 2,
@@ -187,7 +189,7 @@ export default defineComponent({
       formRef.value.resetFields();
     };
     const message = inject('$message');
-
+    // 获取集群信息
     const getK8SCluster = async (pageSize) => {
       const {data} = await fetchK8SCluster({size: pageSize})
       state.data = data.Data
@@ -222,16 +224,25 @@ export default defineComponent({
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         state.selectedRows = selectedRows
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-      },
-      onSelect: (record, selected, selectedRows) => {
-        console.log(11, record, selected, selectedRows);
-      },
-      onSelectAll: (selected, selectedRows, changeRows) => {
-        console.log(22, selected, selectedRows, changeRows);
+        state.selectedRowKeys = selectedRowKeys
       },
     };
+    // 批量删除集群
+    const removeCluster = async () => {
+      let clusterIds = [];
+      for (let i=0; i < state.selectedRowKeys.length; i++){
+        clusterIds.push(state.selectedRowKeys[i])
+      }
+      await delK8SCluster({"clusterIds": clusterIds}).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          getK8SCluster()
+        }else {
+          message.error(res.errMsg)
+        }
+      });
 
+    };
     onMounted(getK8SCluster)
 
 
@@ -257,6 +268,7 @@ export default defineComponent({
       onShowSizeChange,
       onChange,
       rowSelection,
+      removeCluster,
     };
   },
   components: {

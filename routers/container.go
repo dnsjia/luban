@@ -10,5 +10,6 @@ func InitContainerRouter(r *gin.RouterGroup) {
 	{
 		K8sClusterRouter.POST("cluster", controller.CreateK8SCluster)
 		K8sClusterRouter.GET("cluster", controller.ListK8SCluster)
+		K8sClusterRouter.POST("delCluster", controller.DelK8SCluster)
 	}
 }
