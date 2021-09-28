@@ -72,6 +72,8 @@ func InitServer() {
 		routers.InitCasBinRouter(PrivateGroup)
 		// 容器相关
 		routers.InitContainerRouter(PrivateGroup)
+		//云资产管理
+		routers.InitCloudRouter(PrivateGroup)
 	}
 
 	address := fmt.Sprintf(":%d", common.GVA_CONFIG.System.Addr)
