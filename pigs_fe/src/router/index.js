@@ -18,6 +18,16 @@ const routes = [
                 }
             },
             {
+                path: 'cmdb/server',
+                name: 'Server',
+                component: () => import('../views/cmdb/Index.vue'),
+                meta: {
+                    title: '服务器',
+                    module: '资产管理'
+                },
+                children: []
+            },
+            {
                 path: 'k8s/cluster',
                 name: 'K8S',
                 component: () => import('../views/container/K8SClusterManage.vue'),
