@@ -34,9 +34,9 @@
         </a-tooltip>
       </template>
 
-      <template #action="{  }">
+      <template #action="{text, id }">
         <span>
-          <a>查看</a>
+          <a @click="clusterDetail(id, text.id)">查看</a>
         </span>
       </template>
 
@@ -101,6 +101,7 @@
 import {defineComponent, inject, onMounted, reactive, ref} from 'vue';
 import {fetchK8SCluster, k8sCluster, delK8SCluster} from '@/api/k8s'
 import {createFromIconfontCN} from "@ant-design/icons-vue";
+import router from "../../router";
 
 const columns = [
   {
@@ -129,7 +130,7 @@ const columns = [
   },
   {
     title: '操作',
-    dataIndex: 'action',
+    // dataIndex: 'action',
     slots: {customRender: 'action'},
   }
 ];
@@ -282,7 +283,10 @@ export default defineComponent({
       state.ClusterConfig = text
       state.ClusterConfigVisible = true
     }
-
+    // 查看集群详情
+    const clusterDetail = (text, id) => {
+      router.push({path: `/k8s/cluster/detail/${id}`})
+    }
     onMounted(getK8SCluster)
 
 
@@ -310,6 +314,7 @@ export default defineComponent({
       rowSelection,
       removeCluster,
       ViewClusterConfig,
+      clusterDetail,
     };
   },
   components: {
