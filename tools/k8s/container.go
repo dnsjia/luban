@@ -1,10 +1,9 @@
-package tools
+package k8s
 
 import (
 	"errors"
 	"fmt"
 	"go.uber.org/zap"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -31,30 +30,7 @@ func GetK8sClient(k8sConf string) (*kubernetes.Clientset, error) {
 func GetRestConf(k8sConf string) (restConf *rest.Config, err error) {
 	if restConf, err = clientcmd.RESTConfigFromKubeConfig([]byte(k8sConf)); err != nil {
 		fmt.Println("err: ", err)
+		return nil, err
 	}
-	return
-}
-
-func GetClusterVersion(c *kubernetes.Clientset) (string, error) {
-	/*
-		获取k8s 集群版本
-	*/
-	version, err := c.ServerVersion()
-
-	if err != nil {
-		return "", err
-	}
-
-	return version.String(), nil
-}
-
-func GetClusterNodesNumber(c *kubernetes.Clientset) (int, error) {
-	/*
-		获取k8s node节点数量
-	*/
-	nodeNumber, err := c.CoreV1().Nodes().List(metav1.ListOptions{})
-	if err != nil {
-		return 0, err
-	}
-	return len(nodeNumber.Items), nil
+	return restConf, nil
 }
