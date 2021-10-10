@@ -52,6 +52,9 @@ mysql:
 ## 集群管理
 ![avatar](./docs/img/集群管理.jpg)
 
+## 集群详情
+![avatar](./docs/img/集群详情.png)
+
 ## Features
 
 * 用户注册登录
