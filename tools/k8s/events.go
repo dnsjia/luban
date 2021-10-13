@@ -8,6 +8,7 @@ import (
 )
 
 func GetEvents(client *kubernetes.Clientset, namespace string) (*v1.EventList, error) {
+
 	events, err := client.CoreV1().Events(namespace).List(
 		metav1.ListOptions{
 			FieldSelector: fmt.Sprintf("type=%s", "Warning"),
