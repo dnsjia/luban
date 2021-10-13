@@ -13,9 +13,9 @@ import (
 )
 
 func CreateK8SCluster(c *gin.Context) {
+
 	var K8sCluster models.K8SCluster
 	err := CheckParams(c, &K8sCluster)
-
 	if err != nil {
 		return
 	}
@@ -47,6 +47,7 @@ func CreateK8SCluster(c *gin.Context) {
 }
 
 func ListK8SCluster(c *gin.Context) {
+
 	query := models.PaginationQ{}
 	if c.ShouldBindQuery(&query) != nil {
 		response.FailWithMessage(response.ParamError, response.ParamErrorMsg, c)
@@ -54,63 +55,54 @@ func ListK8SCluster(c *gin.Context) {
 	}
 
 	var K8sCluster []models.K8SCluster
-	data := make(map[string]interface{})
 	if err := services.ListK8SCluster(&query, &K8sCluster); err != nil {
 		common.GVA_LOG.Error("获取集群失败", zap.Any("err", err))
 		response.FailWithMessage(response.InternalServerError, "获取集群失败", c)
 	} else {
-		data["Data"] = K8sCluster
-		data["Total"] = query.Total
-		data["Size"] = query.Size
-		data["Page"] = query.Page
-		response.OkWithDetailed(data, "获取集群成功", c)
+		response.OkWithDetailed(response.PageResult{
+			Data:  K8sCluster,
+			Total: query.Total,
+			Size:  query.Size,
+			Page:  query.Page,
+		}, "获取集群成功", c)
 	}
-}
-
-// ClusterID 公共方法, 获取指定k8s集群的KubeConfig
-func ClusterID(c *gin.Context) {
-	clusterId := c.DefaultQuery("clusterId", "1")
-	clusterIdUint, err := strconv.ParseUint(clusterId, 10, 32)
-	cluster, err := services.GetK8sCluster(uint(clusterIdUint))
-	if err != nil {
-		common.GVA_LOG.Error("获取集群失败", zap.Any("err", err))
-		response.FailWithMessage(response.InternalServerError, "获取集群失败", c)
-		return
-	}
-	response.OkWithData(cluster, c)
 }
 
 func DelK8SCluster(c *gin.Context) {
+
 	var id models.ClusterIds
 	err := CheckParams(c, &id)
 	if err != nil {
 		return
 	}
-
 	err2 := services.DelCluster(id)
-
 	if err2 != nil {
 		username, _ := c.Get("username")
 		common.GVA_LOG.Error(fmt.Sprintf("用户：%s, 删除数据失败", username))
 		response.FailWithMessage(response.InternalServerError, "删除失败！", c)
 		return
 	}
-
 	response.Ok(c)
+	return
+}
+
+func ClusterSecret(c *gin.Context) {
+	clusterId := c.DefaultQuery("clusterId", "1")
+	clusterIdUint, err := strconv.ParseUint(clusterId, 10, 32)
+	cluster, err := services.GetK8sCluster(uint(clusterIdUint))
+	if err != nil {
+		common.GVA_LOG.Error("获取集群失败", zap.Any("err", err))
+		response.FailWithMessage(1000, "获取集群凭证失败", c)
+		return
+	}
+	data := map[string]interface{}{"secret": cluster.KubeConfig, "name": cluster.ClusterName}
+	response.OkWithData(data, c)
 	return
 }
 
 func GetK8SClusterDetail(c *gin.Context) {
 
-	clusterId := c.DefaultQuery("clusterId", "1")
-	clusterIdUint, err := strconv.ParseUint(clusterId, 10, 32)
-	config, err := services.GetK8sCluster(uint(clusterIdUint))
-	if err != nil {
-		response.FailWithMessage(response.InternalServerError, err.Error(), c)
-		return
-	}
-	client, err := k8s.GetK8sClient(config.KubeConfig)
-
+	client, err := k8s.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -121,26 +113,34 @@ func GetK8SClusterDetail(c *gin.Context) {
 }
 
 func Events(c *gin.Context) {
-	clusterId := c.DefaultQuery("clusterId", "1")
-	namespace := c.DefaultQuery("namespace", "")
-	clusterIdUint, err := strconv.ParseUint(clusterId, 10, 32)
-	config, err := services.GetK8sCluster(uint(clusterIdUint))
-	if err != nil {
-		response.FailWithMessage(response.InternalServerError, err.Error(), c)
-		return
-	}
-	client, err := k8s.GetK8sClient(config.KubeConfig)
 
+	namespace := c.DefaultQuery("namespace", "")
+	client, err := k8s.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
 	data, err := k8s.GetEvents(client, namespace)
-
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-
 	response.OkWithData(data, c)
+	return
+}
+
+func GetNodes(c *gin.Context) {
+
+	client, err := k8s.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+	data, err := k8s.GetNodeList(client)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+	response.OkWithData(data, c)
+	return
 }

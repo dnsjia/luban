@@ -28,9 +28,9 @@
         </span>
       </template>
 
-      <template #kubeConfig="{ text }">
+      <template #kubeConfig="{ text, id }">
         <a-tooltip placement="topLeft" title="查看凭证">
-          <a @click="ViewClusterConfig(text)"><IconFont type="pigs-icon-pingzheng"/></a>
+          <a @click="ViewClusterConfig(id, text.id)"><IconFont type="pigs-icon-pingzheng"/></a>
         </a-tooltip>
       </template>
 
@@ -99,7 +99,7 @@
 
 <script>
 import {defineComponent, inject, onMounted, reactive, ref} from 'vue';
-import {fetchK8SCluster, k8sCluster, delK8SCluster} from '@/api/k8s'
+import {fetchK8SCluster, k8sCluster, delK8SCluster, clusterSecret} from '../../api/k8s'
 import {createFromIconfontCN} from "@ant-design/icons-vue";
 import router from "../../router";
 
@@ -121,7 +121,7 @@ const columns = [
   },
   {
     title: '集群凭证',
-    dataIndex: 'kubeConfig',
+    // dataIndex: 'kubeConfig',
     slots: {customRender: 'kubeConfig'},
   },
   {
@@ -151,7 +151,7 @@ export default defineComponent({
       total: null,
       pageSizeOptions: ['10', '20', '30', '40'],
       ClusterConfigVisible: false,
-      ClusterConfig: "",
+      ClusterConfig: undefined,
     });
 
     const createK8SClusterVisible = ref(false);
@@ -227,9 +227,9 @@ export default defineComponent({
     // 获取集群信息
     const getK8SCluster = async (pageSize) => {
       const {data} = await fetchK8SCluster({size: pageSize})
-      state.data = data.Data
-      state.total = data.Total
-      state.pageSize = data.Size
+      state.data = data.data
+      state.total = data.total
+      state.pageSize = data.pageSize
     }
     // 翻页
     const onChange = async (pageNumber) => {
@@ -238,7 +238,7 @@ export default defineComponent({
         size: state.pageSize
       }).then(res => {
         if (res.errCode === 0) {
-          state.data = res.data.Data
+          state.data = res.data.data
           // state.total = res.Total
           // state.pageSize = res.Size
         }
@@ -250,9 +250,9 @@ export default defineComponent({
       const {data} = await fetchK8SCluster({
         size: pageSize,
       })
-      state.data = data.Data
-      state.total = data.Total
-      state.pageSize = data.Size
+      state.data = data.data
+      state.total = data.total
+      state.pageSize = data.pageSize
       state.current = 1
     };
 
@@ -279,9 +279,19 @@ export default defineComponent({
 
     };
     // 查看集群凭证
-    const ViewClusterConfig = (text) => {
-      state.ClusterConfig = text
-      state.ClusterConfigVisible = true
+    const ViewClusterConfig = (text, id) => {
+      clusterSecret({'clusterId': id}).then(res => {
+        if (res.errCode === 0){
+          state.ClusterConfig = res.data.secret
+          state.ClusterConfigVisible = true
+        }else {
+          message.error("获取集群凭证失败")
+
+        }
+      })
+
+      // state.ClusterConfig = text
+
     }
     // 查看集群详情
     const clusterDetail = (text, id) => {

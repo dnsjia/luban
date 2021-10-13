@@ -43,7 +43,6 @@ func GetClusterNodesRunningStatus(c *kubernetes.Clientset, m *models.ClusterNode
 	nodes, err := c.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
 		common.GVA_LOG.Error("get nodes err")
-		panic(err)
 	}
 
 	var ready int = 0

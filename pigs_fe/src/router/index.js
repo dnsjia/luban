@@ -47,6 +47,16 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/node',
+                name: 'Nodes',
+                component: () => import('../views/container/Nodes.vue'),
+                meta: {
+                    title: '节点管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
