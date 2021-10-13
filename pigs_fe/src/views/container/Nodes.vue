@@ -47,19 +47,23 @@ import {fetchK8SCluster, getNodes} from '../../api/k8s'
 const columns = [
   {
     title: '节点名称',
-    dataIndex: 'name',
+    dataIndex: 'objectMeta.name',
   },
   {
-    title: 'IP',
-    dataIndex: 'age',
+    title: '就绪',
+    dataIndex: 'ready',
   },
   {
     title: '角色',
-    dataIndex: 'address',
+    dataIndex: 'typeMeta.kind',
   },
   {
     title: '运行类型',
-    dataIndex: 'address',
+    dataIndex: 'runtimeType',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'objectMeta.creationTimestamp'
   },
 ];
 
@@ -71,7 +75,7 @@ export default {
       console.log(`selected ${value}`);
       getNodes({'clusterId': value}).then(res => {
         if (res.errCode === 0){
-          cluster.nodeData = res.data.data
+          cluster.nodeData = res.data.nodes
         }
       })
     };
