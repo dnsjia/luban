@@ -77,7 +77,7 @@
 
     <div class="float-right" style="padding: 10px 0;">
 
-      <a-pagination size="md" :show-total="total => `共 ${total} 条数据`" :v-model="state.total"
+      <a-pagination size="md" :show-total="total => `共 ${state.total} 条数据`" :v-model="state.total"
                     :page-size-options="state.pageSizeOptions"
                     :total="state.total"
                     show-size-changer
@@ -86,10 +86,10 @@
                     @showSizeChange="onShowSizeChange"
                     @change="onChange"
       >
-        <!--        <template slot="buildOptionText" slot-scope="props">-->
-        <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
-        <span v-if="props.value === '50'">全部</span>
-        <!--        </template>-->
+        <template #buildOptionText="props">
+          <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
+          <span v-if="props.value === '50'">全部</span>
+        </template>
       </a-pagination>
     </div>
 
@@ -146,7 +146,7 @@ export default defineComponent({
       selectedRowKeys,
       loading: false,
       data: [],
-      pageSize: 2,
+      pageSize: 10,
       current: null,
       total: null,
       pageSizeOptions: ['10', '20', '30', '40'],
@@ -239,8 +239,8 @@ export default defineComponent({
       }).then(res => {
         if (res.errCode === 0) {
           state.data = res.data.data
-          // state.total = res.Total
-          // state.pageSize = res.Size
+          state.total = res.Total
+          state.pageSize = res.Size
         }
       });
 

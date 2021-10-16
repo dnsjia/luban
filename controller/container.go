@@ -136,7 +136,7 @@ func GetNodes(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	data, err := k8s.GetNodeList(client)
+	data, err := k8s.GetNodeList(client, c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return

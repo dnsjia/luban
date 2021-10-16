@@ -104,3 +104,7 @@ type Time struct {
 // code that does things based on the kind. For example, there may be a generic "deleter"
 // that based on resource kind, name and namespace deletes it.
 type ResourceKind string
+
+type Unschedulable bool
+
+type NodeIP string

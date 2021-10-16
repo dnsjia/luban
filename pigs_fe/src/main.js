@@ -13,6 +13,12 @@ const app = createApp(App)
 app.config.globalProperties.$filters = {
     fmtTime(value) {
         return filter.fmtTime(value)
+    },
+    addZero(value) {
+        return filter.addZero(value)
+    },
+    sizeType(value) {
+        return filter.sizeType(value)
     }
 
 }

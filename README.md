@@ -55,6 +55,8 @@ mysql:
 ## 集群详情
 ![avatar](./docs/img/集群详情.png)
 
+## 节点列表
+![avatar](./docs/img/节点.jpg)
 ## Features
 
 * 用户注册登录
