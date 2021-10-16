@@ -2,12 +2,14 @@ package k8s
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"pigs/common"
 	"pigs/models/k8s"
-	"strings"
+	"pigs/pkg/k8s/dataselect"
+	"pigs/pkg/k8s/parser"
 )
 
 // NodeList 包含集群中的节点列表.
@@ -22,11 +24,14 @@ type Node struct {
 	ObjectMeta         k8s.ObjectMeta             `json:"objectMeta"`
 	TypeMeta           k8s.TypeMeta               `json:"typeMeta"`
 	Ready              v1.ConditionStatus         `json:"ready"`
+	Unschedulable      k8s.Unschedulable          `json:"unschedulable"`
+	NodeIP             k8s.NodeIP                 `json:"nodeIP"`
 	AllocatedResources k8s.NodeAllocatedResources `json:"allocatedResources"`
-	RuntimeType        string                     `json:"runtimeType"`
+	NodeInfo           v1.NodeSystemInfo          `json:"nodeInfo"`
+	//RuntimeType        string                     `json:"runtimeType"`
 }
 
-func GetNodeList(client *kubernetes.Clientset) (*NodeList, error) {
+func GetNodeList(client *kubernetes.Clientset, dsQuery *gin.Context) (*NodeList, error) {
 	/*
 		获取所有Node节点信息
 	*/
@@ -36,40 +41,25 @@ func GetNodeList(client *kubernetes.Clientset) (*NodeList, error) {
 		return nil, fmt.Errorf("get nodes from cluster failed: %v", err)
 	}
 
-	return toNodeList(client, nodes.Items), nil
+	return toNodeList(client, nodes.Items, dsQuery), nil
 }
 
-func toNodeList(client *kubernetes.Clientset, nodes []v1.Node) *NodeList {
+func toNodeList(client *kubernetes.Clientset, nodes []v1.Node, dsQuery *gin.Context) *NodeList {
 
 	nodeList := &NodeList{
 		Nodes:    make([]Node, 0),                      // make初始化node信息
 		ListMeta: k8s.ListMeta{TotalItems: len(nodes)}, // 计算node数量
 	}
-	var runtimeType string
-	for i, node := range nodes {
-		// todo
-		if i == 0 {
-			if strings.Contains(node.Status.NodeInfo.ContainerRuntimeVersion, "docker") {
-				runtimeType = "docker"
-			} else {
-				runtimeType = "containerd"
-			}
-		}
-		var role string
-		if _, ok := node.ObjectMeta.Labels["node-role.kubernetes.io/master"]; ok {
-			role = "master"
-		} else {
-			role = "worker"
-		}
-		//item.Architecture = node.Status.NodeInfo.Architecture
-		//item.RuntimeType = runtimeType
-		//for _, addr := range node.Status.Addresses {
-		//	if addr.Type == "InternalIP" {
-		//		item.Ip = addr.Address
-		//	}
-		//}
-		//k8sNodes = append(k8sNodes, item)
+	// 解析前端传递的参数, filterBy=name,1.1&itemsPerPage=10&name=&namespace=default&page=1&sortBy=d,creationTimestamp
+	// sortBy=d 倒序, sortBy=a 正序, 排序按照a-z
+	dataSelect := parser.ParseDataSelectPathParameter(dsQuery)
+	// 过滤
+	nodeCells, filteredTotal := dataselect.GenericDataSelectWithFilter(toCells(nodes), dataSelect)
+	nodes = fromCells(nodeCells)
+	// 更新node数量, filteredTotal过滤后的数量
+	nodeList.ListMeta = k8s.ListMeta{TotalItems: filteredTotal}
 
+	for _, node := range nodes {
 		// 根据Node名称去获取节点上面的pod，过滤时排除pod为 Succeeded, Failed 返回pods
 		pods, err := getNodePods(client, node)
 		if err != nil {
@@ -77,13 +67,13 @@ func toNodeList(client *kubernetes.Clientset, nodes []v1.Node) *NodeList {
 		}
 
 		// 调用toNode方法获取 node节点的计算资源
-		nodeList.Nodes = append(nodeList.Nodes, toNode(node, pods, role, runtimeType))
+		nodeList.Nodes = append(nodeList.Nodes, toNode(node, pods, getNodeRole(node)))
 	}
 
 	return nodeList
 }
 
-func toNode(node v1.Node, pods *v1.PodList, role string, runtimeType string) Node {
+func toNode(node v1.Node, pods *v1.PodList, role string) Node {
 	// 获取cpu和内存的reqs, limits使用
 	allocatedResources, err := getNodeAllocatedResources(node, pods)
 	if err != nil {
@@ -94,8 +84,10 @@ func toNode(node v1.Node, pods *v1.PodList, role string, runtimeType string) Nod
 		ObjectMeta:         k8s.NewObjectMeta(node.ObjectMeta),
 		TypeMeta:           k8s.NewTypeMeta(k8s.ResourceKind(role)),
 		Ready:              getNodeConditionStatus(node, v1.NodeReady),
+		NodeIP:             k8s.NodeIP(getNodeIP(node)),
+		Unschedulable:      k8s.Unschedulable(node.Spec.Unschedulable),
 		AllocatedResources: allocatedResources,
-		RuntimeType:        runtimeType,
+		NodeInfo:           node.Status.NodeInfo,
 	}
 }
 
@@ -106,6 +98,25 @@ func getNodeConditionStatus(node v1.Node, conditionType v1.NodeConditionType) v1
 		}
 	}
 	return v1.ConditionUnknown
+}
+
+func getNodeIP(node v1.Node) string {
+	for _, addr := range node.Status.Addresses {
+		if addr.Type == v1.NodeInternalIP {
+			return addr.Address
+		}
+	}
+	return ""
+}
+
+func getNodeRole(node v1.Node) string {
+	var role string
+	if _, ok := node.ObjectMeta.Labels["node-role.kubernetes.io/master"]; ok {
+		role = "Master"
+	} else {
+		role = "Worker"
+	}
+	return role
 }
 
 func GetNodeResource(client *kubernetes.Clientset) (namespaces int, deployments int, pods int) {

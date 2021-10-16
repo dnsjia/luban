@@ -19,4 +19,16 @@ export default {
     fmtIsContainer(val) {
         return ['是', '否'][val]
     },
+    // 保留2位小数点
+    addZero: function(value){
+        return value.toFixed(2)
+    },
+    // 单位换算 KB,MB,GB
+    sizeType: function (value){
+        if (value === 0) return "0"
+        var k = 1024;
+        var sizes = ["B", "Ki", "Mi", "Gi", "Ti", "Pi"]
+        var i = Math.floor(Math.log(value) / Math.log(k));
+        return (value / Math.pow(k, i)).toPrecision(3) + " " + sizes[i];
+    }
 }
