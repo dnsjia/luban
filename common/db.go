@@ -10,7 +10,7 @@ import (
 )
 
 func GormMysql() *gorm.DB {
-	m := GVA_CONFIG.Mysql
+	m := CONFIG.Mysql
 	dsn := m.Username + ":" + m.Password + "@tcp(" + m.Path + ")/" + m.Dbname + "?" + m.Config
 	mysqlConfig := mysql.Config{
 		DSN:                       dsn,   // DSN data source name
@@ -21,7 +21,7 @@ func GormMysql() *gorm.DB {
 		SkipInitializeWithVersion: false, // 根据版本自动配置
 	}
 	if db, err := gorm.Open(mysql.New(mysqlConfig), gormConfig(m.LogMode)); err != nil {
-		GVA_LOG.Error("mysql connection failed", zap.Any("err", err))
+		LOG.Error("mysql connection failed", zap.Any("err", err))
 		os.Exit(0)
 		return nil
 	} else {
@@ -33,7 +33,7 @@ func GormMysql() *gorm.DB {
 }
 
 func DBInsertOne(bean interface{}) error {
-	err := GVA_DB.Create(bean)
+	err := DB.Create(bean)
 	if err != nil {
 		logger.Errorf("mysql.error: insert fail: %v, to insert object: %+v", err, bean)
 		return errors.New("Internal server error, try again later please")

@@ -15,7 +15,7 @@ func ListPlatform(c *gin.Context) {
 	_ = c.ShouldBindJSON(&pageInfo)
 	err, list, total := services.ListPlatform(pageInfo)
 	if err != nil {
-		common.GVA_LOG.Error("获取云平台信息失败", zap.Any("err", err))
+		common.LOG.Error("获取云平台信息失败", zap.Any("err", err))
 		response.FailWithMessage(500, fmt.Sprintf("获取云平台信息失败，%v", err), c)
 	} else {
 		response.OkWithData(response.PageResult{

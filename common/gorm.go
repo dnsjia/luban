@@ -21,7 +21,7 @@ func gormConfig(mod bool) *gorm.Config {
 	/*
 		根据配置决定是否开启日志
 	*/
-	switch GVA_CONFIG.Mysql.LogZap {
+	switch CONFIG.Mysql.LogZap {
 	case "Silent":
 		return &gorm.Config{
 			Logger:                                   Default.LogMode(logger.Silent),

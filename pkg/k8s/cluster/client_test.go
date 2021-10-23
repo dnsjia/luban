@@ -1,8 +1,12 @@
-package k8s
+package cluster
 
 import (
+	"context"
 	"fmt"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -24,9 +28,18 @@ func TestGetNodeList(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	nodes, err := clientset.CoreV1().Nodes().List(metav1.ListOptions{})
-	for _, c := range nodes.Items {
-		j, _ := json.Marshal(c)
-		fmt.Println(string(j))
-	}
+	//nodes, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	//for _, c := range nodes.Items {
+	//	j, _ := json.Marshal(c)
+	//	fmt.Println(string(j))
+	//}
+
+	scheme := runtime.NewScheme()
+	groupVersion := schema.GroupVersion{Group: "", Version: "v1"}
+	scheme.AddKnownTypes(groupVersion, &v1.Node{})
+	events, err := clientset.CoreV1().Events(v1.NamespaceAll).List(context.TODO(),
+		metav1.ListOptions{FieldSelector: fmt.Sprintf("involvedObject.name=%v", "192.168.1.16")})
+	fmt.Println(err)
+	d, _ := json.Marshal(events)
+	fmt.Println(string(d))
 }

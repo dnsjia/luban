@@ -1,6 +1,7 @@
-package k8s
+package node
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	v1 "k8s.io/api/core/v1"
@@ -36,7 +37,7 @@ func GetNodeList(client *kubernetes.Clientset, dsQuery *gin.Context) (*NodeList,
 		获取所有Node节点信息
 	*/
 
-	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{})
+	nodes, err := client.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("get nodes from cluster failed: %v", err)
 	}
@@ -63,7 +64,7 @@ func toNodeList(client *kubernetes.Clientset, nodes []v1.Node, dsQuery *gin.Cont
 		// 根据Node名称去获取节点上面的pod，过滤时排除pod为 Succeeded, Failed 返回pods
 		pods, err := getNodePods(client, node)
 		if err != nil {
-			common.GVA_LOG.Error(fmt.Sprintf("Couldn't get pods of %s node: %s\n", node.Name, err))
+			common.LOG.Error(fmt.Sprintf("Couldn't get pods of %s node: %s\n", node.Name, err))
 		}
 
 		// 调用toNode方法获取 node节点的计算资源
@@ -77,7 +78,7 @@ func toNode(node v1.Node, pods *v1.PodList, role string) Node {
 	// 获取cpu和内存的reqs, limits使用
 	allocatedResources, err := getNodeAllocatedResources(node, pods)
 	if err != nil {
-		common.GVA_LOG.Error(fmt.Sprintf("Couldn't get allocated resources of %s node: %s\n", node.Name, err))
+		common.LOG.Error(fmt.Sprintf("Couldn't get allocated resources of %s node: %s\n", node.Name, err))
 	}
 
 	return Node{
@@ -123,23 +124,43 @@ func GetNodeResource(client *kubernetes.Clientset) (namespaces int, deployments 
 	/*
 		获取集群 namespace数量 deployment数量 pod数量 container数量
 	*/
-	namespace, err := client.CoreV1().Namespaces().List(metav1.ListOptions{})
+	namespace, err := client.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	namespaces = len(namespace.Items)
 	if err != nil {
-		common.GVA_LOG.Error("list namespace err")
+		common.LOG.Error("list namespace err")
 	}
 	for _, v := range namespace.Items {
-		deployment, err := client.AppsV1().Deployments(v.Name).List(metav1.ListOptions{})
+		deployment, err := client.AppsV1().Deployments(v.Name).List(context.TODO(), metav1.ListOptions{})
 		deployments += len(deployment.Items)
 		if err != nil {
-			common.GVA_LOG.Error("get deployment err")
+			common.LOG.Error("get deployment err")
 		}
-		pod, err := client.CoreV1().Pods(v.Name).List(metav1.ListOptions{})
+		pod, err := client.CoreV1().Pods(v.Name).List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
-			common.GVA_LOG.Error("get pod err")
+			common.LOG.Error("get pod err")
 		}
 		pods += len(pod.Items)
 	}
 
 	return namespaces, deployments, pods
+}
+
+func NodeUnschdulable(client *kubernetes.Clientset, nodeName string, unschdulable bool) (bool, error) {
+	/*
+		设置节点是否可调度
+	*/
+	common.LOG.Info(fmt.Sprintf("设置Node节点:%v  是否可调度: %v", nodeName, unschdulable))
+	node, err := client.CoreV1().Nodes().Get(context.TODO(), nodeName, metav1.GetOptions{})
+	if err != nil {
+		return false, err
+	}
+	node.Spec.Unschedulable = unschdulable
+
+	_, err = client.CoreV1().Nodes().Update(context.TODO(), node, metav1.UpdateOptions{})
+
+	if err != nil {
+		common.LOG.Error(fmt.Sprintf("设置节点调度失败：%v", err))
+		return false, err
+	}
+	return true, nil
 }

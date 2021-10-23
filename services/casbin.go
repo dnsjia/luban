@@ -10,9 +10,9 @@ import (
 )
 
 func Casbin() *casbin.Enforcer {
-	admin := common.GVA_CONFIG.Mysql
-	a, _ := gormAdapter.NewAdapter(common.GVA_CONFIG.System.DbType, admin.Username+":"+admin.Password+"@("+admin.Path+")/"+admin.Dbname, true)
-	e, _ := casbin.NewEnforcer(common.GVA_CONFIG.Casbin.ModelPath, a)
+	admin := common.CONFIG.Mysql
+	a, _ := gormAdapter.NewAdapter(common.CONFIG.System.DbType, admin.Username+":"+admin.Password+"@("+admin.Path+")/"+admin.Dbname, true)
+	e, _ := casbin.NewEnforcer(common.CONFIG.Casbin.ModelPath, a)
 	e.AddFunction("ParamsMatch", ParamsMatchFunc)
 	_ = e.LoadPolicy()
 	return e

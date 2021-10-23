@@ -1,6 +1,7 @@
-package k8s
+package cluster
 
 import (
+	"context"
 	"fmt"
 	"github.com/prometheus/common/expfmt"
 	"go.uber.org/zap"
@@ -29,7 +30,7 @@ func GetClusterNodesNumber(c *kubernetes.Clientset) (int, error) {
 	/*
 		获取k8s node节点数量
 	*/
-	nodes, err := c.CoreV1().Nodes().List(metav1.ListOptions{})
+	nodes, err := c.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return 0, err
 	}
@@ -40,15 +41,15 @@ func GetClusterNodesRunningStatus(c *kubernetes.Clientset, m *models.ClusterNode
 	/*
 		统计k8s 集群node节点 就绪数量
 	*/
-	nodes, err := c.CoreV1().Nodes().List(metav1.ListOptions{})
+	nodes, err := c.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		common.GVA_LOG.Error("get nodes err")
+		common.LOG.Error("get nodes err")
 	}
 
 	var ready int = 0
 	var unready int = 0
 	for _, node := range nodes.Items {
-		listNode, _ := c.CoreV1().Nodes().Get(node.ObjectMeta.Name, metav1.GetOptions{})
+		listNode, _ := c.CoreV1().Nodes().Get(context.TODO(), node.ObjectMeta.Name, metav1.GetOptions{})
 
 		if len(listNode.Status.Conditions) >= 0 {
 			if string(listNode.Status.Conditions[len(listNode.Status.Conditions)-1].Status) == "True" {
@@ -57,7 +58,7 @@ func GetClusterNodesRunningStatus(c *kubernetes.Clientset, m *models.ClusterNode
 				unready += 1
 			}
 		} else {
-			common.GVA_LOG.Error("get nodes ready err")
+			common.LOG.Error("get nodes ready err")
 			return &models.ClusterNodesStatus{}
 		}
 	}
@@ -82,12 +83,12 @@ func GetClusterInfo(c *kubernetes.Clientset) *models.ClusterNodesStatus {
 	//node.Deployment = deployment
 	//node.Pod = pod
 
-	data, _ := c.RESTClient().Get().AbsPath("/api/v1/namespaces/kube-system/services/tke-kube-state-metrics:http-metrics/proxy/metrics").DoRaw()
+	data, _ := c.RESTClient().Get().AbsPath("/api/v1/namespaces/kube-system/services/tke-kube-state-metrics:http-metrics/proxy/metrics").DoRaw(context.TODO())
 
 	var parser expfmt.TextParser
 	mf, err := parser.TextToMetricFamilies(strings.NewReader(string(data)))
 	if err != nil {
-		common.GVA_LOG.Error("解析metrics错误", zap.Any("err:", err))
+		common.LOG.Error("解析metrics错误", zap.Any("err:", err))
 		return nil
 	}
 
