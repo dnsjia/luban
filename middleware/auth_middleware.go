@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"pigs/common"
@@ -33,8 +32,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		userId := claims.ID
 		var user models.User
 		//common.GVA_DB.First(&user, userId)
-		common.GVA_DB.Preload("Role").First(&user, userId)
-		fmt.Printf("角色名称：%v\n", user.Role.Name)
+		common.DB.Preload("Role").First(&user, userId)
 		// 判断用户是否存在
 		if user.UserName == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"errcode": 401, "errmsg": "认证失败"})
@@ -43,8 +41,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 用户存在, 将用户的信息写入 context
-		fmt.Printf("claims---------:%v\n", claims)
-		fmt.Printf("user---------:%v\n", user)
 		c.Set("user", user)
 		c.Set("claims", claims)
 		c.Next()

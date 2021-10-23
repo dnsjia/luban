@@ -20,7 +20,7 @@ func CheckParams(c *gin.Context, ptr interface{}) error {
 		panic(t.Error())
 	}
 	if err := c.ShouldBindJSON(&ptr); err != nil {
-		common.GVA_LOG.Warn(fmt.Sprintf("解析参数出错：%v", err.Error()))
+		common.LOG.Warn(fmt.Sprintf("解析参数出错：%v", err.Error()))
 		response.FailWithMessage(response.ParamError, "", c)
 		return err
 	}

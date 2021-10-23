@@ -1,7 +1,9 @@
-package k8s
+package node
 
 import (
 	v1 "k8s.io/api/core/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"pigs/pkg/k8s/common"
 	"pigs/pkg/k8s/dataselect"
 )
 
@@ -37,4 +39,30 @@ func fromCells(cells []dataselect.DataCell) []v1.Node {
 		std[i] = v1.Node(cells[i].(NodeCell))
 	}
 	return std
+}
+
+func getNodeConditions(node v1.Node) []common.Condition {
+	var conditions []common.Condition
+	for _, condition := range node.Status.Conditions {
+		conditions = append(conditions, common.Condition{
+			Type:               string(condition.Type),
+			Status:             metaV1.ConditionStatus(condition.Status),
+			LastProbeTime:      condition.LastHeartbeatTime,
+			LastTransitionTime: condition.LastTransitionTime,
+			Reason:             condition.Reason,
+			Message:            condition.Message,
+		})
+	}
+	return conditions
+}
+
+//getContainerImages returns container image strings from the given node.
+func getContainerImages(node v1.Node) []string {
+	var containerImages []string
+	for _, image := range node.Status.Images {
+		for _, name := range image.Names {
+			containerImages = append(containerImages, name)
+		}
+	}
+	return containerImages
 }

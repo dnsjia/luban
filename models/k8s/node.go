@@ -108,3 +108,5 @@ type ResourceKind string
 type Unschedulable bool
 
 type NodeIP string
+
+type UID string

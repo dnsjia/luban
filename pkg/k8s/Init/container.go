@@ -1,4 +1,4 @@
-package k8s
+package Init
 
 import (
 	"errors"
@@ -20,13 +20,13 @@ func GetK8sClient(k8sConf string) (*kubernetes.Clientset, error) {
 	// skips the validity check for the server's certificate. This will make your HTTPS connections insecure.
 	// config.TLSClientConfig.Insecure = true
 	if err != nil {
-		common.GVA_LOG.Error("KubeConfig内容错误", zap.Any("err", err))
+		common.LOG.Error("KubeConfig内容错误", zap.Any("err", err))
 		return nil, errors.New("KubeConfig内容错误")
 	}
 
 	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		common.GVA_LOG.Error("创建Client失败", zap.Any("err", err))
+		common.LOG.Error("创建Client失败", zap.Any("err", err))
 		return nil, errors.New("创建Client失败！")
 	}
 	return clientSet, nil
@@ -49,7 +49,7 @@ func ClusterID(c *gin.Context) (*kubernetes.Clientset, error) {
 	clusterIdUint, err := strconv.ParseUint(clusterId, 10, 32)
 	cluster, err := services.GetK8sCluster(uint(clusterIdUint))
 	if err != nil {
-		common.GVA_LOG.Error("获取集群失败", zap.Any("err", err))
+		common.LOG.Error("获取集群失败", zap.Any("err", err))
 		return nil, err
 	}
 

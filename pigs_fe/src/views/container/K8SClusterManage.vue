@@ -14,6 +14,7 @@
         :data-source="state.data"
         :pagination="false"
         rowKey="id"
+        :locale="{emptyText: '暂无数据'}"
     >
 
       <template #ClusterVersion="{ text }">

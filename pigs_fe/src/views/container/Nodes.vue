@@ -66,11 +66,12 @@
         :data-source="cluster.nodeData"
         :pagination="false"
         rowKey="id"
+        :locale="{emptyText: '暂无数据'}"
     >
 
       <template #name="{text }">
         <a-space>
-          <a>{{ text.objectMeta.name }}</a>
+          <a @click="nodeDetail(text.objectMeta.name)">{{ text.objectMeta.name }}</a>
           <a-tooltip color="#ffffff" :overlayStyle="{'font-size': '12px', 'max-width': '400px'}">
             <template #title>
               <div v-for="(v,k, i) in text.objectMeta.labels" :key="i">
@@ -142,19 +143,37 @@
           </a>
           <template #overlay>
             <a-menu>
-              <a-menu-item><span @click="detailNode(text.id)">详情</span></a-menu-item>
+              <a-menu-item><span @click="nodeDetail(text.objectMeta.name)">详情</span></a-menu-item>
               <a-menu-item><span @click="removeNode(id)">移除</span></a-menu-item>
               <a-menu-item><span @click="drainNode(id)">节点排水</span></a-menu-item>
-              <a-menu-item><span @click="scheduleSetup(id)">调度设置</span></a-menu-item>
+              <a-menu-item><span @click="scheduleSetup(text)">调度设置</span></a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
 
       </template>
-
     </a-table>
     </a-spin>
 
+    <!-- 调度设置 开始 -->
+    <template>
+      <div>
+        <a-modal v-model:visible="scheduleVisible" title="调度设置" cancel-text="取消" ok-text="确认" @ok="scheduleSetupOk(cluster.nodeName.unschedulable)">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p v-if="cluster.nodeName.unschedulable===true">请确认是否要将以下节点设置为可调度？</p>
+            <p v-else>请确认是否要将以下节点设置为不可调度？</p>
+          </a-space>
+          <br/>
+          <p class="nodeName" v-if="cluster.nodeName.objectMeta">{{ cluster.nodeName.objectMeta.name }}</p>
+        </a-modal>
+
+
+      </div>
+    </template>
+    <!-- 调度设置 结束 -->
 <!--    <a-button type="primary" :disabled="!hasSelected" :loading="loading" @click="start">-->
 <!--      Reload-->
 <!--    </a-button>-->
@@ -184,8 +203,9 @@
 
 <script>
 import {computed, reactive, toRefs, ref, inject, onMounted} from 'vue';
-import {fetchK8SCluster, getNodes} from '../../api/k8s'
+import {fetchK8SCluster, getNodes, NodeSchedule} from '../../api/k8s'
 import { DownOutlined,TagOutlined,SyncOutlined } from '@ant-design/icons-vue';
+import router from "../../router";
 
 const columns = [
   {
@@ -276,7 +296,11 @@ export default {
       data: [],
       nodeData: [],
       clusterId: "",
+      // 节点名称
+      nodeName: "",
+
     })
+
     const page = reactive({
       pageSize: 10,
       current: 1,
@@ -285,36 +309,32 @@ export default {
 
       loading: false,
     })
-
     const state = reactive({
       selectedRowKeys: [],
-      // Check here to configure the default column
       loading: false,
     });
-    const hasSelected = computed(() => state.selectedRowKeys.length > 0);
 
+    const scheduleVisible = ref(false);
+
+
+    const hasSelected = computed(() => state.selectedRowKeys.length > 0);
     const start = () => {
       state.loading = true; // ajax request after empty completing
-
       setTimeout(() => {
         state.loading = false;
         state.selectedRowKeys = [];
       }, 1000);
     };
-
     const onSelectChange = selectedRowKeys => {
       console.log('selectedRowKeys changed: ', selectedRowKeys);
       state.selectedRowKeys = selectedRowKeys;
     };
-
     // 查看集群
     const getK8SCluster = async () => {
       const {data} = await fetchK8SCluster()
       cluster.data = data.data
     }
-
     const message = inject('$message');
-
     // get
     const GetStorage = () => {
       const cs = JSON.parse(localStorage.getItem("cluster"))
@@ -324,7 +344,6 @@ export default {
         return cluster
       }
     }
-
     const getNode = () => {
       let cs = GetStorage()
       if (cs) {
@@ -341,7 +360,11 @@ export default {
         })
       }
     }
-
+    const nodeDetail = (name) => {
+      let cs = GetStorage()
+      let routeData = router.resolve({ name: 'NodeDetail', query: {name: name, clusterId: cs.clusterId} });
+      window.open(routeData.href, '_blank');
+    }
     // const filterLabel = (e) => {
     //   const FilterLabelMenuClick(e) {
     //     const inputValue = e.key;
@@ -356,7 +379,6 @@ export default {
     //     this.getNodeListLabel(label)
     //   },
     // }  // 标签过滤
-
     // 显示条数
     const onShowSizeChange = async (current, pageSize) => {
       let cs = GetStorage()
@@ -378,7 +400,6 @@ export default {
 
 
     };
-
     // 翻页
     const onChange = async (pageNumber) => {
       let cs = GetStorage()
@@ -398,6 +419,28 @@ export default {
       })
 
     };
+
+    const scheduleSetup = (text) => {
+      scheduleVisible.value = true
+      cluster.nodeName = text
+    }
+    const scheduleSetupOk = (unscheduled) => {
+      let cs = GetStorage()
+      if (unscheduled === true) {
+        unscheduled = false
+      }else {
+        unscheduled = true
+      }
+      NodeSchedule({"node_name": "k8s-master1", "unscheduled": unscheduled}, cs.clusterId).then(res => {
+        if (res.errCode === 0) {
+          message.success(res.msg)
+          scheduleVisible.value = false
+          getNode()
+        }else {
+          message.error("设置节点调度失败")
+        }
+      })
+    }
 
     onMounted(() => {
       GetStorage();
@@ -424,6 +467,10 @@ export default {
 
       onShowSizeChange,
       onChange,
+      nodeDetail,
+      scheduleSetup,
+      scheduleVisible,
+      scheduleSetupOk,
     };
   },
   components: {
@@ -435,5 +482,23 @@ export default {
 </script>
 
 <style scoped>
-
+  /* 先画个圆圈 */
+  .circular {
+    width:30px;
+    height:30px;
+    background-color:#F90;
+    border-radius:50px;
+  }
+  /* 再画个感叹号 */
+  .exclamation-point {
+    height:15px;
+    line-height:30px;
+    display:block;
+    color:#FFF;
+    text-align:center;
+    font-size:20px
+  }
+  .nodeName {
+    padding-left: 40px;
+  }
 </style>

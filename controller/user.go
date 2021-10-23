@@ -23,7 +23,7 @@ func Register(c *gin.Context) {
 	user.Password = string(hashPassword)
 	u, err := services.UserRegister(user)
 	if err != nil {
-		common.GVA_LOG.Error(fmt.Sprintf("用户：%v, 注册失败", user.UserName), zap.Any("err", err))
+		common.LOG.Error(fmt.Sprintf("用户：%v, 注册失败", user.UserName), zap.Any("err", err))
 		response.FailWithMessage(response.UserRegisterFail, err.Error(), c)
 	} else {
 		response.ResultOk(0, u, "注册成功", c)
@@ -70,7 +70,7 @@ func Login(c *gin.Context) {
 				// 发放Token
 				token, err := common.ReleaseToken(*user)
 				if err != nil {
-					common.GVA_LOG.Error(fmt.Sprintf("token generate err: %v", err))
+					common.LOG.Error(fmt.Sprintf("token generate err: %v", err))
 					response.FailWithMessage(response.InternalServerError, fmt.Sprintf("token generate err：%v", err), c)
 					return
 				}
@@ -84,7 +84,7 @@ func Login(c *gin.Context) {
 
 	u, err := services.Login(user)
 	if err != nil {
-		common.GVA_LOG.Error("用户登录失败", zap.Any("err", err))
+		common.LOG.Error("用户登录失败", zap.Any("err", err))
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
@@ -101,7 +101,7 @@ func Login(c *gin.Context) {
 	// 发放Token
 	token, err := common.ReleaseToken(u)
 	if err != nil {
-		common.GVA_LOG.Error(fmt.Sprintf("token generate err: %v", err))
+		common.LOG.Error(fmt.Sprintf("token generate err: %v", err))
 		response.FailWithMessage(response.InternalServerError, fmt.Sprintf("token generate err：%v", err), c)
 		return
 	}

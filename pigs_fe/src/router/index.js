@@ -57,6 +57,16 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/node/detail',
+                name: 'NodeDetail',
+                component: () => import('../views/container/NodeDetail.vue'),
+                meta: {
+                    title: '节点详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
