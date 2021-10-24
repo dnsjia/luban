@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"pigs/routers/cmdb"
 	"syscall"
 	"time"
 
@@ -72,6 +73,8 @@ func InitServer() {
 		routers.InitCasBinRouter(PrivateGroup)
 		// 容器相关
 		routers.InitContainerRouter(PrivateGroup)
+		// 主机
+		cmdb.InitHostRouter(PrivateGroup)
 	}
 
 	address := fmt.Sprintf(":%d", common.GVA_CONFIG.System.Addr)
