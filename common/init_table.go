@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"os"
 	"pigs/models"
+	"pigs/models/cmdb"
 )
 
 func MysqlTables(db *gorm.DB) {
@@ -18,8 +19,12 @@ func MysqlTables(db *gorm.DB) {
 		models.Dept{},
 		models.K8SCluster{},
 		models.ClusterVersion{},
-		models.CloudPlatform{},
-		models.VirtualMachine{},
+		cmdb.CloudPlatform{},
+		cmdb.VirtualMachine{},
+		cmdb.TreeMenu{},
+
+		//
+
 	)
 	if err != nil {
 		LOG.Error("register table failed", zap.Any("err", err))
