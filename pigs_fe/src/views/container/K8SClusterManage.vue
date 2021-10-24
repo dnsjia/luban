@@ -240,8 +240,8 @@ export default defineComponent({
       }).then(res => {
         if (res.errCode === 0) {
           state.data = res.data.data
-          state.total = res.Total
-          state.pageSize = res.Size
+          state.total = res.data.total
+          state.pageSize = res.data.pageSize
         }
       });
 
