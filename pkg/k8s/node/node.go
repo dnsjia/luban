@@ -10,6 +10,7 @@ import (
 	"pigs/common"
 	"pigs/models/k8s"
 	"pigs/pkg/k8s/dataselect"
+	"pigs/pkg/k8s/evict"
 	"pigs/pkg/k8s/parser"
 )
 
@@ -163,4 +164,22 @@ func NodeUnschdulable(client *kubernetes.Clientset, nodeName string, unschdulabl
 		return false, err
 	}
 	return true, nil
+}
+
+func CordonNode(client *kubernetes.Clientset, nodeName string) (bool, error) {
+	/*
+		排空节点
+		选择排空节点（同时设置为不可调度），在后续进行应用部署时，则Pod不会再调度到该节点，并且该节点上由DaemonSet控制的Pod不会被排空。
+		kubectl drain cn-beijing.i-2ze19qyi8votgjz12345 --grace-period=120 --ignore-daemonsets=true
+	*/
+	_, err := NodeUnschdulable(client, nodeName, true)
+	if err != nil {
+		return false, err
+	}
+	err = evict.EvictNodePods(client, nodeName)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+
 }
