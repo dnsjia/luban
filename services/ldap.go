@@ -10,7 +10,7 @@ import (
 
 func UserGet(where string, args ...interface{}) (*models.User, error) {
 	var obj models.User
-	err := common.GVA_DB.Where(where, args...).First(&obj).Error
+	err := common.DB.Where(where, args...).First(&obj).Error
 	if err != nil {
 		logger.Errorf("mysql.error: query user(%s)%+v fail: %s", where, args, err)
 		return nil, err
@@ -82,7 +82,7 @@ func LdapLogin(username, pass string) (*models.User, error) {
 
 	if user.ID > 0 {
 		if models.LDAP.CoverAttributes {
-			err := common.GVA_DB.Where("id=?", user.ID).Updates(&user)
+			err := common.DB.Where("id=?", user.ID).Updates(&user)
 			if err != nil {
 				logger.Errorf("mysql.error: update user %+v fail: %v", user, err)
 				return nil, err.Error

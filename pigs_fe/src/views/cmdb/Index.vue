@@ -32,24 +32,6 @@
                   </template>
                 </a-dropdown>
               </template>
-              <!--              <a-tree-node key="0-0" title="default">-->
-              <!--                <a-tree-node key="0-0-2" title="bj-game-server1" is-leaf >-->
-              <!--                  <template #icon><IconFont type="pigs-icon-ubuntu"/></template>-->
-              <!--                </a-tree-node>-->
-              <!--                <a-tree-node key="0-0-1" title="k8s-master" is-leaf >-->
-              <!--                  <template #icon><IconFont type="pigs-icon-linux"/></template>-->
-              <!--                </a-tree-node>-->
-              <!--              </a-tree-node>-->
-              <!--              <a-tree-node key="0-1" title="阿里云">-->
-              <!--                <a-tree-node key="0-1-0" title="深圳一区-游戏" is-leaf >-->
-              <!--                  <template #icon><IconFont type="pigs-icon-ubuntu"/></template>-->
-              <!--                </a-tree-node>-->
-              <!--                <a-tree-node key="0-1-1" title="跳板机" is-leaf >-->
-              <!--                  <template #icon><IconFont type="pigs-icon-linux"/></template>-->
-              <!--                  <a-dropdown :trigger="['contextmenu']">-->
-              <!--                  </a-dropdown>-->
-              <!--                </a-tree-node>-->
-              <!--              </a-tree-node>-->
             </a-directory-tree>
 
           <div v-if="store.treeData" style="padding-top: 40px; text-align:center">
@@ -102,38 +84,13 @@
 
 <script>
 import {
-  // createFromIconfontCN,
-  // EditOutlined,
-  // DeleteOutlined,
-  // CloseOutlined,
-  // FolderOutlined,
-  // FolderAddOutlined
   QuestionCircleOutlined
 } from "@ant-design/icons-vue";
 
-// const IconFont = createFromIconfontCN({
-//   scriptUrl: '//at.alicdn.com/t/font_2828790_mybvy5yyuni.js',
-// });
 
 import {onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
 import { cloneDeep } from 'lodash-es';
 import {getGroup} from "../../api/group";
-
-// const treeData = [
-//   {
-//     title: 'default',
-//     value: 'default',
-//     key: '0',
-//     children: [],
-//
-//   },
-//   {
-//     title: '北京机房',
-//     value: '北京机房',
-//     key: '1',
-//     children: []
-//   }
-// ];
 
 const columns = [
   {
@@ -281,12 +238,6 @@ export default {
 
   },
   components: {
-    // IconFont,
-    // EditOutlined,
-    // CloseOutlined,
-    // DeleteOutlined,
-    // FolderOutlined,
-    // FolderAddOutlined,
     QuestionCircleOutlined
   },
 };

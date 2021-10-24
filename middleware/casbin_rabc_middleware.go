@@ -18,14 +18,12 @@ func CasBinHandler() gin.HandlerFunc {
 		act := c.Request.Method
 		// 获取用户的角色
 		sub := waitUse.Role
-		fmt.Println("---------------------------")
-		fmt.Printf("URL：%v, Method：%v, Role：%v\n", obj, act, sub)
+		common.LOG.Info(fmt.Sprintf("URL：%v, Method：%v, Role：%v", obj, act, sub))
 		e := services.Casbin()
 		// 判断策略中是否存在
 		success, _ := e.Enforce(sub, obj, act)
-		fmt.Println("success", success)
-		fmt.Println("--------------")
-		if common.GVA_CONFIG.System.Env == "develop" || success {
+		common.LOG.Debug(fmt.Sprintf("用户：%v, 权限校验：%v", waitUse.Username, success))
+		if common.CONFIG.System.Env == "develop" || success {
 			c.Next()
 		} else {
 			c.JSON(response.Forbidden, gin.H{"errCode": 403, "errMsg": "权限不足", "data": gin.H{}, "msg": ""})

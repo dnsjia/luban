@@ -136,18 +136,18 @@ func (g *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 }
 
 func (g *GormLogger) Printf(message string, data ...interface{}) {
-	if GVA_CONFIG.Mysql.LogZap == "Info" && !GVA_CONFIG.Mysql.LogMode {
+	if CONFIG.Mysql.LogZap == "Info" && !CONFIG.Mysql.LogMode {
 		switch len(data) {
 		case 0:
-			GVA_LOG.Info(message)
+			LOG.Info(message)
 		case 1:
-			GVA_LOG.Info("gorm", zap.Any("src", data[0]))
+			LOG.Info("gorm", zap.Any("src", data[0]))
 		case 2:
-			GVA_LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]))
+			LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]))
 		case 3:
-			GVA_LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]), zap.Any("rows", data[2]))
+			LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]), zap.Any("rows", data[2]))
 		case 4:
-			GVA_LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]), zap.Any("rows", data[2]), zap.Any("sql", data[3]))
+			LOG.Info("gorm", zap.Any("src", data[0]), zap.Any("duration", data[1]), zap.Any("rows", data[2]), zap.Any("sql", data[3]))
 		}
 		return
 	}

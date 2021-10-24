@@ -27,8 +27,8 @@ func MysqlTables(db *gorm.DB) {
 
 	)
 	if err != nil {
-		GVA_LOG.Error("register table failed", zap.Any("err", err))
+		LOG.Error("register table failed", zap.Any("err", err))
 		os.Exit(0)
 	}
-	GVA_LOG.Info("register table success")
+	LOG.Info("register table success")
 }

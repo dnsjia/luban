@@ -6,7 +6,7 @@ import (
 )
 
 func CreateK8SCluster(cluster models.K8SCluster) (err error) {
-	err = common.GVA_DB.Create(&cluster).Error
+	err = common.DB.Create(&cluster).Error
 	return
 }
 
@@ -20,11 +20,11 @@ func ListK8SCluster(p *models.PaginationQ, k *[]models.K8SCluster) (err error) {
 	}
 
 	offset := p.Size * (p.Page - 1)
-	tx := common.GVA_DB
+	tx := common.DB
 	if p.Keyword != "" {
-		tx = common.GVA_DB.Where("cluster_name like ?", "%"+p.Keyword+"%").Limit(p.Size).Offset(offset).Find(&k)
+		tx = common.DB.Where("cluster_name like ?", "%"+p.Keyword+"%").Limit(p.Size).Offset(offset).Find(&k)
 	} else {
-		tx = common.GVA_DB.Limit(p.Size).Offset(offset).Find(&k)
+		tx = common.DB.Limit(p.Size).Offset(offset).Find(&k)
 
 	}
 
@@ -37,6 +37,14 @@ func ListK8SCluster(p *models.PaginationQ, k *[]models.K8SCluster) (err error) {
 	}
 
 	return nil
+}
+
+func GetK8sCluster(id uint) (K8sCluster models.K8SCluster, err error) {
+	err = common.DB.Where("id = ?", id).First(&K8sCluster).Error
+	if err != nil {
+		return K8sCluster, err
+	}
+	return K8sCluster, nil
 }
 
 func DelCluster(ids models.ClusterIds) (err error) {
@@ -52,7 +60,7 @@ func DelCluster(ids models.ClusterIds) (err error) {
 	//	}
 	//}
 
-	err2 := common.GVA_DB.Delete(&k, ids.Data)
+	err2 := common.DB.Delete(&k, ids.Data)
 	if err2.Error != nil {
 		return err2.Error
 	}

@@ -23,7 +23,7 @@ cd pigs/pigs_fe
 npm run dev
 ```
 
-2. 启动 创建config.yaml在可执行文件同级
+2. 启动服务前先创建etc/config.yaml
 ```shell script
 # 数据库配置
 mysql:
@@ -52,6 +52,11 @@ mysql:
 ## 集群管理
 ![avatar](./docs/img/集群管理.jpg)
 
+## 集群详情
+![avatar](./docs/img/集群详情.png)
+
+## 节点列表
+![avatar](./docs/img/节点.jpg)
 ## Features
 
 * 用户注册登录
