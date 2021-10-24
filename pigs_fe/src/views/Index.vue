@@ -2,38 +2,42 @@
   <div>
     <a-row :gutter="16">
       <a-col :span="6">
-        <a-card :loading="dashLoading" :hoverable="true" style="height: 140px">
-          <div class="ant-statistic-title">主机</div>
-          <div class="ant-statistic-content">
-                  <span class="ant-statistic-content-value">
-                      <span class="ant-statistic-content-value-int">{{ serverCount }}</span></span>
-            <span class="ant-statistic-content-suffix">台</span></div>
-        </a-card>
+          <a-card :loading="dashLoading" :hoverable="true" style="height: 120px;border-radius:8px;background-color: rgb(72, 209,141);">
+            <div class="ant-statistic-title" style="color: white">主机</div>
+            <div class="ant-statistic-content" style="color: white">
+                <span class="ant-statistic-content-value">
+                    <span class="ant-statistic-content-value-int">{{ serverCount }}</span>
+                </span>
+              <span class="ant-statistic-content-suffix">台</span></div>
+          </a-card>
       </a-col>
       <a-col :span="6">
-        <a-card :loading="dashLoading" :hoverable="true" style="height: 140px">
-          <div class="ant-statistic-title">作业</div>
-          <div class="ant-statistic-content">
-                  <span class="ant-statistic-content-value">
-                      <span class="ant-statistic-content-value-int">{{ jobCount }}</span></span>
+        <a-card :loading="dashLoading" :hoverable="true" style="height: 120px;border-radius:8px;background-color: rgb(249, 89, 89)">
+          <div class="ant-statistic-title" style="color: white">作业</div>
+          <div class="ant-statistic-content" style="color: white">
+                <span class="ant-statistic-content-value">
+                    <span class="ant-statistic-content-value-int">{{ jobCount }}</span>
+                </span>
             <span class="ant-statistic-content-suffix">个</span></div>
         </a-card>
       </a-col>
       <a-col :span="6">
-        <a-card :loading="dashLoading" :hoverable="true" style="height: 140px">
-          <div class="ant-statistic-title">应用</div>
-          <div class="ant-statistic-content">
-                  <span class="ant-statistic-content-value">
-                      <span class="ant-statistic-content-value-int">{{ appsCount }}</span></span>
+        <a-card :loading="dashLoading" :hoverable="true" style="height: 120px;border-radius:8px;background-color: rgb(133,149,244)">
+          <div class="ant-statistic-title" style="color: white">应用</div>
+          <div class="ant-statistic-content" style="color: white">
+                <span class="ant-statistic-content-value">
+                    <span class="ant-statistic-content-value-int">{{ appsCount }}</span>
+                </span>
             <span class="ant-statistic-content-suffix">个</span></div>
         </a-card>
         <br></a-col>
       <a-col :span="6">
-        <a-card :loading="dashLoading" :hoverable="true" style="height: 140px">
-          <div class="ant-statistic-title">部署</div>
-          <div class="ant-statistic-content">
-                  <span class="ant-statistic-content-value">
-                      <span class="ant-statistic-content-value-int">{{ deployCount }}</span></span>
+        <a-card :loading="dashLoading" :hoverable="true" style="height: 120px;border-radius:8px;background-color: rgb(254,187,80)">
+          <div class="ant-statistic-title" style="color: white">部署</div>
+          <div class="ant-statistic-content" style="color: white">
+                <span class="ant-statistic-content-value">
+                    <span class="ant-statistic-content-value-int">{{ deployCount }}</span>
+                </span>
             <span class="ant-statistic-content-suffix">次</span></div>
         </a-card>
         <br></a-col>
@@ -41,15 +45,11 @@
 
       <a-row :gutter="2">
         <a-col :span="24">
-          <a-card title="一周部署情况">
+          <a-card :hoverable="true" :bordered="false" title="一周部署情况">
             <div id="chars" ></div>
           </a-card>
         </a-col>
-
       </a-row>
-
-
-
   </div>
 </template>
 
@@ -80,7 +80,7 @@ export default {
       ];
 
       const chart = new Chart({
-        type: 'line',
+        // type: 'line',
         container: 'chars',
         autoFit: true,
         height: 400,
@@ -152,9 +152,7 @@ export default {
       } else {
         message.error(res.errmsg)
       }
-
     }
-
   },
 
 
