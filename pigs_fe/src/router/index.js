@@ -29,10 +29,40 @@ const routes = [
             },
             {
                 path: 'k8s/cluster',
-                name: 'K8S',
+                name: 'ClusterManage',
                 component: () => import('../views/container/K8SClusterManage.vue'),
                 meta: {
                     title: '集群管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/cluster/detail/:id',
+                name: 'ClusterDetail',
+                component: () => import('../views/container/ClusterDetail.vue'),
+                meta: {
+                    title: '集群详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/node',
+                name: 'Nodes',
+                component: () => import('../views/container/Nodes.vue'),
+                meta: {
+                    title: '节点管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/node/detail',
+                name: 'NodeDetail',
+                component: () => import('../views/container/NodeDetail.vue'),
+                meta: {
+                    title: '节点详情',
                     module: "容器管理"
                 },
                 children: []

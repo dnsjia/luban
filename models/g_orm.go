@@ -15,7 +15,7 @@ const (
 )
 
 type GModel struct {
-	ID        uint `gorm:"primarykey;comment:'自增编号'" json:"id"`
+	ID        uint `gorm:"primarykey;comment:'自增编号'" json:"id" form:"id"`
 	CreatedAt LocalTime
 	UpdatedAt LocalTime
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`

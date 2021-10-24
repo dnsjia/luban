@@ -34,8 +34,8 @@
             </router-link>
           </a-menu-item>
           <a-menu-item key="32">
-            <router-link :to="{path: '/k8s/cluster'}">
-              节点池
+            <router-link :to="{path: '/k8s/node'}">
+              节点管理
             </router-link>
           </a-menu-item>
           <a-menu-item key="33">

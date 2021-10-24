@@ -28,12 +28,12 @@ func main() {
 	// 如果需要将日志同时写入文件和控制台，请使用以下代码
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
-	common.GVA_VP = tools.Viper()      // 初始化Viper
-	common.GVA_LOG = tools.Zap()       // 初始化zap日志库
-	common.GVA_DB = common.GormMysql() // gorm连接数据库
-	common.MysqlTables(common.GVA_DB)  // 初始化表
+	common.VP = tools.Viper()      // 初始化Viper
+	common.LOG = tools.Zap()       // 初始化zap日志库
+	common.DB = common.GormMysql() // gorm连接数据库
+	common.MysqlTables(common.DB)  // 初始化表
 	// 程序结束前关闭数据库链接
-	db, _ := common.GVA_DB.DB()
+	db, _ := common.DB.DB()
 	defer db.Close()
 
 	parseConf()
@@ -44,7 +44,7 @@ func main() {
 
 func InitServer() {
 	r := gin.Default()
-	gin.ForceConsoleColor()
+	//gin.ForceConsoleColor()
 	r.Use(middleware.Cors())
 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		// 你的自定义格式
@@ -75,9 +75,12 @@ func InitServer() {
 		routers.InitContainerRouter(PrivateGroup)
 		// 主机
 		cmdb.InitHostRouter(PrivateGroup)
+		//云资产管理
+		routers.InitCloudRouter(PrivateGroup)
+
 	}
 
-	address := fmt.Sprintf(":%d", common.GVA_CONFIG.System.Addr)
+	address := fmt.Sprintf(":%d", common.CONFIG.System.Addr)
 	err := r.Run(address)
 
 	if err != nil {

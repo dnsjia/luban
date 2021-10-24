@@ -16,7 +16,7 @@ logs/*.log
 *.sw?
 gin.log
 /latest_log
-/config.yaml
+/etc/config.yaml
 /gin.log
 /gva.exe
 /server.exe

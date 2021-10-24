@@ -21,7 +21,7 @@ type DataRes struct {
 // GetMenu 生成目录树
 func GetMenu(pid int) []*TreeList {
 	var menu []cmdb.TreeMenu
-	common.GVA_DB.Where("parent_id = ?", pid).Order("sort_id").Find(&menu)
+	common.DB.Where("parent_id = ?", pid).Order("sort_id").Find(&menu)
 	var treeList []*TreeList
 	for _, v := range menu {
 		child := GetMenu(v.ID)
