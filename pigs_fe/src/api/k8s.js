@@ -1,4 +1,4 @@
-import {post, get} from "@/plugin/utils/request";
+import {post, get, del} from "@/plugin/utils/request";
 
 export const k8sCluster = (params) => post('/api/v1/k8s/cluster', params)
 export const fetchK8SCluster = (params) => get('/api/v1/k8s/cluster', params)
@@ -9,3 +9,7 @@ export const getEvents = (params) => get('/api/v1/k8s/events', params)
 export const getNodes = (params) => get('/api/v1/k8s/node', params)
 export const NodeDetail = (params) => get('/api/v1/k8s/node/detail', params)
 export const NodeSchedule = (params, clusterId) => post('/api/v1/k8s/node/schedule?clusterId=' + clusterId, params)
+export const NodeCordon = (params, clusterId) => get('/api/v1/k8s/node/cordon?clusterId=' + clusterId, params)
+export const RemoveNode = (params, clusterId) => del('/api/v1/k8s/node?clusterId=' + clusterId, params)
+export const CollectionNodeSchedule = (params, clusterId) => post('/api/v1/k8s/node/collectionSchedule?clusterId=' + clusterId, params)
+export const CollectionCordonNode = (params, clusterId) => post('/api/v1/k8s/node/collectionCordon?clusterId=' + clusterId, params)

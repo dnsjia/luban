@@ -52,20 +52,14 @@
     </a-button>
     <br/>
     <br/>
-<!--    <div style="margin-bottom: 16px">-->
-<!--      <span style="margin-left: 8px">-->
-<!--        <template v-if="hasSelected">-->
-<!--          {{ `Selected ${selectedRowKeys.length} items` }}-->
-<!--        </template>-->
-<!--      </span>-->
-<!--    </div>-->
+
     <a-spin :spinning="page.loading" size="large">
     <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
         :data-source="cluster.nodeData"
         :pagination="false"
-        rowKey="id"
+        :rowKey="item=>JSON.stringify(item)"
         :locale="{emptyText: '暂无数据'}"
     >
 
@@ -144,8 +138,8 @@
           <template #overlay>
             <a-menu>
               <a-menu-item><span @click="nodeDetail(text.objectMeta.name)">详情</span></a-menu-item>
-              <a-menu-item><span @click="removeNode(id)">移除</span></a-menu-item>
-              <a-menu-item><span @click="drainNode(id)">节点排水</span></a-menu-item>
+              <a-menu-item><span @click="removeNode(text)">移除</span></a-menu-item>
+              <a-menu-item><span @click="drainNode(text)">节点排水</span></a-menu-item>
               <a-menu-item><span @click="scheduleSetup(text)">调度设置</span></a-menu-item>
             </a-menu>
           </template>
@@ -169,17 +163,117 @@
           <br/>
           <p class="nodeName" v-if="cluster.nodeName.objectMeta">{{ cluster.nodeName.objectMeta.name }}</p>
         </a-modal>
-
-
       </div>
     </template>
     <!-- 调度设置 结束 -->
-<!--    <a-button type="primary" :disabled="!hasSelected" :loading="loading" @click="start">-->
-<!--      Reload-->
-<!--    </a-button>-->
+
+    <!-- 节点排水 开始 -->
+    <template>
+      <div>
+        <a-modal v-model:visible="drainNodeVisible"
+                 title="节点排水"
+                 cancel-text="取消" ok-text="确认"
+                 @ok="drainNodeOk(cluster.nodeName.objectMeta.name)"
+                 :confirm-loading="drainLoading">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>请确认是否要将以下节点进行排空操作（同时设置为不可调度）？</p>
+          </a-space>
+          <br/>
+          <p class="nodeName" v-if="cluster.nodeName.objectMeta">
+            {{ cluster.nodeName.objectMeta.name }}
+<!--            <span style="color: red;font-size: 8px">节点上由 DaemonSet 控制的 Pod 不会被排水</span>-->
+          </p>
+
+          <div style="background: #f8e6e9;width: 480px;height: 100px;">
+            <span style="color: red; padding-left: 8px">注意：</span>
+            <p style="color: red; margin-left:18px; font-size: 12px">1. 节点上由 DaemonSet 控制的 Pod 不会被排水。</p>
+            <p style="color: red; margin-left:18px; font-size: 12px">2. 命名空间 kube-system 的下 Pod 不会被排水。</p>
+
+          </div>
+        </a-modal>
+      </div>
+    </template>
+    <!-- 节点排水 结束 -->
+
+    <!-- 节点移除 开始 -->
+    <template>
+      <div>
+        <a-modal v-model:visible="removeNodeVisible" title="移除节点" cancel-text="取消" ok-text="确认" @ok="removeNodeOk()">
+            <span style="color: red">Warning: 您正在进行高危操作！</span><br/><br/>
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>确定要移除节点吗？</p>
+          </a-space>
+          <br/>
+          <p class="nodeName" v-if="cluster.nodeName.objectMeta">{{ cluster.nodeName.objectMeta.name }}</p>
+          <div style="background: #f8e6e9;width: 480px;height: 160px;">
+            <span style="color: red; padding-left: 8px">注意：</span>
+            <p style="color: red; margin-left:18px; font-size: 12px">1. 此操作可能会对业务产生影响，建议在业务低峰期进行</p>
+            <p style="color: red; margin-left:18px; font-size: 12px">2. 如果节点上存在 Pod，将会“自动排空节点”，请确保集群资源充足，Pod 将自动迁移到其他节点。</p>
+            <p style="color: red; margin-left:18px; font-size: 12px">3. 移除节点是异步操作，请稍后再来查看。</p>
+            <p style="color: red; margin-left:18px; font-size: 12px">4. 节点移除后需要手动添加。</p>
+
+          </div>
+        </a-modal>
+      </div>
+    </template>
+    <!-- 节点移除 结束 -->
+
+
+
+    <br/>
+    <div style="float:left;padding: 10px 0 0 20px">
+      <a-space>
+<!--        <a-button :disabled="!hasSelected" @click="CollectionNodeRemove">批量移除</a-button>-->
+        <a-button :disabled="!hasSelected" @click="CollectionNodeCordon">节点排水</a-button>
+        <a-button :disabled="!hasSelected" @click="CollectionNodeUnschedule">设置不可调度</a-button>
+      </a-space>
+    </div>
+
+    <!--批量设置调度开始-->
+    <a-modal
+        v-model:visible="data.CollectionNodeUnscheduleVisible"
+        title="设置不可调度"
+        :confirm-loading="data.CollectionNodeUnscheduleConfirmLoading"
+        @ok="CollectionNodeUnscheduleHandleOk"
+    >
+      <div v-if="data.selectedRows.length>0">
+        <h4 style="font-size: 18px">确定更改以下 <span style="color: red">{{data.selectedRows.length}}</span> 个节点状态?</h4>
+        <div v-for="v in data.selectedRows" :key="v">{{ v.objectMeta.name }}
+          <span v-if="v.unschedulable">不可调度</span>
+          <span v-else>可调度</span>
+        </div>
+        <br/>
+      </div>
+    </a-modal>
+    <!--批量设置调度结束-->
+
+
+    <!--批量节点排水开始-->
+    <a-modal
+        v-model:visible="data.CollectionNodeCordonVisible"
+        title="设置节点排水"
+        :confirm-loading="data.CollectionNodeCordonConfirmLoading"
+        @ok="CollectionNodeCordonHandleOk"
+    >
+      <div v-if="data.selectedRows.length>0">
+        <h4 style="font-size: 18px">确定排空以下 <span style="color: red">{{data.selectedRows.length}}</span> 个节点?</h4>
+        <div v-for="v in data.selectedRows" :key="v">{{ v.objectMeta.name }}
+          <span v-if="v.unschedulable">不可调度</span>
+          <span v-else>可调度</span>
+        </div>
+        <a-radio :checked="true">排空节点（同时设置为不可调度）</a-radio>
+        <br/>
+      </div>
+    </a-modal>
+    <!--批量节点排水结束-->
 
     <div class="float-right" style="padding: 10px 0;">
-
       <a-pagination size="md" :show-total="total => `共 ${page.total} 条数据`" :v-model="page.total"
                     :page-size-options="page.pageSizeOptions"
                     :total="page.total"
@@ -195,18 +289,26 @@
           <span v-else>全部</span>
         </template>
       </a-pagination>
-
-
     </div>
+
+
   </div>
 </template>
 
 <script>
-import {computed, reactive, toRefs, ref, inject, onMounted} from 'vue';
-import {fetchK8SCluster, getNodes, NodeSchedule} from '../../api/k8s'
+import {computed, reactive, ref, inject, onMounted, h, toRefs} from 'vue';
+import {
+  CollectionCordonNode,
+  CollectionNodeSchedule,
+  fetchK8SCluster,
+  getNodes,
+  NodeCordon,
+  NodeSchedule,
+  RemoveNode
+} from '../../api/k8s'
 import { DownOutlined,TagOutlined,SyncOutlined } from '@ant-design/icons-vue';
 import router from "../../router";
-
+import { Modal } from 'ant-design-vue';
 const columns = [
   {
     title: '名称/IP',
@@ -306,28 +408,39 @@ export default {
       current: 1,
       total: null,
       pageSizeOptions: ['10', '20', '30', '40'],
-
       loading: false,
     })
     const state = reactive({
       selectedRowKeys: [],
-      loading: false,
     });
 
     const scheduleVisible = ref(false);
+    const drainNodeVisible = ref(false);
+    const drainLoading = ref(false);
+    const removeNodeVisible = ref(false);
+
+    const data = reactive(
+        {
+          CollectionNodeUnscheduleVisible: false,
+          CollectionNodeUnscheduleConfirmLoading: false,
+          selectedRows: [],
+          unscheduleData: [],
+
+          CollectionNodeCordonVisible: false,
+          CollectionNodeCordonConfirmLoading: false,
+        }
+    )
 
 
     const hasSelected = computed(() => state.selectedRowKeys.length > 0);
-    const start = () => {
-      state.loading = true; // ajax request after empty completing
-      setTimeout(() => {
-        state.loading = false;
-        state.selectedRowKeys = [];
-      }, 1000);
-    };
-    const onSelectChange = selectedRowKeys => {
-      console.log('selectedRowKeys changed: ', selectedRowKeys);
+
+
+    const onSelectChange = (selectedRowKeys, selectedRows) => {
       state.selectedRowKeys = selectedRowKeys;
+      data.selectedRows = selectedRows
+      for (let i = 0; i < selectedRows.length; i ++) {
+        data.unscheduleData.push(selectedRows[i].objectMeta.name)
+      }
     };
     // 查看集群
     const getK8SCluster = async () => {
@@ -335,7 +448,6 @@ export default {
       cluster.data = data.data
     }
     const message = inject('$message');
-    // get
     const GetStorage = () => {
       const cs = JSON.parse(localStorage.getItem("cluster"))
       if (cs !== null && cs !== undefined && cs !== ""){
@@ -426,12 +538,9 @@ export default {
     }
     const scheduleSetupOk = (unscheduled) => {
       let cs = GetStorage()
-      if (unscheduled === true) {
-        unscheduled = false
-      }else {
-        unscheduled = true
-      }
-      NodeSchedule({"node_name": "k8s-master1", "unscheduled": unscheduled}, cs.clusterId).then(res => {
+      // unscheduled = unscheduled ? false : true;
+      unscheduled = unscheduled !== true;
+      NodeSchedule({"node_name": cluster.nodeName.objectMeta.name, "unscheduled": unscheduled}, cs.clusterId).then(res => {
         if (res.errCode === 0) {
           message.success(res.msg)
           scheduleVisible.value = false
@@ -439,6 +548,87 @@ export default {
         }else {
           message.error("设置节点调度失败")
         }
+      });
+    }
+    // 批量将Node设置为不可调度
+    const CollectionNodeUnschedule = () => {
+        data.CollectionNodeUnscheduleVisible = true
+    }
+    const CollectionNodeUnscheduleHandleOk = () => {
+      let cs = GetStorage()
+      data.CollectionNodeUnscheduleConfirmLoading = true
+      CollectionNodeSchedule({"node_name": data.unscheduleData}, cs.clusterId).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          getNode()
+        }else {
+          message.error(res.errMsg)
+        }
+        data.CollectionNodeUnscheduleVisible = false
+        data.CollectionNodeUnscheduleConfirmLoading = false
+        data.unscheduleData = []
+        state.selectedRowKeys = []
+      })
+    }
+
+    const drainNode = (text) => {
+      drainNodeVisible.value = true
+      cluster.nodeName = text
+    }
+    const drainNodeOk = () => {
+      let cs = GetStorage()
+      drainLoading.value = true
+      NodeCordon({"node_name": cluster.nodeName.objectMeta.name}, cs.clusterId).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          drainNodeVisible.value = false
+          getNode()
+        }else {
+          message.error("设置节点排水失败")
+        }
+        drainLoading.value = false
+      })
+    }
+    const CollectionNodeCordon = () => {
+      data.CollectionNodeCordonVisible = true
+    }
+    const CollectionNodeCordonHandleOk = () => {
+      let cs = GetStorage()
+      data.CollectionNodeCordonConfirmLoading = true
+      CollectionCordonNode({"node_name": data.unscheduleData}, cs.clusterId).then(res => {
+        if (res.errCode === 0) {
+          message.success(res.msg)
+          getNode()
+        } else {
+          message.error(res.errMsg)
+        }
+        data.CollectionNodeCordonVisible = false
+        data.CollectionNodeCordonConfirmLoading = false
+        data.unscheduleData = []
+        state.selectedRowKeys = []
+      })
+    }
+
+
+    const CollectionNodeRemove = () => {
+    }
+
+    const removeNode = (text) => {
+      removeNodeVisible.value = true
+      cluster.nodeName = text
+    }
+    const removeNodeOk = () => {
+      let cs = GetStorage()
+      RemoveNode({"node_name": cluster.nodeName.objectMeta.name}, cs.clusterId).then(res => {
+        if (res.errCode === 0){
+          Modal.success({
+            title: '节点移除已放入后台任务',
+            content: h('div', {}, [h('p', '1.请稍后刷新该页面.'), h('p', '2.如果节点移除未成功,请检查后端日志.')]),
+          });
+        }else {
+          message.error("节点移除失败")
+        }
+        removeNodeVisible.value = false
       })
     }
 
@@ -462,7 +652,6 @@ export default {
       ...toRefs(state),
       page,
       // func
-      start,
       onSelectChange,
 
       onShowSizeChange,
@@ -471,6 +660,22 @@ export default {
       scheduleSetup,
       scheduleVisible,
       scheduleSetupOk,
+      CollectionNodeUnschedule,
+      CollectionNodeUnscheduleHandleOk,
+
+      drainNode,
+      drainNodeVisible,
+      drainLoading,
+      drainNodeOk,
+      CollectionNodeCordon,
+      CollectionNodeCordonHandleOk,
+
+      CollectionNodeRemove,
+      removeNodeVisible,
+      removeNode,
+      removeNodeOk,
+      data,
+
     };
   },
   components: {
