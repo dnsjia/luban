@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	v1 "k8s.io/api/core/v1"
@@ -12,6 +13,7 @@ import (
 	"pigs/pkg/k8s/dataselect"
 	"pigs/pkg/k8s/evict"
 	"pigs/pkg/k8s/parser"
+	"time"
 )
 
 // NodeList 包含集群中的节点列表.
@@ -150,18 +152,19 @@ func NodeUnschdulable(client *kubernetes.Clientset, nodeName string, unschdulabl
 	/*
 		设置节点是否可调度
 	*/
-	common.LOG.Info(fmt.Sprintf("设置Node节点:%v  是否可调度: %v", nodeName, unschdulable))
+	common.LOG.Info(fmt.Sprintf("设置Node节点:%v  不可调度: %v", nodeName, unschdulable))
 	node, err := client.CoreV1().Nodes().Get(context.TODO(), nodeName, metav1.GetOptions{})
 	if err != nil {
+		common.LOG.Error(fmt.Sprintf("get node err: %v", err.Error()))
 		return false, err
 	}
 	node.Spec.Unschedulable = unschdulable
 
-	_, err = client.CoreV1().Nodes().Update(context.TODO(), node, metav1.UpdateOptions{})
+	_, err2 := client.CoreV1().Nodes().Update(context.TODO(), node, metav1.UpdateOptions{})
 
-	if err != nil {
-		common.LOG.Error(fmt.Sprintf("设置节点调度失败：%v", err))
-		return false, err
+	if err2 != nil {
+		common.LOG.Error(fmt.Sprintf("设置节点调度失败：%v", err2.Error()))
+		return false, err2
 	}
 	return true, nil
 }
@@ -176,10 +179,93 @@ func CordonNode(client *kubernetes.Clientset, nodeName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	err = evict.EvictNodePods(client, nodeName)
+	err = evict.EvictsNodePods(client, nodeName)
 	if err != nil {
+		common.LOG.Error(fmt.Sprintf("排空节点出现异常: %v", err.Error()))
 		return false, err
 	}
 	return true, nil
 
+}
+
+func RemoveNode(client *kubernetes.Clientset, nodeName string) (bool, error) {
+	startTime := time.Now()
+	common.LOG.Info(fmt.Sprintf("移除Node节点:%v, 异步任务已开始", nodeName))
+	_, err := NodeUnschdulable(client, nodeName, true)
+	if err != nil {
+		return false, err
+	}
+	err = evict.EvictsNodePods(client, nodeName)
+	if err != nil {
+		common.LOG.Error(fmt.Sprintf("排空节点出现异常: %v", err.Error()))
+		return false, err
+	}
+	err2 := client.CoreV1().Nodes().Delete(context.TODO(), nodeName, metav1.DeleteOptions{})
+	if err2 != nil {
+		return false, err2
+	}
+	common.LOG.Info(fmt.Sprintf("已将节点：%v从集群中移除, 异步任务已完成,任务耗时：%v", nodeName, time.Since(startTime)))
+
+	return true, nil
+}
+
+func CollectionNodeUnschedule(client *kubernetes.Clientset, nodeName []string) error {
+	/*
+		批量设置Node节点不可调度
+		{"node_name": ["k8s-master", "k8s-node"]}
+	*/
+	if len(nodeName) <= 0 {
+		return errors.New("节点名称不能为空")
+	}
+	common.LOG.Info(fmt.Sprintf("批量设置Node节点:%v  不可调度：true", nodeName))
+	for _, v := range nodeName {
+		node, err := client.CoreV1().Nodes().Get(context.TODO(), v, metav1.GetOptions{})
+		if err != nil {
+			common.LOG.Error(fmt.Sprintf("get node err: %v", err.Error()))
+			return err
+		}
+		node.Spec.Unschedulable = true
+
+		_, err2 := client.CoreV1().Nodes().Update(context.TODO(), node, metav1.UpdateOptions{})
+
+		if err2 != nil {
+			common.LOG.Error(fmt.Sprintf("设置节点调度失败：%v", err2.Error()))
+			return err
+		}
+	}
+	common.LOG.Info(fmt.Sprintf("已将所有Node节点:%v  设置为不可调度", nodeName))
+	return nil
+}
+
+func CollectionCordonNode(client *kubernetes.Clientset, nodeName []string) error {
+	/*
+		批量排空Node节点， 不允许调度
+		{"node_name": ["k8s-master", "k8s-node"]}
+	*/
+
+	if len(nodeName) <= 0 {
+		return errors.New("节点名称不能为空")
+	}
+	common.LOG.Info(fmt.Sprintf("开始排空节点, 设置Node节点:%v  不可调度：true", nodeName))
+	for _, v := range nodeName {
+		node, err := client.CoreV1().Nodes().Get(context.TODO(), v, metav1.GetOptions{})
+		if err != nil {
+			common.LOG.Error(fmt.Sprintf("get node err: %v", err.Error()))
+			return err
+		}
+		node.Spec.Unschedulable = true
+
+		_, err2 := client.CoreV1().Nodes().Update(context.TODO(), node, metav1.UpdateOptions{})
+
+		if err2 != nil {
+			common.LOG.Error(fmt.Sprintf("设置节点调度失败：%v", err2.Error()))
+			return err
+		}
+		_, cordonErr := CordonNode(client, v)
+		if cordonErr != nil {
+			return cordonErr
+		}
+	}
+	common.LOG.Info(fmt.Sprintf("已将所有Node节点:%v  设置为不可调度", nodeName))
+	return nil
 }
