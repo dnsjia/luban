@@ -4,7 +4,7 @@
 <!--      <a-col flex="100px">-->
       <a-col :xs="20" :md="12" :lg="8" :xl="4">
         <!-- 资产树形控件开始 -->
-        <a-card :hoverable="true" style="height: 100%" title="资产分组">
+        <a-card :hoverable="true" title="资产分组">
           <template #extra>
             <a-tooltip>
               <template #title>右键点击分组可进行分组管理， 删除分组时请先删除主机。</template>
@@ -48,7 +48,7 @@
           <!-- 资产列表开始 -->
           <div style="padding-bottom: 18px; padding-left: 20px;">
             <a-space :size="18">
-              <a-button type="primary" loading>同步主机</a-button>
+              <a-button type="primary" :loading="false">同步主机</a-button>
               <a-button>导入主机</a-button>
               <a-input-search
                   v-model:value="value"
@@ -60,67 +60,174 @@
           </div>
           <div style="padding-left: 20px">
             <a-table
+                :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                 :columns="columns"
-                :row-key="record => record.login.uuid"
-                :data-source="dataSource"
+                :data-source="store.hostData"
                 :pagination="pagination"
                 :loading="store.loading"
                 @change="handleTableChange">
-              <template #name="{ text }">{{ text.first }} {{ text.last }}</template>
+
+              <!-- 实例ID/名称-->
+              <template #instance="instance">
+                <span>
+                  <div @mouseenter="onMouseoverCopyBtn($event, instance.text.uuid)" @mouseleave="onMouseoutCopyBtn($event, instance.text.uuid)" :data-instance_id="instance.text.uuid">
+                    <a :href="'/cmdb/server/detail?id=' + instance.text.uuid">{{instance.text.uuid}} </a>
+                      <span @click="copyText(instance.text.uuid)" :id="instance.text.uuid" style="visibility: hidden; padding-left: 6px">
+                      <a-tooltip placement="rightBottom">
+                        <template #title :id="instance.text.uuid">复制到剪贴板</template>
+                        <CopyOutlined />
+                      </a-tooltip>
+                      </span>
+                  </div>
+                  {{instance.text.hostname}}
+                </span>
+              </template>
+              <!-- 实例私网IP/公网IP-->
+              <template #ip="ip">
+                <span>
+                  <div @mouseenter="onMouseoverCopyBtn($event, ip.text.private_addr)" @mouseleave="onMouseoutCopyBtn($event, ip.text.private_addr)" :data-instance_id="ip.text.private_addr">
+                     {{ ip.text.private_addr }} (私网)
+                      <span @click="copyText(ip.text.private_addr)" :id="ip.text.private_addr" style="visibility: hidden; padding-left: 6px">
+                      <a-tooltip placement="rightBottom">
+                        <template #title :id="ip.text.private_addr">复制到剪贴板</template>
+                        <CopyOutlined />
+                      </a-tooltip>
+                      </span>
+                    <br/>
+                  </div>
+                  <div @mouseenter="onMouseoverCopyBtn($event, ip.text.public_addr)" @mouseleave="onMouseoutCopyBtn($event, ip.text.public_addr)" :data-instance_id="ip.text.public_addr">
+                    <p v-if="ip.text.public_addr">
+                      <a :href="'http://'+ ip.text.public_addr" target="_blank"> {{ ip.text.public_addr }}</a> (公网)
+                      <span @click="copyText(ip.text.public_addr)" :id="ip.text.public_addr" style="visibility: hidden; padding-left: 6px">
+                      <a-tooltip placement="rightBottom">
+                        <template #title :id="ip.text.public_addr">复制到剪贴板</template>
+                        <CopyOutlined />
+                      </a-tooltip>
+                      </span>
+                    </p>
+                  </div>
+                </span>
+              </template>
+              <!--主机状态-->
+              <template #status="serverStatus">
+                <span>
+                  <a-badge v-if="serverStatus.text.status==='Running'" status="processing" text="运行中"/>
+                  <a-badge v-else-if="serverStatus.text.status==='Stopped'" status="error" text="已停止"/>
+                </span>
+              </template>
+              <!--系统类型-->
+              <template #os_type="os">
+                <span>
+                  <a-tooltip :title="os.text.os">
+                      <svg class="icon" aria-hidden="true">
+                        <use v-if="SystemType(os.text.os)==='linux'" xlink:href="#pigs-icon-linux">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='windows'" xlink:href="#pigs-icon-windows-100">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='aliyun'" xlink:href="#pigs-icon-alinuxAliyunLinux2">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='alibaba'" xlink:href="#pigs-icon-aliyun">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='centos'" xlink:href="#pigs-icon-centos">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='ubuntu'" xlink:href="#pigs-icon-ubuntu">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='debian'" xlink:href="#pigs-icon-Debian">{{os.text.os}}</use>
+                      </svg>
+                  </a-tooltip>
+                </span>
+              </template>
+              <!--机器配置-->
+              <template #server_configure="vm">
+                <span style="padding-top: -20px">
+                  {{ vm.text.cpu }} vCPU {{ $filters.aliyunEcsMemory(vm.text.memory) }} <br/>
+                  {{vm.text.bandwidth}} Mbps (带宽)
+                </span>
+              </template>
+              <!-- 实例付费方式 -->
+              <template #vm_expired_time="expired_time">
+                <span>
+                  {{formatDate(expired_time.text.vm_expired_time)}}
+              </span>
+              </template>
+              <!--操作-->
+              <template #action="action">
+                <a @click="RemoteConnection(action.text.uuid)">远程连接</a>
+                <a-divider type="vertical"/>
+                <a-dropdown>
+                  <a class="ant-dropdown-link" @click.prevent>更多<DownOutlined /></a>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="0" disabled>屏幕截图
+                        <a target="_blank" href=""></a>
+                      </a-menu-item>
+                      <a-menu-item key="1" disabled>系统日志
+                        <a target="_blank" href="http://www.taobao.com/"></a>
+                      </a-menu-item>
+                      <a-menu-divider />
+                      <a-menu-item key="2" disabled>诊断健康状态</a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </template>
+
             </a-table>
           </div>
           <!-- 资产列表结束 -->
         </a-col>
-
     </a-row>
-  </div>
-  <div>
-<!--    <IconFont type="pigs-icon-ubuntu"/>-->
-    <svg class="icon" aria-hidden="true">
-      <use xlink:href="#pigs-icon-ubuntu"></use>
-    </svg>
+    <template>
+      <h2>test</h2>
+      <div class="float-right" style="padding: 10px 0;">
+        <a-button type="primary" danger :disabled="!hasSelected" :loading="loading" @click="start">删除</a-button>
+        <span style="margin-left: 8px">
+                  <template v-if="hasSelected">
+                    {{ `Selected ${selectedRowKeys.length} items` }}
+                  </template>
+                </span>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import {
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  DownOutlined,
+  CopyOutlined,
 } from "@ant-design/icons-vue";
 
 
-import {onBeforeMount, onMounted, reactive, ref, watch} from 'vue';
+import {onBeforeMount, onMounted, computed, reactive, ref, watch, toRefs} from 'vue';
 import { cloneDeep } from 'lodash-es';
 import {getGroup} from "../../api/group";
+import {getHost} from "../../api/cmdb/ecs";
+import Moment from 'moment'
+import {message} from "ant-design-vue";
 
 const columns = [
   {
     title: '实例ID/名称',
-    dataIndex: 'instance_id',
-    key: 'instance_id',
-    scopedSlots: {customRender: 'instance_id'}
+    // dataIndex: 'uuid',
+    key: 'uuid',
+    slots: {customRender: 'instance'}
   },
   {
     // title: '系统',
-    dataIndex: 'os_type',
+    // dataIndex: 'os_type',
     key: 'os_type',
-    scopedSlots: {customRender: 'os_type'}
+    slots: {customRender: 'os_type'}
   },
   {
-    title: '机房',
-    dataIndex: 'idc',
-    key: 'idc',
+    title: '区域',
+    dataIndex: 'region',
+    key: 'region',
   },
   {
     title: 'IP地址',
-    dataIndex: 'private_ip',
-    key: 'private_ip',
-    scopedSlots: {customRender: 'ip'},
+    // dataIndex: 'private_addr',
+    key: 'private_addr',
+    slots: {customRender: 'ip'},
   },
   {
     title: '状态',
-    dataIndex: 'status',
+    // dataIndex: 'status',
     key: 'status',
-    scopedSlots: {customRender: 'status'},
+    slots: {customRender: 'status'},
     filterMultiple: false,
     filters: [
       {
@@ -135,21 +242,21 @@ const columns = [
 
   },
   {
-    title: '网络类型',
-    dataIndex: 'network_type',
-    key: 'network_type',
-    scopedSlots: {customRender: 'network_type'},
+    title: '配置',
+    // dataIndex: 'cpu',
+    key: 'cpu', // memory
+    slots: {customRender: 'server_configure'},
   },
   {
-    title: '配置',
-    dataIndex: 'cpu',
-    key: 'cpu', // memory
-    scopedSlots: {customRender: 'server_configure'},
+    title: '到期时间',
+    // dataIndex: 'instance_charge_type', // expired_time
+    key: 'vm_expired_time',
+    slots: {customRender: 'vm_expired_time'}
   },
   {
     title: '操作',
     key: 'action',
-    scopedSlots: {customRender: 'action'},
+    slots: {customRender: 'action'},
   },
 ];
 
@@ -158,6 +265,8 @@ export default {
   setup() {
     let store = reactive({
       treeData: [],
+      hostData: [],
+      selectedRowKeys: [],
       loading: false,
     })
     onBeforeMount(() =>{
@@ -166,7 +275,22 @@ export default {
 
     onMounted(() =>{
       getGroups()
+      getHosts()
     })
+    const hasSelected = computed(() => store.selectedRowKeys.length > 0);
+    const start = () => {
+      store.loading = true; // ajax request after empty completing
+
+      setTimeout(() => {
+        store.loading = false;
+        store.selectedRowKeys = [];
+      }, 1000);
+    };
+    const onSelectChange = selectedRowKeys => {
+      console.log('selectedRowKeys changed: ', selectedRowKeys);
+      store.selectedRowKeys = selectedRowKeys;
+    };
+
     const editData = reactive({})
     // 重命名分组
     const edit = key => {
@@ -176,8 +300,9 @@ export default {
       Object.assign(store.treeData.value.filter(item => key === item.key)[0], editData[key])
       delete editData[key]
     }
-    const expandedKeys = ref(["1"]);
-    const selectedKeys = ref(["1"]);
+    console.log(ref("1"))
+    const expandedKeys = ref(["0-0", "0-0-0"]);
+    const selectedKeys = ref(["0-0", "0-0-0"]);
     const value = ref('');
     // 资产搜索
     const onSearch = searchValue => {
@@ -193,8 +318,9 @@ export default {
       console.log(`treeKey: ${treeKey}, menuKey: ${menuKey}`);
     };
 
-    watch(expandedKeys, () => {
-      console.log('expandedKeys', expandedKeys);
+
+    watch(expandedKeys, (treeKey) => {
+      console.log('expandedKeys： =======', treeKey);
       // 当分组展开时获取ecs资产列表
     });
     // 删除分组
@@ -206,6 +332,63 @@ export default {
     function delHosts(key) {
       alert(key)
     }
+    // 远程连接
+    function RemoteConnection(uuid) {
+      window.open("/ssh/" + uuid, "_blank")
+    }
+    // 判断操作系统类型
+    function SystemType(os) {
+      let OSName = os.toLowerCase()
+      if (OSName.indexOf("centos") === 0){
+        return "centos"
+      }else if(OSName.indexOf("windows") === 0) {
+        return "windows"
+      } else if(OSName.indexOf("aliyun") === 0) {
+        return "aliyun"
+      } else if(OSName.indexOf("alibaba") === 0){
+        return "alibaba"
+      } else if(OSName.indexOf("ubuntu") === 0) {
+        return "ubuntu"
+      } else if(OSName.indexOf("debian") === 0) {
+        return "debian"
+      } else if(OSName.indexOf("suse") === 0) {
+        return "suse"
+      } else if(OSName.indexOf("fedora") === 0) {
+        return "fedora"
+      } else {
+        return "linux"
+      }
+    }
+    // 格式化阿里云ecs到期时间
+    function formatDate(date) {
+      return Moment(date).format('YYYY-MM-DD HH:mm')
+    }
+    // 鼠标移入事件监听
+    function onMouseoverCopyBtn(event,value) {
+      document.getElementById(value).style.visibility="visible";
+    }
+    // 鼠标移出事件监听
+    function onMouseoutCopyBtn(event, value) {
+      document.getElementById(value).style.visibility="hidden";
+    }
+
+    // 拷贝文字
+    function copyText(value){
+      return new Promise((resolve) => {
+        let copyText = document.createElement("input");
+        // 存储值
+        copyText.value = value;
+        // 添加子节点
+        document.body.appendChild(copyText)
+        copyText.select()
+        document.execCommand("Copy")
+        // 清空输入框
+        copyText.remove()
+        resolve(true)
+        message.success('已复制到剪贴板');
+      });
+    }
+
     // 获取分组
     const getGroups = async () => {
       const result = await getGroup()
@@ -213,7 +396,15 @@ export default {
         console.log('获取资产分组失败')
       }else {
         store.treeData = result.data.treeData
-        console.log(store.treeData, typeof(store.treeData))
+      }
+    }
+    // 获取主机
+    const getHosts = async () => {
+      const result = await getHost({"treeId": 1})
+      if (result.errCode !== 0){
+        console.log('获取资产分组失败')
+      }else {
+        store.hostData = result.data
       }
     }
 
@@ -226,6 +417,16 @@ export default {
       onSearch,
       onContextMenuClick,
       delGroup,
+      RemoteConnection,
+      SystemType,
+      formatDate,
+      onMouseoverCopyBtn,
+      onMouseoutCopyBtn,
+      copyText,
+      hasSelected,
+      ...toRefs(store),
+      start,
+      onSelectChange,
       delHosts,
       //
       editData,
@@ -238,7 +439,9 @@ export default {
 
   },
   components: {
-    QuestionCircleOutlined
+    QuestionCircleOutlined,
+    DownOutlined,
+    CopyOutlined,
   },
 };
 
