@@ -20,9 +20,14 @@ type DataRes struct {
 
 // GetMenu 生成目录树
 func GetMenu(pid int) []*TreeList {
-	var menu []cmdb.TreeMenu
-	common.DB.Where("parent_id = ?", pid).Order("sort_id").Find(&menu)
-	var treeList []*TreeList
+	var (
+		menu     []cmdb.TreeMenu
+		treeList []*TreeList
+	)
+
+	if err := common.DB.Where("parent_id = ?", pid).Order("sort_id").Find(&menu).Error; err != nil {
+		return nil
+	}
 	for _, v := range menu {
 		child := GetMenu(v.ID)
 		node := &TreeList{
