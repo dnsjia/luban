@@ -42,7 +42,7 @@
       </template>
 
     </a-table>
-    <a-modal v-model:visible="state.ClusterConfigVisible" title="查看集群凭证" :footer="null">
+    <a-modal v-model:visible="state.ClusterConfigVisible" title="查看集群凭证" :footer="null" :keyboard="false" :maskClosable="false">
 
       <a-textarea v-model:value="state.ClusterConfig" placeholder="请粘贴KubeConfig内容" style="width: 100%; height: 600px"/>
     </a-modal>
@@ -149,7 +149,7 @@ export default defineComponent({
       data: [],
       pageSize: 10,
       current: null,
-      total: null,
+      total: 0,
       pageSizeOptions: ['10', '20', '30', '40'],
       ClusterConfigVisible: false,
       ClusterConfig: undefined,
@@ -240,8 +240,8 @@ export default defineComponent({
       }).then(res => {
         if (res.errCode === 0) {
           state.data = res.data.data
-          state.total = res.Total
-          state.pageSize = res.Size
+          state.total = res.data.total
+          state.pageSize = res.data.pageSize
         }
       });
 

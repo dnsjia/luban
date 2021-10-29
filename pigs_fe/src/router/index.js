@@ -67,6 +67,26 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/workload',
+                name: 'WorkLoad',
+                component: () => import('../views/container/WorkLoad.vue'),
+                meta: {
+                    title: '工作负载',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/workload/deployment/detail',
+                name: 'DeploymentDetail',
+                component: () => import('../views/container/DeploymentDetail.vue'),
+                meta: {
+                    title: '无状态详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {

@@ -3,7 +3,7 @@ module pigs
 go 1.15
 
 require (
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1304 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1304
 	github.com/casbin/casbin v1.9.1
 	github.com/casbin/casbin/v2 v2.37.0
 	github.com/casbin/gorm-adapter/v3 v3.4.2
@@ -17,6 +17,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/prometheus/common v0.31.1
@@ -32,7 +33,6 @@ require (
 	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.63.0 // indirect
-	gorm.io/datatypes v1.0.2 // indirect
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/driver/postgres v1.1.1 // indirect
 	gorm.io/driver/sqlserver v1.0.9 // indirect
@@ -40,5 +40,4 @@ require (
 	k8s.io/api v0.22.2
 	k8s.io/apimachinery v0.22.2
 	k8s.io/client-go v0.22.2
-	k8s.io/metrics v0.22.2
 )
