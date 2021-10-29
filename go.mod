@@ -12,7 +12,6 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gookit/color v1.4.2
-	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
@@ -36,7 +35,7 @@ require (
 	gorm.io/driver/sqlserver v1.0.9 // indirect
 	gorm.io/gorm v1.21.15
 	k8s.io/api v0.22.2
+	k8s.io/apiextensions-apiserver v0.22.2
 	k8s.io/apimachinery v0.22.2
 	k8s.io/client-go v0.22.2
-	k8s.io/metrics v0.22.2
 )

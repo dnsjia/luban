@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"pigs/common"
-	"pigs/controller/response"
 )
 
 func CheckParams(c *gin.Context, ptr interface{}) error {
@@ -21,8 +20,9 @@ func CheckParams(c *gin.Context, ptr interface{}) error {
 	}
 	if err := c.ShouldBindJSON(&ptr); err != nil {
 		common.LOG.Warn(fmt.Sprintf("解析参数出错：%v", err.Error()))
-		response.FailWithMessage(response.ParamError, "", c)
+		//response.FailWithMessage(response.ParamError, "", c)
 		return err
+
 	}
 	return nil
 }

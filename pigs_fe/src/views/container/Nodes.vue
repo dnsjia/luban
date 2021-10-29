@@ -152,7 +152,8 @@
     <!-- 调度设置 开始 -->
     <template>
       <div>
-        <a-modal v-model:visible="scheduleVisible" title="调度设置" cancel-text="取消" ok-text="确认" @ok="scheduleSetupOk(cluster.nodeName.unschedulable)">
+        <a-modal v-model:visible="scheduleVisible" title="调度设置" cancel-text="取消" ok-text="确认"
+                 @ok="scheduleSetupOk(cluster.nodeName.unschedulable)" :keyboard="false" :maskClosable="false">
           <a-space>
             <p class="circular">
               <span class="exclamation-point">i</span>
@@ -174,7 +175,7 @@
                  title="节点排水"
                  cancel-text="取消" ok-text="确认"
                  @ok="drainNodeOk(cluster.nodeName.objectMeta.name)"
-                 :confirm-loading="drainLoading">
+                 :confirm-loading="drainLoading" :keyboard="false" :maskClosable="false">
           <a-space>
             <p class="circular">
               <span class="exclamation-point">i</span>
@@ -201,7 +202,7 @@
     <!-- 节点移除 开始 -->
     <template>
       <div>
-        <a-modal v-model:visible="removeNodeVisible" title="移除节点" cancel-text="取消" ok-text="确认" @ok="removeNodeOk()">
+        <a-modal v-model:visible="removeNodeVisible" title="移除节点" cancel-text="取消" ok-text="确认" @ok="removeNodeOk()" :keyboard="false" :maskClosable="false">
             <span style="color: red">Warning: 您正在进行高危操作！</span><br/><br/>
           <a-space>
             <p class="circular">
@@ -241,6 +242,7 @@
         title="设置不可调度"
         :confirm-loading="data.CollectionNodeUnscheduleConfirmLoading"
         @ok="CollectionNodeUnscheduleHandleOk"
+        :keyboard="false" :maskClosable="false"
     >
       <div v-if="data.selectedRows.length>0">
         <h4 style="font-size: 18px">确定更改以下 <span style="color: red">{{data.selectedRows.length}}</span> 个节点状态?</h4>
@@ -260,6 +262,7 @@
         title="设置节点排水"
         :confirm-loading="data.CollectionNodeCordonConfirmLoading"
         @ok="CollectionNodeCordonHandleOk"
+        :keyboard="false" :maskClosable="false"
     >
       <div v-if="data.selectedRows.length>0">
         <h4 style="font-size: 18px">确定排空以下 <span style="color: red">{{data.selectedRows.length}}</span> 个节点?</h4>

@@ -3,7 +3,9 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"pigs/controller/k8s/cluster"
+	"pigs/controller/k8s/deployment"
 	"pigs/controller/k8s/event"
+	"pigs/controller/k8s/namespace"
 	"pigs/controller/k8s/node"
 )
 
@@ -23,5 +25,16 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.POST("node/collectionSchedule", node.CollectionNodeUnschedule)
 		K8sClusterRouter.GET("node/cordon", node.CordonNode)
 		K8sClusterRouter.POST("node/collectionCordon", node.CollectionCordonNode)
+
+		K8sClusterRouter.GET("deployment", deployment.GetDeploymentList)
+		K8sClusterRouter.POST("deployments", deployment.DeleteCollectionDeployment)
+		K8sClusterRouter.POST("deployment/delete", deployment.DeleteDeployment)
+
+		K8sClusterRouter.POST("deployment/scale", deployment.ScaleDeployment)
+		K8sClusterRouter.GET("deployment/detail", deployment.DetailDeploymentController)
+		K8sClusterRouter.POST("deployment/restart", deployment.RestartDeploymentController)
+		K8sClusterRouter.POST("deployment/service", deployment.GetDeploymentToServiceController)
+
+		K8sClusterRouter.GET("namespace", namespace.GetNamespaceList)
 	}
 }
