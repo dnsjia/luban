@@ -49,6 +49,9 @@ mysql:
 ## 仪表盘
 ![avatar](./docs/img/仪表盘.jpg)
 
+## 资产管理
+![avatar](./docs/img/资产管理.jpg)
+
 ## 集群管理
 ![avatar](./docs/img/集群管理.jpg)
 

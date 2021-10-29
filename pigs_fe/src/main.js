@@ -9,6 +9,8 @@ import "ant-design-vue/dist/antd.css";
 import {VueCookieNext} from 'vue-cookie-next'
 import filter from "./plugin/filter";
 
+
+
 const app = createApp(App)
 app.config.globalProperties.$filters = {
     fmtTime(value) {
@@ -19,7 +21,14 @@ app.config.globalProperties.$filters = {
     },
     sizeType(value) {
         return filter.sizeType(value)
-    }
+    },
+    aliyunEcsMemory(value) {
+        if (value === 0) return '0';
+        var k = 1024,
+            sizes = ['MB', 'GB', 'TB'],
+            i = Math.floor(Math.log(value) / Math.log(k));
+        return (value / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    },
 
 }
 
