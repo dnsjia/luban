@@ -1,6 +1,10 @@
 package k8s
 
-import metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/labels"
+)
 
 // NewObjectMeta returns internal endpoint name for the given service properties, e.g.,
 // NewObjectMeta creates a new instance of ObjectMeta struct based on K8s object meta.
@@ -19,4 +23,10 @@ func NewTypeMeta(kind ResourceKind) TypeMeta {
 	return TypeMeta{
 		Kind: kind,
 	}
+}
+
+// ListEverything is a list options used to list all resources without any filtering.
+var ListEverything = metaV1.ListOptions{
+	LabelSelector: labels.Everything().String(),
+	FieldSelector: fields.Everything().String(),
 }
