@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 	"github.com/prometheus/common/expfmt"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,7 +19,8 @@ func GetClusterVersion(c *kubernetes.Clientset) (string, error) {
 	version, err := c.ServerVersion()
 
 	if err != nil {
-		return "", fmt.Errorf("get version from cluster failed: %v", err.Error())
+		common.LOG.Error("get version from cluster failed", zap.Any("err: ", err))
+		return "", err
 	}
 
 	return version.String(), nil
@@ -43,7 +43,7 @@ func GetClusterNodesRunningStatus(c *kubernetes.Clientset, m *models.ClusterNode
 	*/
 	nodes, err := c.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		common.LOG.Error("get nodes err")
+		common.LOG.Error("get nodes err", zap.Any("err: ", err))
 	}
 
 	var ready int = 0

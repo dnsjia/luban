@@ -34,8 +34,8 @@ require (
 	gorm.io/driver/postgres v1.1.1 // indirect
 	gorm.io/driver/sqlserver v1.0.9 // indirect
 	gorm.io/gorm v1.21.15
-	k8s.io/api v0.22.2
-	k8s.io/apiextensions-apiserver v0.22.2
-	k8s.io/apimachinery v0.22.2
-	k8s.io/client-go v0.22.2
+	k8s.io/api v0.22.3
+	k8s.io/apimachinery v0.22.3
+	k8s.io/client-go v0.22.3
+	k8s.io/kubectl v0.22.3
 )

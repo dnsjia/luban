@@ -23,8 +23,7 @@
     </a-tab-pane>
 
     <a-tab-pane key="6" tab="容器组">
-
-      <Pod></Pod>
+      <Pods></Pods>
     </a-tab-pane>
 
   </a-tabs>
@@ -33,6 +32,7 @@
 
 <script>
 import Deployment from "./Deployment";
+import Pods from "./Pods";
 import {onMounted, reactive} from "vue";
 export default {
   name: "WorkLoad",
@@ -62,6 +62,7 @@ export default {
 
   components: {
     Deployment,
+    Pods,
   }
 }
 </script>

@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"fmt"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -11,14 +10,13 @@ import (
 	"strings"
 )
 
-func GetEvents(client *kubernetes.Clientset, namespace string) (*v1.EventList, error) {
+func GetEvents(client *kubernetes.Clientset, namespace string, field string) (*v1.EventList, error) {
 
 	events, err := client.CoreV1().Events(namespace).List(context.TODO(),
 		metav1.ListOptions{
-			FieldSelector: fmt.Sprintf("type=%s", "Warning"),
+			FieldSelector: field,
 		},
 	)
-	//events, err := client.CoreV1().Events(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

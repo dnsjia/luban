@@ -83,7 +83,17 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item><span @click="rolloutVersion(text)">回滚上一版本</span></a-menu-item>
+                <a-menu-item>
+<!--                  <span @click="rollbackVersion(text)">回滚上一版本</span>-->
+                  <a-popconfirm placement="left" ok-text="确定" cancel-text="取消" @confirm="rollbackVersion(text)">
+                    <template #title>
+                      <span>你确定要回退到上一个版本吗？</span><br/>
+                      <span>应用： {{ text.objectMeta.name }} </span>
+                    </template>
+                    <a>回滚上一版本</a>
+                  </a-popconfirm>
+
+                </a-menu-item>
                 <a-menu-item><span @click="editDeployment(text)">编辑应用</span></a-menu-item>
                 <a-menu-item><span @click="removeOneDeployment(text)" style="color: red">删除应用</span></a-menu-item>
               </a-menu>
@@ -196,7 +206,7 @@
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {
   DeleteCollectionDeployment,
-  DeleteDeployment,
+  DeleteDeployment, DeploymentRollBack,
   GetDeployment,
   GetDeploymentToService,
   GetNamespaces,
@@ -495,6 +505,18 @@ export default {
       });
       // window.open(routeData.href, '_blank');
     }
+    const rollbackVersion = (text) => {
+      let cs = GetStorage()
+      DeploymentRollBack(cs.clusterId, {"namespace": text.objectMeta.namespace, "deploymentName": text.objectMeta.name, "reVersion": 0}).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          getDeploymentList()
+        }else {
+          message.error(res.errMsg)
+        }
+
+      })
+    }
     onMounted(() => {
       GetNamespaceList()
       getDeploymentList()
@@ -521,6 +543,7 @@ export default {
       RestartDeployment,
       removeOnDeploymentOnSubmit,
       deploymentDetail,
+      rollbackVersion,
     }
 
   },
