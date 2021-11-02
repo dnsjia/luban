@@ -1,6 +1,7 @@
 package event
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"pigs/controller/response"
 	"pigs/pkg/k8s/Init"
@@ -15,7 +16,8 @@ func Events(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	data, err := event.GetEvents(client, namespace)
+	field := fmt.Sprintf("type=%s", "Warning")
+	data, err := event.GetEvents(client, namespace, field)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return

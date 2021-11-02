@@ -7,6 +7,7 @@ import (
 	"pigs/controller/k8s/event"
 	"pigs/controller/k8s/namespace"
 	"pigs/controller/k8s/node"
+	"pigs/controller/k8s/pods"
 )
 
 func InitContainerRouter(r *gin.RouterGroup) {
@@ -34,7 +35,10 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("deployment/detail", deployment.DetailDeploymentController)
 		K8sClusterRouter.POST("deployment/restart", deployment.RestartDeploymentController)
 		K8sClusterRouter.POST("deployment/service", deployment.GetDeploymentToServiceController)
+		K8sClusterRouter.POST("deployment/rollback", deployment.RollBackDeploymentController)
 
 		K8sClusterRouter.GET("namespace", namespace.GetNamespaceList)
+
+		K8sClusterRouter.GET("pods", pods.GetPodsList)
 	}
 }

@@ -82,7 +82,7 @@ const routes = [
                 name: 'DeploymentDetail',
                 component: () => import('../views/container/DeploymentDetail.vue'),
                 meta: {
-                    title: '无状态详情',
+                    title: '无状态应用详情',
                     module: "容器管理"
                 },
                 children: []

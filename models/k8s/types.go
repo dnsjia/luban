@@ -30,3 +30,37 @@ var ListEverything = metaV1.ListOptions{
 	LabelSelector: labels.Everything().String(),
 	FieldSelector: fields.Everything().String(),
 }
+
+// List of all resource kinds supported by the UI.
+const (
+	ResourceKindConfigMap                = "configmap"
+	ResourceKindDaemonSet                = "daemonset"
+	ResourceKindDeployment               = "deployment"
+	ResourceKindEvent                    = "event"
+	ResourceKindHorizontalPodAutoscaler  = "horizontalpodautoscaler"
+	ResourceKindIngress                  = "ingress"
+	ResourceKindServiceAccount           = "serviceaccount"
+	ResourceKindJob                      = "job"
+	ResourceKindCronJob                  = "cronjob"
+	ResourceKindLimitRange               = "limitrange"
+	ResourceKindNamespace                = "namespace"
+	ResourceKindNode                     = "node"
+	ResourceKindPersistentVolumeClaim    = "persistentvolumeclaim"
+	ResourceKindPersistentVolume         = "persistentvolume"
+	ResourceKindCustomResourceDefinition = "customresourcedefinition"
+	ResourceKindPod                      = "pod"
+	ResourceKindReplicaSet               = "replicaset"
+	ResourceKindReplicationController    = "replicationcontroller"
+	ResourceKindResourceQuota            = "resourcequota"
+	ResourceKindSecret                   = "secret"
+	ResourceKindService                  = "service"
+	ResourceKindStatefulSet              = "statefulset"
+	ResourceKindStorageClass             = "storageclass"
+	ResourceKindClusterRole              = "clusterrole"
+	ResourceKindClusterRoleBinding       = "clusterrolebinding"
+	ResourceKindRole                     = "role"
+	ResourceKindRoleBinding              = "rolebinding"
+	ResourceKindPlugin                   = "plugin"
+	ResourceKindEndpoint                 = "endpoint"
+	ResourceKindNetworkPolicy            = "networkpolicy"
+)

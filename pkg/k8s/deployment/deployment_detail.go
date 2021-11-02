@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 	apps "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"pigs/common"
 	k8scommon "pigs/pkg/k8s/common"
+	"pigs/pkg/k8s/event"
+	"pigs/tools"
+	"sort"
 )
 
 // RollingUpdateStrategy is behavior of a rolling update. See RollingUpdateDeployment K8s object.
@@ -60,8 +64,11 @@ type DeploymentDetail struct {
 	// Optional field that specifies the number of old Replica Sets to retain to allow rollback.
 	RevisionHistoryLimit *int32 `json:"revisionHistoryLimit"`
 
-	// List of non-critical errors, that occurred during resource retrieval.
-	Errors []error `json:"errors"`
+	// Events Info
+	Events []v1.Event `json:"events"`
+
+	// Deployment history image version
+	HistoryVersion []HistoryVersion `json:"historyVersion"`
 }
 
 // GetDeploymentDetail returns model object of deployment and error, if any.
@@ -115,6 +122,7 @@ func GetDeploymentDetail(client *kubernetes.Clientset, namespace string, deploym
 			MaxUnavailable: deployment.Spec.Strategy.RollingUpdate.MaxUnavailable,
 		}
 	}
+	events, _ := event.GetEvents(client, namespace, fmt.Sprintf("involvedObject.name=%v", deploymentName))
 
 	return &DeploymentDetail{
 		Deployment:            toDeployment(deployment, rawRs.Items, rawPods.Items, rawEvents.Items),
@@ -125,6 +133,8 @@ func GetDeploymentDetail(client *kubernetes.Clientset, namespace string, deploym
 		MinReadySeconds:       deployment.Spec.MinReadySeconds,
 		RollingUpdateStrategy: rollingUpdateStrategy,
 		RevisionHistoryLimit:  deployment.Spec.RevisionHistoryLimit,
+		Events:                events.Items,
+		HistoryVersion:        getDeploymentHistory(namespace, deploymentName, rawRs.Items),
 	}, nil
 }
 
@@ -136,4 +146,51 @@ func GetStatusInfo(deploymentStatus *apps.DeploymentStatus) StatusInfo {
 		Available:   deploymentStatus.AvailableReplicas,
 		Unavailable: deploymentStatus.UnavailableReplicas,
 	}
+}
+
+type HistoryVersion struct {
+	CreateTime metaV1.Time `json:"create_time"`
+	Image      string      `json:"image"`
+	Version    int64       `json:"version"`
+	Namespace  string      `json:"namespace"`
+	Name       string      `json:"name"`
+}
+
+func getDeploymentHistory(namespace string, deploymentName string, rs []apps.ReplicaSet) []HistoryVersion {
+
+	var historyVersion []HistoryVersion
+
+	for _, v := range rs {
+		if namespace == v.Namespace && deploymentName == v.OwnerReferences[0].Name {
+			history := HistoryVersion{
+				CreateTime: v.CreationTimestamp,
+				Image:      v.Spec.Template.Spec.Containers[0].Image,
+				Version:    tools.ParseStringToInt64(v.Annotations["deployment.kubernetes.io/revision"]),
+				Namespace:  v.Namespace,
+				Name:       v.OwnerReferences[0].Name,
+			}
+			historyVersion = append(historyVersion, history)
+
+		}
+	}
+	// Sort the map by date
+	//sort.Slice(historyVersion, func(i, j int) bool {
+	//	return historyVersion[j].CreateTime.Before(&historyVersion[i].CreateTime)
+	//})
+	// Sort the map by version
+	sort.Sort(historiesByRevision(historyVersion))
+
+	return historyVersion
+}
+
+type historiesByRevision []HistoryVersion
+
+func (h historiesByRevision) Len() int {
+	return len(h)
+}
+func (h historiesByRevision) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+func (h historiesByRevision) Less(i, j int) bool {
+	return h[j].Version < h[i].Version
 }

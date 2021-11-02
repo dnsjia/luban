@@ -59,18 +59,21 @@ type EventListChannel struct {
 
 // GetEventListChannel returns a pair of channels to an Event list and errors that both must be read
 // numReads times.
-func GetEventListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) EventListChannel {
+func GetEventListChannel(client *client.Clientset, nsQuery *NamespaceQuery, numReads int) EventListChannel {
 	return GetEventListChannelWithOptions(client, nsQuery, k8s.ListEverything, numReads)
 }
 
 // GetEventListChannelWithOptions is GetEventListChannel plus list options.
-func GetEventListChannelWithOptions(client client.Interface, nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) EventListChannel {
+func GetEventListChannelWithOptions(client *client.Clientset, nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) EventListChannel {
 	channel := EventListChannel{
 		List:  make(chan *v1.EventList, numReads),
 		Error: make(chan error, numReads),
 	}
 
 	go func() {
+		// 原options是根据label过滤来过滤Event事件信息, 代码deployment_detail + L78
+		// TODO 改成field过滤
+		//options.FieldSelector = fmt.Sprintf("involvedObject.name=%v", deploymentName)
 		list, err := client.CoreV1().Events(nsQuery.ToRequestParam()).List(context.TODO(), options)
 		var filteredItems []v1.Event
 		for _, item := range list.Items {
