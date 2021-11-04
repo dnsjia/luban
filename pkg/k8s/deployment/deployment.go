@@ -10,11 +10,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
+	deploymentutil "k8s.io/kubectl/pkg/util/deployment"
 	"pigs/common"
 	"pigs/models/k8s"
 	k8scommon "pigs/pkg/k8s/common"
 	"pigs/pkg/k8s/dataselect"
 	"pigs/pkg/k8s/event"
+	"pigs/tools"
 	"time"
 )
 
@@ -143,7 +145,7 @@ func toDeployment(deployment *apps.Deployment, rs []apps.ReplicaSet, pods []v1.P
 
 	return Deployment{
 		ObjectMeta:          k8s.NewObjectMeta(deployment.ObjectMeta),
-		TypeMeta:            k8s.NewTypeMeta("deployment"),
+		TypeMeta:            k8s.NewTypeMeta(k8s.ResourceKindDeployment),
 		Pods:                podInfo,
 		ContainerImages:     k8scommon.GetContainerImages(&deployment.Spec.Template.Spec),
 		InitContainerImages: k8scommon.GetInitContainerImages(&deployment.Spec.Template.Spec),
@@ -162,9 +164,9 @@ func getDeploymentStatus(deployment *apps.Deployment) DeploymentStatus {
 	}
 }
 
-func DeleteCollectionDeployment(client *kubernetes.Clientset, deploymentData []k8s.RemoveDeploymentData) (err error) {
+func DeleteCollectionDeployment(client *kubernetes.Clientset, deploymentList []k8s.RemoveDeploymentData) (err error) {
 	common.LOG.Info("批量删除deployment开始")
-	for _, v := range deploymentData {
+	for _, v := range deploymentList {
 		common.LOG.Info(fmt.Sprintf("delete deployment：%v, ns: %v", v.DeploymentName, v.Namespace))
 		err := client.AppsV1().Deployments(v.Namespace).Delete(
 			context.TODO(),
@@ -238,4 +240,135 @@ func RestartDeployment(client *kubernetes.Clientset, deploymentName string, name
 		return err
 	}
 	return nil
+}
+
+func RollbackDeployment(client *kubernetes.Clientset, deploymentName string, namespace string, reVersion int64) (err error) {
+	/*
+		该Api方法已移除, 不推荐使用 client.ExtensionsV1beta1().Deployments(namespace).Rollback(v1beta1.DeploymentRollback{})
+		https://github.com/kubernetes/kubernetes/pull/59970
+
+
+		Because of the removal of /rollback endpoint in apps/v1.Deployments, the example and kubectl, if switched to apps/v1.Deployments, need to do the rollback logic themselves. That includes:
+
+		1.List all ReplicaSets the Deployment owns
+		2.Find the ReplicaSet of a specific revision
+		3.Copy that ReplicaSet's template back to the Deployment's template
+
+		The rollback logic currently lives in Deployment controller code, which still uses extensions/v1beta1 Deployment client:
+		https://github.com/kubernetes/kubernetes/blob/ecc5eb67d965295db95ba2df5f3d3ff43a258a05/pkg/controller/deployment/rollback.go#L30-L69
+	*/
+	common.LOG.Info(fmt.Sprintf("应用：%v, 所属空间：%v, 版本回滚到%v", deploymentName, namespace, reVersion))
+	if reVersion < 0 {
+		return revisionNotFoundErr(reVersion)
+	}
+
+	deployment, err := client.AppsV1().Deployments(namespace).Get(context.TODO(), deploymentName, metav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to retrieve Deployment %s: %v", deploymentName, err)
+	}
+	if deployment.Spec.Paused {
+		return fmt.Errorf("skipped rollback (deployment \"%s\" is paused)", deployment.Name)
+	}
+	// If rollback revision is 0, rollback to the last revision
+	if reVersion == 0 {
+		common.LOG.Warn("传递回滚版本号是：0, 默认回退上一次版本！")
+		rsForRevision, err := deploymentRevision(deployment, client, reVersion)
+		if err != nil {
+			return err
+		}
+
+		for k, _ := range rsForRevision.Annotations {
+			if k == "deployment.kubernetes.io/revision" {
+				deployment.Spec.Template = rsForRevision.Spec.Template
+				if _, rollbackErr := client.AppsV1().Deployments(namespace).Update(context.TODO(), deployment, metav1.UpdateOptions{}); rollbackErr != nil {
+					common.LOG.Error("版本回退失败", zap.Any("err: ", err))
+					return rollbackErr
+				}
+				common.LOG.Info("The rollback task was executed successfully")
+				return nil
+			}
+		}
+	}
+
+	selector, err := metav1.LabelSelectorAsSelector(deployment.Spec.Selector)
+	if err != nil {
+		return err
+	}
+	options := metav1.ListOptions{LabelSelector: selector.String()}
+
+	replicaSetList, err := client.AppsV1().ReplicaSets(namespace).List(context.TODO(), options)
+	if err != nil {
+		return err
+	}
+	if len(replicaSetList.Items) <= 1 {
+		return revisionNotFoundErr(reVersion)
+	}
+
+	for _, v := range replicaSetList.Items {
+		// reVersion = nginx-56656dc477 Or  reVersion = 5
+		// v.ObjectMeta.Name Or v.Annotations["deployment.kubernetes.io/revision"] == reVersion
+		currentVersion := tools.ParseStringToInt64(v.Annotations["deployment.kubernetes.io/revision"])
+		if currentVersion == reVersion {
+			deployment.Spec.Template = v.Spec.Template
+			if _, rollbackErr := client.AppsV1().Deployments(namespace).Update(context.TODO(), deployment, metav1.UpdateOptions{}); rollbackErr != nil {
+				common.LOG.Error("版本回退失败", zap.Any("err: ", err))
+				return rollbackErr
+			}
+			common.LOG.Info("The rollback task was executed successfully")
+			return nil
+		}
+	}
+	return nil
+}
+
+func deploymentRevision(deployment *apps.Deployment, c kubernetes.Interface, toRevision int64) (revision *apps.ReplicaSet, err error) {
+
+	_, allOldRSs, newRS, err := deploymentutil.GetAllReplicaSets(deployment, c.AppsV1())
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve replica sets from deployment %s: %v", deployment.Name, err)
+	}
+	allRSs := allOldRSs
+	if newRS != nil {
+		allRSs = append(allRSs, newRS)
+	}
+
+	var (
+		latestReplicaSet   *apps.ReplicaSet
+		latestRevision     = int64(-1)
+		previousReplicaSet *apps.ReplicaSet
+		previousRevision   = int64(-1)
+	)
+	for _, rs := range allRSs {
+		if v, err := deploymentutil.Revision(rs); err == nil {
+			if toRevision == 0 {
+				if latestRevision < v {
+					// newest one we've seen so far
+					previousRevision = latestRevision
+					previousReplicaSet = latestReplicaSet
+					latestRevision = v
+					latestReplicaSet = rs
+				} else if previousRevision < v {
+					// second newest one we've seen so far
+					previousRevision = v
+					previousReplicaSet = rs
+				}
+			} else if toRevision == v {
+				return rs, nil
+			}
+		}
+	}
+
+	if toRevision > 0 {
+		return nil, revisionNotFoundErr(toRevision)
+	}
+
+	if previousReplicaSet == nil {
+		return nil, fmt.Errorf("no rollout history found for deployment %q", deployment.Name)
+	}
+	return previousReplicaSet, nil
+}
+
+func revisionNotFoundErr(r int64) error {
+	common.LOG.Warn("没有找到可回滚的版本！")
+	return fmt.Errorf("unable to find specified revision %v in history", r)
 }

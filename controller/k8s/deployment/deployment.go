@@ -45,15 +45,15 @@ func DeleteCollectionDeployment(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var deploymentData []k8s.RemoveDeploymentData
+	var deploymentList []k8s.RemoveDeploymentData
 
-	err = controller.CheckParams(c, &deploymentData)
+	err = controller.CheckParams(c, &deploymentList)
 	if err != nil {
 		response.FailWithMessage(http.StatusNotFound, err.Error(), c)
 		return
 	}
 
-	err = deployment.DeleteCollectionDeployment(client, deploymentData)
+	err = deployment.DeleteCollectionDeployment(client, deploymentList)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -112,7 +112,7 @@ func ScaleDeployment(c *gin.Context) {
 		return
 	}
 
-	err = deployment.ScaleDeployment(client, scaleData.Namespace, scaleData.DeploymentName, scaleData.ScaleNumber)
+	err = deployment.ScaleDeployment(client, scaleData.Namespace, scaleData.DeploymentName, *scaleData.ScaleNumber)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -176,12 +176,10 @@ func DetailDeploymentController(c *gin.Context) {
 	}
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-
 	if name == "" || namespace == "" {
 		response.FailWithMessage(response.ParamError, err.Error(), c)
 		return
 	}
-
 	data, err := deployment.GetDeploymentDetail(client, namespace, name)
 
 	if err != nil {
@@ -189,4 +187,26 @@ func DetailDeploymentController(c *gin.Context) {
 		return
 	}
 	response.OkWithData(data, c)
+}
+
+func RollBackDeploymentController(c *gin.Context) {
+	client, err := Init.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.ParamError, err.Error(), c)
+		return
+	}
+	var rollback k8s.RollbackDeployment
+
+	rollbackParamsErr := controller.CheckParams(c, &rollback)
+	if rollbackParamsErr != nil {
+		response.FailWithMessage(response.ParamError, rollbackParamsErr.Error(), c)
+		return
+	}
+	rollbackErr := deployment.RollbackDeployment(client, rollback.DeploymentName, rollback.Namespace, *rollback.ReVersion)
+
+	if rollbackErr != nil {
+		response.FailWithMessage(response.ERROR, rollbackErr.Error(), c)
+		return
+	}
+	response.Ok(c)
 }

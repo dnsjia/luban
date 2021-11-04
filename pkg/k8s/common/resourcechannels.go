@@ -1,17 +1,3 @@
-// Copyright 2017 The Kubernetes Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package common
 
 import (
@@ -49,6 +35,18 @@ type ResourceChannels struct {
 
 	// List and error channels to Events.
 	EventList EventListChannel
+
+	// List and error channels to ConfigMaps.
+	ConfigMapList ConfigMapListChannel
+
+	// List and error channels to Secrets.
+	SecretList SecretListChannel
+
+	// List and error channels to PersistentVolumes
+	PersistentVolumeList PersistentVolumeListChannel
+
+	// List and error channels to PersistentVolumeClaims
+	PersistentVolumeClaimList PersistentVolumeClaimListChannel
 }
 
 // EventListChannel is a list and error channels to Events.
@@ -59,18 +57,21 @@ type EventListChannel struct {
 
 // GetEventListChannel returns a pair of channels to an Event list and errors that both must be read
 // numReads times.
-func GetEventListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) EventListChannel {
+func GetEventListChannel(client *client.Clientset, nsQuery *NamespaceQuery, numReads int) EventListChannel {
 	return GetEventListChannelWithOptions(client, nsQuery, k8s.ListEverything, numReads)
 }
 
 // GetEventListChannelWithOptions is GetEventListChannel plus list options.
-func GetEventListChannelWithOptions(client client.Interface, nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) EventListChannel {
+func GetEventListChannelWithOptions(client *client.Clientset, nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) EventListChannel {
 	channel := EventListChannel{
 		List:  make(chan *v1.EventList, numReads),
 		Error: make(chan error, numReads),
 	}
 
 	go func() {
+		// 原options是根据label过滤来过滤Event事件信息, 代码deployment_detail + L78
+		// TODO 改成field过滤
+		//options.FieldSelector = fmt.Sprintf("involvedObject.name=%v", deploymentName)
 		list, err := client.CoreV1().Events(nsQuery.ToRequestParam()).List(context.TODO(), options)
 		var filteredItems []v1.Event
 		for _, item := range list.Items {
@@ -189,6 +190,125 @@ func GetReplicaSetListChannelWithOptions(client client.Interface, nsQuery *Names
 			}
 		}
 		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// ConfigMapListChannel is a list and error channels to ConfigMaps.
+type ConfigMapListChannel struct {
+	List  chan *v1.ConfigMapList
+	Error chan error
+}
+
+// GetConfigMapListChannel returns a pair of channels to a ConfigMap list and errors that both must be read
+// numReads times.
+func GetConfigMapListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) ConfigMapListChannel {
+
+	channel := ConfigMapListChannel{
+		List:  make(chan *v1.ConfigMapList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.CoreV1().ConfigMaps(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []v1.ConfigMap
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// SecretListChannel is a list and error channels to Secrets.
+type SecretListChannel struct {
+	List  chan *v1.SecretList
+	Error chan error
+}
+
+// GetSecretListChannel returns a pair of channels to a Secret list and errors that
+// both must be read numReads times.
+func GetSecretListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) SecretListChannel {
+
+	channel := SecretListChannel{
+		List:  make(chan *v1.SecretList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.CoreV1().Secrets(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []v1.Secret
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// PersistentVolumeListChannel is a list and error channels to PersistentVolumes.
+type PersistentVolumeListChannel struct {
+	List  chan *v1.PersistentVolumeList
+	Error chan error
+}
+
+// GetPersistentVolumeListChannel returns a pair of channels to a PersistentVolume list and errors
+// that both must be read numReads times.
+func GetPersistentVolumeListChannel(client client.Interface,
+	numReads int) PersistentVolumeListChannel {
+	channel := PersistentVolumeListChannel{
+		List:  make(chan *v1.PersistentVolumeList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.CoreV1().PersistentVolumes().List(context.TODO(), k8s.ListEverything)
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// PersistentVolumeClaimListChannel is a list and error channels to PersistentVolumeClaims.
+type PersistentVolumeClaimListChannel struct {
+	List  chan *v1.PersistentVolumeClaimList
+	Error chan error
+}
+
+// GetPersistentVolumeClaimListChannel returns a pair of channels to a PersistentVolumeClaim list
+// and errors that both must be read numReads times.
+func GetPersistentVolumeClaimListChannel(client client.Interface, nsQuery *NamespaceQuery,
+	numReads int) PersistentVolumeClaimListChannel {
+
+	channel := PersistentVolumeClaimListChannel{
+		List:  make(chan *v1.PersistentVolumeClaimList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.CoreV1().PersistentVolumeClaims(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
 		for i := 0; i < numReads; i++ {
 			channel.List <- list
 			channel.Error <- err
