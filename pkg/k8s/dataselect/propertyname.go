@@ -10,4 +10,8 @@ const (
 	CreationTimestampProperty = "creationTimestamp"
 	NamespaceProperty         = "namespace"
 	StatusProperty            = "status"
+	TypeProperty              = "type"
+	FirstSeenProperty         = "firstSeen"
+	LastSeenProperty          = "lastSeen"
+	ReasonProperty            = "reason"
 )

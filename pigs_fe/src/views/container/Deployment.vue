@@ -84,7 +84,6 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
-<!--                  <span @click="rollbackVersion(text)">回滚上一版本</span>-->
                   <a-popconfirm placement="left" ok-text="确定" cancel-text="取消" @confirm="rollbackVersion(text)">
                     <template #title>
                       <span>你确定要回退到上一个版本吗？</span><br/>
@@ -106,7 +105,7 @@
 
     <div style="float:left;padding: 10px 0 0 20px">
       <a-space>
-        <a-button :disabled="!hasSelected" @click="RemoveDeployment">批量删除</a-button>
+        <a-button :disabled="!hasSelected" @click="CollectionRemoveDeployment">批量删除</a-button>
       </a-space>
     </div>
 
@@ -388,7 +387,7 @@ export default {
 
     };
 
-    const RemoveDeployment = () => {
+    const CollectionRemoveDeployment = () => {
       data.removeDeploymentVisible = true
     }
     const removeDeploymentOnSubmit = () => {
@@ -503,7 +502,6 @@ export default {
           name: text.objectMeta.name
         }
       });
-      // window.open(routeData.href, '_blank');
     }
     const rollbackVersion = (text) => {
       let cs = GetStorage()
@@ -534,7 +532,7 @@ export default {
       deploymentSearch,
       onShowSizeChangePage,
       onChangePage,
-      RemoveDeployment,
+      CollectionRemoveDeployment,
       removeDeploymentOnSubmit,
       removeDeploymentColumns,
       removeOneDeployment,

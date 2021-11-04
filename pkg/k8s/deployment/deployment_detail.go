@@ -133,7 +133,7 @@ func GetDeploymentDetail(client *kubernetes.Clientset, namespace string, deploym
 		MinReadySeconds:       deployment.Spec.MinReadySeconds,
 		RollingUpdateStrategy: rollingUpdateStrategy,
 		RevisionHistoryLimit:  deployment.Spec.RevisionHistoryLimit,
-		Events:                events.Items,
+		Events:                events,
 		HistoryVersion:        getDeploymentHistory(namespace, deploymentName, rawRs.Items),
 	}, nil
 }

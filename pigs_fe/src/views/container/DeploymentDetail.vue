@@ -107,26 +107,12 @@
               </a-table>
             </div>
 
-          <br/>
-          <a-tabs v-model:activeKey="data.workload" @change="callback">
-
-            <a-tab-pane key="1" tab="容器组">
-              功能开发中
-            </a-tab-pane>
-
-            <a-tab-pane key="2" tab="访问方式" force-render>
-              功能开发中
-            </a-tab-pane>
-
-          </a-tabs>
-          <br/>
           <!-- 事件 -->
           <div class="console-sub-title custom-sub-title top-sub clearfix">
             <div class="pull-left">
               <h4>事件信息</h4>
             </div>
           </div>
-
             <a-table
                 :columns="eventsColumns"
                 :data-source="data.deploymentEventData"
@@ -144,14 +130,18 @@
 
             </a-table>
 
+          <br/>
+          <a-tabs v-model:activeKey="data.workload" @change="callback">
 
-          <div class="console-sub-title custom-sub-title top-sub clearfix">
-            <div class="pull-left">
-              <h4>历史版本</h4>
-            </div>
-          </div>
+            <a-tab-pane key="1" tab="容器组">
+              功能开发中
+            </a-tab-pane>
 
-          <div>
+            <a-tab-pane key="2" tab="访问方式" force-render>
+              功能开发中
+            </a-tab-pane>
+
+            <a-tab-pane key="3" tab="历史版本" force-render>
               <a-table :columns="historyColumns" :data-source="data.historyData" size="middle" :rowKey="(record,index)=>{return index}" :pagination="false">
                 <!-- 	更新时间 -->
                 <template #create_time="{text}">
@@ -172,7 +162,9 @@
                 </template>
 
               </a-table>
-          </div>
+            </a-tab-pane>
+          </a-tabs>
+          <br/>
       </a-page-header>
     </div>
 </template>
