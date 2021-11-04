@@ -18,7 +18,6 @@ func GetDeploymentToService(client *kubernetes.Clientset, ns string, deploymentN
 		common.LOG.Error("获取deployment详情异常", zap.Any("err: ", err))
 		return nil, err
 	}
-
 	for k, v := range deploymentData.Selector {
 		selector := fmt.Sprintf("%v=%v", k, v)
 		common.LOG.Info(fmt.Sprintf("根据label过滤service: %v", selector))

@@ -131,3 +131,12 @@ func (p *PaginationQuery) IsValidPagination() bool {
 func (p *PaginationQuery) IsPageAvailable(itemsCount, startingIndex int) bool {
 	return itemsCount > startingIndex && p.ItemsPerPage > 0
 }
+
+// GenericDataSelect takes a list of GenericDataCells and DataSelectQuery and returns selected data as instructed by dsQuery.
+func GenericDataSelect(dataList []DataCell, dsQuery *DataSelectQuery) []DataCell {
+	SelectableData := DataSelector{
+		GenericDataList: dataList,
+		DataSelectQuery: dsQuery,
+	}
+	return SelectableData.Sort().Paginate().GenericDataList
+}

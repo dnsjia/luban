@@ -44,13 +44,13 @@
                 <span class="margin-right">: </span>
                 <span>{{ data.DetailData.strategy }}</span>
               </td>
-<!--              <td colspan="2">-->
-<!--                <span>选择器</span>-->
-<!--                <span class="margin-right">: </span>-->
-<!--                <span style="font-size: 12px; display: inline-block; white-space: normal; margin-bottom: 5px;" >-->
-<!--                <a-tag v-for="(label_k, label_v, index) in deploymentData.spec.selector.match_labels" style="background: #999999; color: white" :key="index">{{ label_v }}: {{ label_k }}</a-tag>-->
-<!--              </span>-->
-<!--              </td>-->
+              <td colspan="2">
+                <span>选择器</span>
+                <span class="margin-right">: </span>
+                <span style="font-size: 12px; display: inline-block;  margin-bottom: 5px;" >
+                <a-tag v-for="(label_k, label_v, index) in data.DetailData.selector" :key="index">{{ label_v }}: {{ label_k }}</a-tag>
+              </span>
+              </td>
             </tr>
 
             <tr>
@@ -101,50 +101,70 @@
                   :locale="{emptyText: '暂无数据'}"
               >
                 <!-- 	更新时间 -->
-
+                <template #lastProbeTime="{text}">
+                  {{ $filters.fmtTime(text.lastProbeTime) }}
+                </template>
               </a-table>
             </div>
 
-<!--          &lt;!&ndash; 事件 &ndash;&gt;-->
-<!--          <div class="console-sub-title custom-sub-title top-sub clearfix">-->
-<!--            <div class="pull-left">-->
-<!--              <h4>事件信息</h4>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <template>-->
-<!--            <a-spin size="large" :spinning="eventsLoading" >-->
-<!--              <a-table :columns="eventsColumns" :data-source="deploymentEventData.items" size="middle" :rowKey="(record,index)=>{return index}" :pagination="false">-->
-<!--                &lt;!&ndash; 	更新时间 &ndash;&gt;-->
-<!--                <span class="level-assess" slot="last_timestamp" slot-scope="text,record">-->
-<!--              <p>{{record.last_timestamp|fmtTime}}</p>-->
-<!--            </span>-->
-<!--              </a-table>-->
-<!--            </a-spin>-->
-<!--          </template>-->
+          <!-- 事件 -->
+          <div class="console-sub-title custom-sub-title top-sub clearfix">
+            <div class="pull-left">
+              <h4>事件信息</h4>
+            </div>
+          </div>
+            <a-table
+                :columns="eventsColumns"
+                :data-source="data.deploymentEventData"
+                :pagination="false"
+                :rowKey="item=>JSON.stringify(item)"
+                :locale="{emptyText: '可能所有事件已过期'}"
+                size="middle"
+            >
+                <!-- 	更新时间 -->
+                <template #lastTimestamp="{text}">
+                <span class="level-assess">
+                  <span> {{ $filters.fmtTime(text.lastTimestamp) }}</span>
+                </span>
+                </template>
 
-<!--          <div class="console-sub-title custom-sub-title top-sub clearfix">-->
-<!--            <div class="pull-left">-->
-<!--              <h4>历史版本</h4>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <template>-->
-<!--            <div>-->
-<!--              <a-spin size="large" :spinning="historyLoading" >-->
-<!--                <a-table :columns="historyColumns" :data-source="historyData" size="middle" :rowKey="(record,index)=>{return index}" :pagination="false">-->
-<!--                  &lt;!&ndash; 	更新时间 &ndash;&gt;-->
-<!--                  <span class="level-assess" slot="create_time" slot-scope="text,record">-->
-<!--              <p>{{record.create_time|fmtTime}}</p>-->
-<!--            </span>-->
-<!--                  <span class="level-assess" slot="action" slot-scope="text,record">-->
-<!--              <p>-->
-<!--                <a @click="rolloutDeployment(record)">回滚到该版本</a>-->
-<!--              </p>-->
-<!--            </span>-->
-<!--                </a-table>-->
-<!--              </a-spin>-->
-<!--            </div>-->
-<!--          </template>-->
-<!--        </template>-->
+            </a-table>
+
+          <br/>
+          <a-tabs v-model:activeKey="data.workload" @change="callback">
+
+            <a-tab-pane key="1" tab="容器组">
+              功能开发中
+            </a-tab-pane>
+
+            <a-tab-pane key="2" tab="访问方式" force-render>
+              功能开发中
+            </a-tab-pane>
+
+            <a-tab-pane key="3" tab="历史版本" force-render>
+              <a-table :columns="historyColumns" :data-source="data.historyData" size="middle" :rowKey="(record,index)=>{return index}" :pagination="false">
+                <!-- 	更新时间 -->
+                <template #create_time="{text}">
+                  <span class="level-assess">
+                     <span> {{ $filters.fmtTime(text.create_time) }}</span>
+                  </span>
+                </template>
+
+                <template #action="{text}">
+                  <a-popconfirm placement="left" ok-text="确定" cancel-text="取消" @confirm="rolloutDeployment(text)">
+                    <template #title>
+                      <span>你确定要回退应用版本吗？</span><br/>
+                      <span>版本号： {{ text.version }} </span>
+                    </template>
+                    <a>回滚到该版本</a>
+                  </a-popconfirm>
+
+                </template>
+
+              </a-table>
+            </a-tab-pane>
+          </a-tabs>
+          <br/>
       </a-page-header>
     </div>
 </template>
@@ -152,7 +172,7 @@
 <script>
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
-import {DeploymentDetail} from "../../api/k8s";
+import {DeploymentDetail, DeploymentRollBack} from "../../api/k8s";
 const deploymentStatusConditionsColumns = [
   {
     title: '类型',
@@ -164,18 +184,15 @@ const deploymentStatusConditionsColumns = [
   },
   {
     title: '更新时间',
-    // dataIndex: 'lastProbeTime',
     slots: {customRender: 'lastProbeTime'},
   },
   {
     title: '原因',
     dataIndex: 'reason',
-    // slots: {customRender: 'reason'},
   },
   {
     title: '消息',
     dataIndex: 'message',
-    // slots: {customRender: 'message'},
   },
 ]
 const historyColumns = [
@@ -185,17 +202,15 @@ const historyColumns = [
   },
   {
     title: '镜像',
-    dataIndex: 'images',
+    dataIndex: 'image',
   },
   {
     title: '创建时间',
-    dataIndex: 'create_time',
-    scopedSlots: { customRender: 'create_time' }
+    slots: {customRender: 'create_time'},
   },
   {
     title: '操作',
-    dataIndex: 'action',
-    scopedSlots: { customRender: 'action' }
+    slots: {customRender: 'action'},
   },
 ]
 const eventsColumns = [
@@ -205,7 +220,7 @@ const eventsColumns = [
   },
   {
     title: '对象',
-    dataIndex: 'involved_object.kind',
+    dataIndex: 'involvedObject.kind',
   },
   {
     title: '信息',
@@ -217,8 +232,7 @@ const eventsColumns = [
   },
   {
     title: '时间',
-    dataIndex: 'last_timestamp',
-    scopedSlots: { customRender: 'last_timestamp' }
+    slots: {customRender: 'lastTimestamp'},
   },
 ]
 export default {
@@ -227,7 +241,10 @@ export default {
     const message = inject('$message');
     const data = reactive({
       DetailData: [],
+      deploymentEventData: [],
+      historyData: [],
     })
+
     let router = useRoute()
     const GetStorage = () => {
       const cs = JSON.parse(localStorage.getItem("cluster"))
@@ -242,15 +259,31 @@ export default {
       clusterName: ""
     })
     const getDetail = (params) => {
-      console.log("param", router.query)
       DeploymentDetail(params).then(res => {
         if (res.errCode === 0){
           data.DetailData = res.data
+          data.deploymentEventData = res.data.events.items
+          data.historyData = res.data.historyVersion
         }else {
           message.error(res.errMsg)
         }
       })
     }
+
+    const rolloutDeployment = (params) => {
+      let cs = GetStorage()
+      DeploymentRollBack(cs.clusterId, {"namespace": params.namespace, "deploymentName": params.name, "reVersion": params.version}).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          getDetail(router.query)
+        }else {
+          message.error(res.errMsg)
+        }
+
+      })
+    }
+
+
 
 
     onMounted(() => {
@@ -264,6 +297,7 @@ export default {
       deploymentStatusConditionsColumns,
       historyColumns,
       eventsColumns,
+      rolloutDeployment,
     }
 
   }
