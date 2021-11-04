@@ -167,7 +167,7 @@
           <a-breadcrumb-item>{{ $route.meta.title }}</a-breadcrumb-item>
         </a-breadcrumb>
 
-        <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
+        <div>
           <router-view></router-view>
         </div>
 

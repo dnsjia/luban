@@ -22,14 +22,21 @@ func ListHostGroup(c *gin.Context) {
 func ListHost(c *gin.Context) {
 	//_ = CloudECS()
 	var ecs []mcmdb.VirtualMachine
+	treeId := c.DefaultQuery("treeId", "none")
+	if treeId == "none" {
+		common.DB.Find(&ecs)
+		response.OkWithData(&ecs, c)
+		return
+	}
+
 	id, err := strconv.Atoi(c.Query("treeId"))
 	if err != nil {
 		response.FailWithMessage(1001, "传入的参数有误！", c)
 		return
 	}
 
-	treeId := mcmdb.TreeMenu{ID: id}
-	if err := common.DB.Model(&treeId).Preload("Groups").Association("VirtualMachines").Find(&ecs); err != nil {
+	QueryTreeId := mcmdb.TreeMenu{ID: id}
+	if err := common.DB.Model(&QueryTreeId).Preload("Groups").Association("VirtualMachines").Find(&ecs); err != nil {
 		response.FailWithMessage(1000, "获取资产信息失败", c)
 		return
 	}

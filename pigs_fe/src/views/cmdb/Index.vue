@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-row type="flex">
-<!--      <a-col flex="100px">-->
-      <a-col :xs="20" :md="12" :lg="8" :xl="4">
+    <a-row :gutter="[8]" :wrap="true">
+      <a-col :span="5">
+<!--      <a-col :xs="20" :md="12" :lg="8" :xl="4">-->
         <!-- 资产树形控件开始 -->
-        <a-card :hoverable="true" title="资产分组">
+        <a-card title="资产分组">
           <template #extra>
             <a-tooltip>
               <template #title>右键点击分组可进行分组管理， 删除分组时请先删除主机。</template>
@@ -15,9 +15,9 @@
                 :tree-data="store.treeData"
                 v-model:expandedKeys="expandedKeys"
                 v-model:selectedKeys="selectedKeys">
-
               <template #title="{ id: treeKey, name }">
                 <a-dropdown :trigger="['contextmenu']">
+
                   <!-- 显示分组下ecs数量-->
                   <span>{{ name }}</span>
                   <template #overlay>
@@ -44,11 +44,11 @@
         <!-- 资产树形控件结束 -->
       </a-col>
 
-        <a-col flex="auto">
-          <!-- 资产列表开始 -->
+      <!-- 资产列表开始 -->
+      <a-col :span="19">
           <div style="padding-bottom: 18px; padding-left: 20px;">
             <a-space :size="18">
-              <a-button type="primary" :loading="false">同步主机</a-button>
+              <a-button type="primary" @click="syncECS">同步主机</a-button>
               <a-button>导入主机</a-button>
               <a-input-search
                   v-model:value="value"
@@ -57,9 +57,93 @@
                   @search="onSearch"/>
             </a-space>
 
+            <!--云资产同步抽屉-->
+            <a-drawer
+                title="云资源同步"
+                :width="420"
+                :visible="visible"
+                :keyboard="false"
+                :closable="false"
+                :maskClosable="false"
+                :body-style="{ paddingBottom: '80px' }"
+                :footer-style="{ textAlign: 'right' }"
+                @close="onClose">
+              <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
+                <a-row :gutter="16">
+                  <a-col :span="24">
+                    <a-form-item label="账户名称" name="name">
+                      <a-input v-model:value="form.name" placeholder="请输入账户名称" />
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row :gutter="16">
+                  <a-col :span="24">
+                    <a-form-item label="账户类型" name="type">
+                      <a-select v-model:value="form.type" placeholder="请选择云平台">
+                        <a-select-option value="aliyun">
+                          <span class="svg-text">
+                            <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
+                              <use xlink:href="#pigs-icon-aliyun"></use>
+                            </svg>&nbsp;&nbsp;阿里云
+                          </span>
+                          </a-select-option>
+                        <a-select-option value="tencent">
+                          <span class="svg-text">
+                            <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
+                              <use xlink:href="#pigs-icon-tengxunyun"></use>
+                            </svg>&nbsp;&nbsp;腾讯云
+                          </span>
+                        </a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row :gutter="16">
+                  <a-col :span="24">
+                    <a-form-item label="AccessKey ID" name="key">
+                      <a-input v-model:value="form.key" placeholder="请输入AccessKey ID" />
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row :gutter="16">
+                  <a-col :span="24">
+                    <a-form-item label="AccessKey Secret" name="secret">
+                      <a-input v-model:value="form.secret" placeholder="请输入AccessKey Secret" />
+                      <a :href="store.helpUrl" target="_blank">如何获取Key和Secret</a>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row :gutter="16">
+                  <a-col :span="24">
+                    <a-form-item label="备注" name="desc">
+                      <a-textarea v-model:value="form.desc" :rows="2" placeholder="请输入备注"/>
+                    </a-form-item>
+                  </a-col>
+                </a-row><br/><br/>
+                <a-row :gutter="16">
+                  <a-col :span="12">
+                    <div :style="{
+                        position: 'absolute',
+                        right: '30px',
+                        bottom: 0,
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'right',
+                        zIndex: 8,}">
+                      <a-button style="margin-right: 8px" type="primary" :loading="store.cloudBtnLoading" @click="cloudAccountBtn">
+                        提交
+                      </a-button>
+                      <a-button @click="onClose">取消</a-button>
+                    </div>
+                  </a-col>
+                </a-row>
+              </a-form>
+            </a-drawer>
+            <!--云资产同步结束-->
           </div>
           <div style="padding-left: 20px">
             <a-table
+                :rowKey='record=>record.id'
                 :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
                 :columns="columns"
                 :data-source="store.hostData"
@@ -164,12 +248,12 @@
                   </template>
                 </a-dropdown>
               </template>
-
             </a-table>
           </div>
           <!-- 资产列表结束 -->
         </a-col>
     </a-row>
+    <!--翻页-->
     <template>
       <h2>test</h2>
       <div class="float-right" style="padding: 10px 0;">
@@ -196,6 +280,8 @@ import {onBeforeMount, onMounted, computed, reactive, ref, watch, toRefs} from '
 import { cloneDeep } from 'lodash-es';
 import {getGroup} from "../../api/group";
 import {getHost} from "../../api/cmdb/ecs";
+import {CloudAccount} from "../../api/cloud/account"
+
 import Moment from 'moment'
 import {message} from "ant-design-vue";
 
@@ -268,7 +354,70 @@ export default {
       hostData: [],
       selectedRowKeys: [],
       loading: false,
+      helpUrl: "https://github.com/small-flying-pigs/pigs",
     })
+
+    const visible = ref(false);
+    const syncECS = () => {
+      visible.value = true;
+    };
+    const formRef = ref();
+    const form = reactive({
+      name: null,
+      type: undefined,
+      key: null,
+      secret: null,
+      desc: null,
+    });
+    const rules = {
+      name: [{
+        required: true,
+        message: '请输入账户名称',
+      }],
+      type: [{
+        required: true,
+        message: '请选择账户类型',
+      }],
+      key: [{
+        required: true,
+        message: '请输入AccessKey ID',
+      }],
+      secret: [{
+        required: true,
+        message: '请输入AccessKey Secret',
+      }],
+    };
+    // 添加云账号
+    const cloudAccountBtn = () => {
+      formRef.value
+          .validate()
+      .then(() => {
+        message.loading("正在测试云账号连通性...").then(() =>
+            CloudAccount({
+              "name": form.name,
+              "type": form.type,
+              "access_key": form.key,
+              "secret_key": form.secret,
+              "remark": form.desc,
+            }).then(res => {
+              if (res.errCode === 0){
+                message.success(res.msg)
+                onClose()
+              } else {
+                message.error(res.errMsg)
+              }
+            })
+        )
+
+      })
+
+
+    };
+    const onClose = () => {
+      formRef.value.resetFields()
+      visible.value = false;
+    };
+
     onBeforeMount(() =>{
 
     })
@@ -300,7 +449,6 @@ export default {
       Object.assign(store.treeData.value.filter(item => key === item.key)[0], editData[key])
       delete editData[key]
     }
-    console.log(ref("1"))
     const expandedKeys = ref(["0-0", "0-0-0"]);
     const selectedKeys = ref(["0-0", "0-0-0"]);
     const value = ref('');
@@ -318,10 +466,21 @@ export default {
       console.log(`treeKey: ${treeKey}, menuKey: ${menuKey}`);
     };
 
-
+    // 当分组展开时获取ecs资产列表
     watch(expandedKeys, (treeKey) => {
       console.log('expandedKeys： =======', treeKey);
-      // 当分组展开时获取ecs资产列表
+    });
+    // 监听资产同步form数据
+    watch(form, (formData) => {
+      if (formData.type === 'AliYun'){
+        store.helpUrl = "https://help.aliyun.com/document_detail/175967.html"
+      }else if (formData.type === 'tencent'){
+        store.helpUrl = "https://console.cloud.tencent.com/capi"
+      } else {
+        store.helpUrl = "https://github.com/small-flying-pigs/pigs"
+      }
+
+
     });
     // 删除分组
     function delGroup(key) {
@@ -427,6 +586,13 @@ export default {
       ...toRefs(store),
       start,
       onSelectChange,
+      visible,
+      syncECS,
+      form,
+      rules,
+      onClose,
+      formRef,
+      cloudAccountBtn,
       delHosts,
       //
       editData,
