@@ -6,8 +6,32 @@ import (
 	"time"
 )
 
+//
+const (
+	AliYun  string = "aliyun"
+	Tencent string = "tencent"
+	HuaWei  string = "huawei"
+	AWS     string = "aws"
+)
+
+// SupportedCloudVendors 实现了相应的云厂商插件
+var SupportedCloudVendors = []string{AliYun, Tencent, HuaWei, AWS}
+
+// 云同步任务同步状态
+const (
+	CloudSyncSuccess    string = "cloud_sync_success"
+	CloudSyncFail       string = "cloud_sync_fail"
+	CloudSyncInProgress string = "cloud_sync_in_progress"
+)
+
+// Region 云资产地域信息
+type Region struct {
+	RegionId   string `json:"region"`
+	RegionName string `json:"region_name"`
+}
+
 type CloudPlatform struct {
-	ID        int              `json:"id" gorm:"not null;primary_key"`
+	ID        int              `json:"id" gorm:"column:id;AUTO_INCREMENT;comment:主键"`
 	Name      string           `json:"name"`
 	Type      string           `json:"type"`
 	AccessKey string           `json:"access_key"`
