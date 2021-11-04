@@ -14,6 +14,7 @@ var (
 )
 
 func CloudECS() (err error) {
+
 	client, err := ecs.NewClientWithAccessKey("cn-hangzhou", "", "")
 
 	if err != nil {
