@@ -5,8 +5,43 @@ import (
 	"fmt"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
+	"pigs/models/k8s"
+	k8scommon "pigs/pkg/k8s/common"
+	"pigs/pkg/k8s/dataselect"
 )
+
+// EmptyEventList is a empty list of events.
+var EmptyEventList = &k8scommon.EventList{
+	Events: make([]k8scommon.Event, 0),
+	ListMeta: k8s.ListMeta{
+		TotalItems: 0,
+	},
+}
+
+// ToEvent converts event api Event to Event model object.
+func ToEvent(event v1.Event) k8scommon.Event {
+	result := k8scommon.Event{
+		ObjectMeta:         k8s.NewObjectMeta(event.ObjectMeta),
+		TypeMeta:           k8s.NewTypeMeta(k8s.ResourceKindEvent),
+		Message:            event.Message,
+		SourceComponent:    event.Source.Component,
+		SourceHost:         event.Source.Host,
+		SubObject:          event.InvolvedObject.FieldPath,
+		SubObjectKind:      event.InvolvedObject.Kind,
+		SubObjectName:      event.InvolvedObject.Name,
+		SubObjectNamespace: event.InvolvedObject.Namespace,
+		Count:              event.Count,
+		FirstSeen:          event.FirstTimestamp,
+		LastSeen:           event.LastTimestamp,
+		Reason:             event.Reason,
+		Type:               event.Type,
+	}
+
+	return result
+}
 
 // FailedReasonPartials  is an array of partial strings to correctly filter warning events.
 // Have to be lower case for correct case insensitive comparison.
@@ -55,4 +90,97 @@ func FillEventsType(events []v1.Event) []v1.Event {
 	}
 
 	return events
+}
+
+// GetResourceEvents gets events associated to specified resource.
+func GetResourceEvents(client *kubernetes.Clientset, dsQuery *dataselect.DataSelectQuery, namespace, name string) (*k8scommon.EventList, error) {
+	resourceEvents, err := GetEvents(client, namespace, name)
+
+	if err != nil {
+		return EmptyEventList, err
+	}
+
+	events := CreateEventList(resourceEvents, dsQuery)
+	return &events, nil
+}
+
+// CreateEventList converts array of api events to common EventList structure
+func CreateEventList(events []v1.Event, dsQuery *dataselect.DataSelectQuery) k8scommon.EventList {
+	eventList := k8scommon.EventList{
+		Events:   make([]k8scommon.Event, 0),
+		ListMeta: k8s.ListMeta{TotalItems: len(events)},
+	}
+
+	events = fromCells(dataselect.GenericDataSelect(toCells(events), dsQuery))
+	for _, event := range events {
+		eventDetail := ToEvent(event)
+		eventList.Events = append(eventList.Events, eventDetail)
+	}
+
+	return eventList
+}
+
+// The code below allows to perform complex data section on []api.Event
+
+type EventCell v1.Event
+
+func (self EventCell) GetProperty(name dataselect.PropertyName) dataselect.ComparableValue {
+	switch name {
+	case dataselect.NameProperty:
+		return dataselect.StdComparableString(self.ObjectMeta.Name)
+	case dataselect.CreationTimestampProperty:
+		return dataselect.StdComparableTime(self.ObjectMeta.CreationTimestamp.Time)
+	case dataselect.FirstSeenProperty:
+		return dataselect.StdComparableTime(self.FirstTimestamp.Time)
+	case dataselect.LastSeenProperty:
+		return dataselect.StdComparableTime(self.LastTimestamp.Time)
+	case dataselect.NamespaceProperty:
+		return dataselect.StdComparableString(self.ObjectMeta.Namespace)
+	case dataselect.ReasonProperty:
+		return dataselect.StdComparableString(self.Reason)
+	default:
+		// if name is not supported then just return a constant dummy value, sort will have no effect.
+		return nil
+	}
+}
+
+func toCells(std []v1.Event) []dataselect.DataCell {
+	cells := make([]dataselect.DataCell, len(std))
+	for i := range std {
+		cells[i] = EventCell(std[i])
+	}
+	return cells
+}
+
+func fromCells(cells []dataselect.DataCell) []v1.Event {
+	std := make([]v1.Event, len(cells))
+	for i := range std {
+		std[i] = v1.Event(cells[i].(EventCell))
+	}
+	return std
+}
+
+// GetEvents gets events associated to resource with given name.
+func GetEvents(client *kubernetes.Clientset, namespace, resourceName string) ([]v1.Event, error) {
+	fieldSelector, err := fields.ParseSelector("involvedObject.name" + "=" + resourceName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	channels := &k8scommon.ResourceChannels{
+		EventList: k8scommon.GetEventListChannelWithOptions(client, k8scommon.NewSameNamespaceQuery(namespace),
+			metaV1.ListOptions{
+				LabelSelector: labels.Everything().String(),
+				FieldSelector: fieldSelector.String(),
+			},
+			1),
+	}
+
+	eventList := <-channels.EventList.List
+	if err := <-channels.EventList.Error; err != nil {
+		return nil, err
+	}
+
+	return FillEventsType(eventList.Items), nil
 }

@@ -25,3 +25,8 @@ export const DeploymentDetail = (params) => get('/api/v1/k8s/deployment/detail',
 export const DeploymentRollBack = (clusterId, params) => post('/api/v1/k8s/deployment/rollback?clusterId=' + clusterId, params)
 
 export const GetDeploymentToService = (clusterId, params) => post('/api/v1/k8s/deployment/service?clusterId=' + clusterId, params)
+
+export const GetPodsList = (clusterId, params) => get('/api/v1/k8s/pod?clusterId=' + clusterId, params)
+export const DeleteCollectionPods = (clusterId, params) => post('/api/v1/k8s/pods?clusterId=' + clusterId, params)
+export const DeletePod = (clusterId, params) => post('/api/v1/k8s/pod/delete?clusterId=' + clusterId, params)
+export const PodDetail = (params) => get('/api/v1/k8s/pod/detail', params)

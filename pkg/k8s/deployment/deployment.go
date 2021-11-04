@@ -2,7 +2,6 @@ package deployment
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"go.uber.org/zap"
 	apps "k8s.io/api/apps/v1"
@@ -165,9 +164,9 @@ func getDeploymentStatus(deployment *apps.Deployment) DeploymentStatus {
 	}
 }
 
-func DeleteCollectionDeployment(client *kubernetes.Clientset, deploymentData []k8s.RemoveDeploymentData) (err error) {
+func DeleteCollectionDeployment(client *kubernetes.Clientset, deploymentList []k8s.RemoveDeploymentData) (err error) {
 	common.LOG.Info("批量删除deployment开始")
-	for _, v := range deploymentData {
+	for _, v := range deploymentList {
 		common.LOG.Info(fmt.Sprintf("delete deployment：%v, ns: %v", v.DeploymentName, v.Namespace))
 		err := client.AppsV1().Deployments(v.Namespace).Delete(
 			context.TODO(),
@@ -277,8 +276,7 @@ func RollbackDeployment(client *kubernetes.Clientset, deploymentName string, nam
 		if err != nil {
 			return err
 		}
-		rsJson, _ := json.Marshal(rsForRevision)
-		fmt.Printf("rsJson:%s\n", rsJson)
+
 		for k, _ := range rsForRevision.Annotations {
 			if k == "deployment.kubernetes.io/revision" {
 				deployment.Spec.Template = rsForRevision.Spec.Template

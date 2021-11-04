@@ -113,3 +113,6 @@ func NewDataSelectQuery(paginationQuery *PaginationQuery, sortQuery *SortQuery, 
 		FilterQuery:     filterQuery,
 	}
 }
+
+// DefaultDataSelect downloads first 10 items from page 1 with no sort and no metrics.
+var DefaultDataSelect = NewDataSelectQuery(DefaultPagination, NoSort, NoFilter)

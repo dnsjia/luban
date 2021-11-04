@@ -39,6 +39,10 @@ func InitContainerRouter(r *gin.RouterGroup) {
 
 		K8sClusterRouter.GET("namespace", namespace.GetNamespaceList)
 
-		K8sClusterRouter.GET("pods", pods.GetPodsList)
+		K8sClusterRouter.GET("pod", pods.GetPodsListController)
+		K8sClusterRouter.POST("pods", pods.DeleteCollectionPodsController)
+		K8sClusterRouter.POST("pod/delete", pods.DeletePodController)
+
+		K8sClusterRouter.GET("pod/detail", pods.DetailPodController)
 	}
 }

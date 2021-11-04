@@ -45,15 +45,15 @@ func DeleteCollectionDeployment(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var deploymentData []k8s.RemoveDeploymentData
+	var deploymentList []k8s.RemoveDeploymentData
 
-	err = controller.CheckParams(c, &deploymentData)
+	err = controller.CheckParams(c, &deploymentList)
 	if err != nil {
 		response.FailWithMessage(http.StatusNotFound, err.Error(), c)
 		return
 	}
 
-	err = deployment.DeleteCollectionDeployment(client, deploymentData)
+	err = deployment.DeleteCollectionDeployment(client, deploymentList)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
