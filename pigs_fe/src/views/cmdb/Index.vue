@@ -472,7 +472,7 @@ export default {
     });
     // 监听资产同步form数据
     watch(form, (formData) => {
-      if (formData.type === 'AliYun'){
+      if (formData.type === 'aliyun'){
         store.helpUrl = "https://help.aliyun.com/document_detail/175967.html"
       }else if (formData.type === 'tencent'){
         store.helpUrl = "https://console.cloud.tencent.com/capi"
