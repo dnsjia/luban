@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"os"
 	"pigs/models"
+	"pigs/models/cmdb"
 )
 
 func MysqlTables(db *gorm.DB) {
@@ -18,9 +19,9 @@ func MysqlTables(db *gorm.DB) {
 		models.Dept{},
 		models.K8SCluster{},
 		//models.ClusterVersion{},
-		//cmdb.CloudPlatform{},
-		//cmdb.VirtualMachine{},
-		//cmdb.TreeMenu{},
+		cmdb.CloudPlatform{},
+		cmdb.VirtualMachine{},
+		cmdb.TreeMenu{},
 
 		//
 
