@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #FFFFFF">
   <a-tabs v-model:activeKey="data.workload" @change="callback">
 
     <a-tab-pane key="1" tab="无状态">

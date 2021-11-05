@@ -4,7 +4,6 @@
       <span class="table-viewer-topbar-title">基本信息</span>
     </div>
     <p></p>
-<!--    <a-spin :spinning="state.loading" size="large">-->
       <table class="table-default-viewer" v-if="state.nodeData.objectMeta">
         <tbody>
         <tr>
@@ -140,7 +139,6 @@
         </tr>
         </tbody>
       </table>
-<!--    </a-spin>-->
 
     <div class="table-viewer-header clearfix" style="clear: both">
       <span class="table-viewer-topbar-title">状态</span>
@@ -166,14 +164,8 @@
     <p></p>
     <a-spin :spinning="state.loading" size="large">
       <a-table :columns="containerColumns" :data-source="state.containerData" :locale="{emptyText: '当前没有容器组被调度到此节点'}">
-  <!--      <template #bodyCell="{ column, text }">-->
-  <!--        <template v-if="column.dataIndex === 'metadata.name'">-->
-  <!--          <a>{{ text }}</a>-->
-  <!--        </template>-->
-  <!--      </template>-->
-  <!--      <template #title>容器组</template>-->
         <template #containerTitle="{text}">
-          <a>{{text}}</a>
+          <a @click="podDetail(text)">{{text.metadata.name}}</a>
         </template>
 
         <template #containerStatus="{text}">
@@ -224,16 +216,15 @@
 import {inject, onMounted, reactive,} from "vue";
 import {useRoute} from "vue-router";
 import {NodeDetail} from '../../api/k8s'
-
+import {GetStorage} from "../../plugin/state/stroge"
+import router from "../../router";
 const containerColumns = [
   {
     title: '名称',
-    dataIndex: 'metadata.name',
     slots: {customRender: 'containerTitle'},
   },
   {
     title: '状态',
-    // dataIndex: 'status.phase',
     slots: {customRender: 'containerStatus'},
   },
   {
@@ -314,7 +305,7 @@ const conditionsColumns = [
 export default {
   name: "NodeDetail",
   setup() {
-    let router = useRoute()
+    let routers = useRoute()
     const state = reactive({
       nodeData: [],
       containerData: [],
@@ -339,10 +330,20 @@ export default {
 
       })
     }
-
+    const podDetail = (text) => {
+      console.log(111,text)
+      let cs = GetStorage()
+      router.push({
+        name: 'PodDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.metadata.namespace,
+          name: text.metadata.name
+        }
+      });
+    }
 
     onMounted(() => {
-      getNodeDetail(router.query)
+      getNodeDetail(routers.query)
     });
 
     return {
@@ -350,6 +351,7 @@ export default {
       containerColumns,
       eventColumns,
       conditionsColumns,
+      podDetail,
     };
   }
 }

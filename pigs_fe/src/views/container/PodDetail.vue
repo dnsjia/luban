@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #FFFFFF">
     <a-page-header style="border: 1px solid rgb(235, 237, 240)" :title="data.PodData.objectMeta.name" @back="() => $router.go(-1)" v-if="data.PodData.objectMeta">
 <!--      <template>-->
         <div class="console-sub-title custom-sub-title top-sub clearfix">
@@ -124,143 +124,151 @@
 
       <a-tabs default-active-key="1" @change="podDetailTablesCallBack" v-model:activeKey="data.podDetailTableValue">
         <a-tab-pane key="1" tab="容器">
-          <table class="table-default-viewer" style="margin: 0; border: none">
-            <thead>
-            <tr>
-              <th style="width: 20%; padding-left: 24px">名称</th>
-              <th style="padding-left: 24px">镜像</th>
-              <th style="width: 10%; padding-left: 24px">端口</th>
-            </tr>
-            </thead>
-            <tbody>
+<!--              <h3>容器 - {{ container.name }}</h3>-->
+          <div style="width: 100%">
+              <table class="table-default-viewer" style="margin: 0; border: none;">
+              <thead>
+              <tr>
+                <th style="width: 20%; padding-left: 24px">名称</th>
+                <th style="padding-left: 24px">镜像</th>
+                <th style="width: 10%; padding-left: 24px">端口</th>
+              </tr>
+              </thead>
 
-            <tr class="detail ng-hide">
               <template v-for="(container,i) in data.PodData.containers" :key="i">
-                <td>{{ container.name }}</td>
-                <td>{{ container.image }}</td>
-                <template v-for="(port, index) in container.ports" :key="index">
-                  <td>{{ port.protocol }}: {{ port.containerPort }}</td>
-                </template>
-              </template>
+                <tbody>
+                  <tr class="detail ng-hide">
+                    <td>{{ container.name }}</td>
+                    <td>{{ container.image }}</td>
+                    <template v-if="container.ports">
+                      <td>
+                        <template v-for="(port, index) in container.ports" :key="index">
+                          {{ port.protocol }}: {{ port.containerPort }}<br/>
+                        </template>
+                      </td>
 
-            </tr>
-            </tbody>
-          </table>
+                    </template>
+                    <template v-else-if="container.ports===''||container.ports===null">
+                      <td></td>
+                    </template>
+                    <br/>
+                  </tr>
+                  <tr class="detail ng-hide">
+                    <td colspan="3">
+                      <table class="container-table-default-viewer">
+                        <tbody>
+                        <tr class="detail ng-hide">
+                          <td style="width: 15%">镜像拉取策略</td>
+                          <td class="ng-binding">{{ container.imagePullPolicy }} </td>
+                        </tr>
+                        <tr class="ng-scope">
+                          <td>环境变量</td>
+                          <td>
+                            <div v-for="(env, i) in container.env" :key="i">
+                              <span class="ng-binding" style="color: red">{{ env.name }}: </span>
+                              <span>{{ env.value }}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="ng-scope">
+                          <td>所需资源</td>
+                          <td>
+                          <span class="margin-right ng-scope ng-binding" v-if="container.resource.requests && container.resource.requests.cpu">
+                            CPU: {{ container.resource.requests.cpu }}
+                          </span>
+                            <span class="ng-scope ng-binding" v-if="container.resource.requests && container.resource.requests.memory">
+                            Memory: {{ container.resource.requests.memory }}
+                          </span>
+                          </td>
+                        </tr>
+                        <tr class="ng-scope">
+                          <td>资源限制</td>
+                          <td>
+                          <span class="margin-right ng-scope ng-binding" v-if="container.resource.limits && container.resource.limits.cpu">
+                            CPU: {{ container.resource.limits.cpu }}
+                          </span>
+                            <span class="ng-scope ng-binding" v-if="container.resource.limits && container.resource.limits.memory">
+                            Memory: {{ container.resource.limits.memory }}
+                          </span>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  <br/>
+                </tbody>
+              </template>
+            </table>
+          </div>
           <br/>
-          <table class="container-table-default-viewer" style="width: 100%;">
-            <tbody>
-            <tr class="detail ng-hide">
-              <td style="width: 15%">镜像拉取策略</td>
-              <template v-for="(imagePolicy, imagePolicyIndex) in data.PodData.containers" :key="imagePolicyIndex">
-                <td class="ng-binding">{{ imagePolicy.imagePullPolicy }} </td>
-              </template>
-            </tr>
-            <tr class="ng-scope">
-              <td >环境变量</td>
-              <td>
-                <div class="ng-scope" v-for="(envKey, envIndex) in data.PodData.containers" :key="envIndex">
-                  <div v-for="(env, i) in envKey.env" :key="i">
-                    <span class="ng-binding" style="color: red">{{ env.name }}: </span>
-                    <span>{{ env.value }}</span>
-                  </div>
-
-                </div>
-              </td>
-            </tr>
-            <tr class="ng-scope">
-              <td>所需资源</td>
-              <td>
-                <template v-for="(container, containerIndex) in data.PodData.containers" :key="containerIndex">
-                    <span class="margin-right ng-scope ng-binding" v-if="container.resource.requests && container.resource.requests.cpu">
-                      CPU: {{ container.resource.requests.cpu }}
-                    </span>
-                        <span class="ng-scope ng-binding" v-if="container.resource.requests && container.resource.requests.memory">
-                      Memory: {{ container.resource.requests.memory }}
-                    </span>
-                </template>
-              </td>
-            </tr>
-            <tr class="ng-scope">
-              <td>资源限制</td>
-              <td>
-                <div v-for="(container, containerIndex) in data.PodData.containers" :key="containerIndex">
-                    <span class="margin-right ng-scope ng-binding" v-if="container.resource.limits && container.resource.limits.cpu">
-                      CPU: {{ container.resource.limits.cpu }}
-                    </span>
-                    <span class="ng-scope ng-binding" v-if="container.resource.limits && container.resource.limits.memory">
-                      Memory: {{ container.resource.limits.memory }}
-                    </span>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
         </a-tab-pane>
-
         <a-tab-pane key="3" tab="初始化容器">
           开发中
         </a-tab-pane>
         <a-tab-pane key="4" tab="存储">
-          <table class="table-default-viewer" style="width: 100%;">
-            <thead>
-            <tr>
-              <th>名称</th>
-              <th>类型</th>
-              <th>详情</th>
-              <th>挂载点</th>
-              <th>只读</th>
-            </tr>
-            </thead>
-            <tbody>
-              <template v-for="(containers, containersIndex) in data.PodData.containers" :key="containersIndex">
-                  <template v-for="(storage, volumeIndex) in containers.volumeMounts" :key="volumeIndex">
-                    <tr class="detail ng-hide" >
-                      <td>{{ storage.name }}</td>
-                      <td>
-                        <div v-if="storage.volume.hostPath">hostPath</div>
-                        <div v-else-if="storage.volume.persistentVolumeClaim">persistentVolumeClaim</div>
-                        <div v-else-if="storage.volume.secret">secret</div>
-                        <div v-else-if="storage.volume.nfs">nfs</div>
-                        <div v-else-if="storage.volume.glusterfs">glusterfs</div>
-                        <div v-else-if="storage.volume.emptyDir">emptyDir</div>
-                        <div v-else-if="storage.volume.cephfs">cephfs</div>
-                        <div v-else-if="storage.volume.configMap">configMap</div>
-                      </td>
+          <template v-for="(containers, containersIndex) in data.PodData.containers" :key="containersIndex">
+            <h3>容器 - {{ containers.name }}</h3>
+            <table class="table-default-viewer" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>名称</th>
+                  <th>类型</th>
+                  <th>详情</th>
+                  <th>挂载点</th>
+                  <th>只读</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(storage, volumeIndex) in containers.volumeMounts" :key="volumeIndex">
+                  <tr class="detail ng-hide" >
+                    <td>{{ storage.name }}</td>
+                    <td>
+                      <div v-if="storage.volume.hostPath">hostPath</div>
+                      <div v-else-if="storage.volume.persistentVolumeClaim">persistentVolumeClaim</div>
+                      <div v-else-if="storage.volume.secret">secret</div>
+                      <div v-else-if="storage.volume.nfs">nfs</div>
+                      <div v-else-if="storage.volume.glusterfs">glusterfs</div>
+                      <div v-else-if="storage.volume.emptyDir">emptyDir</div>
+                      <div v-else-if="storage.volume.cephfs">cephfs</div>
+                      <div v-else-if="storage.volume.configMap">configMap</div>
+                    </td>
 
-                      <td v-if="storage.volume.hostPath">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.hostPath" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.persistentVolumeClaim">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.persistentVolumeClaim" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.secret">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.secret" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.nfs">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.nfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.glusterfs">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.glusterfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.emptyDir">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.emptyDir" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.cephfs">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.cephfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
-                      <td v-if="storage.volume.configMap">
-                        <div v-for="(path_k, path_v, path_i) in storage.volume.configMap" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
-                      </td>
+                    <td v-if="storage.volume.hostPath">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.hostPath" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.persistentVolumeClaim">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.persistentVolumeClaim" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.secret">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.secret" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.nfs">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.nfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.glusterfs">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.glusterfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.emptyDir">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.emptyDir" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.cephfs">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.cephfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
+                    <td v-if="storage.volume.configMap">
+                      <div v-for="(path_k, path_v, path_i) in storage.volume.configMap" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
+                    </td>
 
-                      <td>{{ storage.mountPath }}</td>
-                      <td>{{ storage.readOnly }}</td>
-                    </tr>
-                  </template>
-              </template>
-            </tbody>
-          </table>
+                    <td>{{ storage.mountPath }}</td>
+                    <td>{{ storage.readOnly }}</td>
+                    <br/>
+                  </tr>
+                </template>
+                <br/>
+              </tbody>
+            </table>
+          </template>
         </a-tab-pane>
-
         <a-tab-pane key="5" tab="存活&就绪">
             <template v-for="(probe, probeIndex) in data.PodData.containers" :key="probeIndex">
               <a-card title="应用存活探针" :bordered="false" >
@@ -474,6 +482,7 @@ const podEventsColumns = [
   {
     title: '信息',
     dataIndex: 'message',
+    width: '900px',
   },
   {
     title: '原因',
@@ -544,7 +553,9 @@ export default {
         data.podDetailTableValue = 1
       }
     }
-
+    const podCollapse = (val) => {
+      console.log(val)
+    }
     onMounted(getWorkloadTable)
     onMounted(() => {
       getPodDetail(router.query);
@@ -555,6 +566,7 @@ export default {
       podStatusConditionsColumns,
       podEventsColumns,
       podDetailTablesCallBack,
+      podCollapse,
     }
   }
 }
@@ -579,6 +591,9 @@ export default {
   padding: 11px 20px;
   border: 1px solid #eeeeee;
   background-color: #f9f9f9;
+}
+.container-table-default-viewer {
+  width: 100%;
 }
 .margin-right, .margin-right-1 {
   margin-right: 8px !important;
