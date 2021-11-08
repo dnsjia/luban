@@ -191,7 +191,7 @@
             <a>编辑</a>
             <a>终端</a>
             <a>日志</a>
-            <a style="color:red;">删除</a>
+            <a style="color:red;" @click="deletePod(text)">删除</a>
           </a-space>
         </template>
       </a-table>
@@ -209,13 +209,29 @@
       </a-table>
     </a-spin>
 
+
+    <template>
+      <div>
+        <a-modal v-model:visible="data.deletePodVisible" title="容器 (Container) "
+                 @ok="deletePodSubmit" cancelText="取消"
+                 okText="确定" :keyboard="false" :maskClosable="false">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>确认删除 {{ data.deletePodData.metadata.name }} 容器？</p>
+          </a-space>
+        </a-modal>
+      </div>
+    </template>
+
   </div>
 </template>
 
 <script>
 import {inject, onMounted, reactive,} from "vue";
 import {useRoute} from "vue-router";
-import {NodeDetail} from '../../api/k8s'
+import {DeletePod, NodeDetail} from '../../api/k8s'
 import {GetStorage} from "../../plugin/state/stroge"
 import router from "../../router";
 const containerColumns = [
@@ -315,6 +331,10 @@ export default {
       loading: true,
 
     });
+    const data = reactive({
+      deletePodVisible: false,
+      deletePodData: [],
+    })
     const message = inject('$message');
     const getNodeDetail = (params) => {
       NodeDetail(params).then(res => {
@@ -331,7 +351,6 @@ export default {
       })
     }
     const podDetail = (text) => {
-      console.log(111,text)
       let cs = GetStorage()
       router.push({
         name: 'PodDetail', query: {
@@ -341,7 +360,25 @@ export default {
         }
       });
     }
-
+    const deletePod = (text) => {
+      data.deletePodData = text
+      data.deletePodVisible = true
+    }
+    const deletePodSubmit = () => {
+      let cs = GetStorage()
+      let delParams = {
+        "podName": data.deletePodData.metadata.name,
+        "namespace": data.deletePodData.metadata.namespace,
+      }
+      DeletePod(cs.clusterId, delParams).then(res => {
+        if (res.errCode === 0) {
+          message.success("删除成功")
+          data.deletePodVisible = false
+        } else {
+          message.error(res.errMsg)
+        }
+      })
+    }
     onMounted(() => {
       getNodeDetail(routers.query)
     });
@@ -352,6 +389,9 @@ export default {
       eventColumns,
       conditionsColumns,
       podDetail,
+      data,
+      deletePod,
+      deletePodSubmit,
     };
   }
 }
@@ -416,5 +456,22 @@ export default {
   padding: 8px 16px;
   height: 32px;
   line-height: 14px;
+}
+/* 先画个圆圈 */
+.circular {
+  width: 30px;
+  height: 30px;
+  background-color: #F90;
+  border-radius: 50px;
+}
+
+/* 再画个感叹号 */
+.exclamation-point {
+  height: 15px;
+  line-height: 30px;
+  display: block;
+  color: #FFF;
+  text-align: center;
+  font-size: 20px
 }
 </style>
