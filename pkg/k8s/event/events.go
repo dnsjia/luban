@@ -1,24 +1,27 @@
 package event
 
 import (
+	"context"
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes"
 	"pigs/pkg/k8s/common"
 	"strings"
 )
 
-//func GetEvents(client *kubernetes.Clientset, namespace string, field string) (*v1.EventList, error) {
-//
-//	events, err := client.CoreV1().Events(namespace).List(context.TODO(),
-//		metav1.ListOptions{
-//			FieldSelector: field,
-//		},
-//	)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return events, nil
-//}
+func GetClusterNodeEvent(client *kubernetes.Clientset, namespace string, field string) (*v1.EventList, error) {
+
+	events, err := client.CoreV1().Events(namespace).List(context.TODO(),
+		metav1.ListOptions{
+			FieldSelector: field,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
 
 // GetPodsEventWarnings returns warning pod events by filtering out events targeting only given pods
 func GetPodsEventWarnings(events []v1.Event, pods []v1.Pod) []common.Event {

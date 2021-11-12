@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div style="background-color: #FFFFFF">
       <a-page-header style="border: 1px solid rgb(235, 237, 240)" :title="data.DetailData.objectMeta.name" @back="() => $router.go(-1)" v-if="data.DetailData.objectMeta">
 <!--        <template>-->
           <div class="console-sub-title custom-sub-title top-sub clearfix">

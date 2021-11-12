@@ -30,3 +30,13 @@ export const GetPodsList = (clusterId, params) => get('/api/v1/k8s/pod?clusterId
 export const DeleteCollectionPods = (clusterId, params) => post('/api/v1/k8s/pods?clusterId=' + clusterId, params)
 export const DeletePod = (clusterId, params) => post('/api/v1/k8s/pod/delete?clusterId=' + clusterId, params)
 export const PodDetail = (params) => get('/api/v1/k8s/pod/detail', params)
+
+export const GetStatefulSet = (clusterId, params) => get('/api/v1/k8s/statefulset?clusterId=' + clusterId, params)
+export const DeleteCollectionStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulsets?clusterId=' + clusterId, params)
+export const DeleteStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/delete?clusterId=' + clusterId, params)
+export const restartStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/restart?clusterId=' + clusterId, params)
+export const scaleStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/scale?clusterId=' + clusterId, params)
+export const StatefulSetDetail = (params) => get('/api/v1/k8s/statefulset/detail', params)
+
+export const GetDaemonSet = (clusterId, params) => get('/api/v1/k8s/daemonset?clusterId=' + clusterId, params)
+export const DeleteCollectionDaemonSet = (clusterId, params) => post('/api/v1/k8s/daemonsets?clusterId=' + clusterId, params)
