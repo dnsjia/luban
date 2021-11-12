@@ -1,27 +1,24 @@
-package event
+package k8s
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"pigs/controller/response"
 	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/event"
+	"pigs/pkg/k8s/namespace"
 )
 
-func Events(c *gin.Context) {
-
-	namespace := c.DefaultQuery("namespace", "")
+func GetNamespaceList(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	field := fmt.Sprintf("type=%s", "Warning")
-	data, err := event.GetEvents(client, namespace, field)
+	namespaces, err := namespace.GetNamespaceList(client)
+
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	response.OkWithData(data, c)
+	response.OkWithData(namespaces, c)
 	return
 }

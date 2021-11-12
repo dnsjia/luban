@@ -1,24 +1,28 @@
-package namespace
+package k8s
 
 import (
 	"github.com/gin-gonic/gin"
 	"pigs/controller/response"
 	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/namespace"
+	"pigs/pkg/k8s/daemonset"
+	"pigs/pkg/k8s/parser"
 )
 
-func GetNamespaceList(c *gin.Context) {
+func GetDaemonSetListController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	namespace, err := namespace.GetNamespaceList(client)
+	dataSelect := parser.ParseDataSelectPathParameter(c)
+	nsQuery := parser.ParseNamespacePathParameter(c)
 
+	data, err := daemonset.GetDaemonSetList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	response.OkWithData(namespace, c)
+
+	response.OkWithData(data, c)
 	return
 }

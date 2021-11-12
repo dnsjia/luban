@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #FFFFFF">
   <a-tabs v-model:activeKey="data.workload" @change="callback">
 
     <a-tab-pane key="1" tab="无状态">
@@ -7,11 +7,11 @@
     </a-tab-pane>
 
     <a-tab-pane key="2" tab="有状态" force-render>
-      功能开发中
+      <StatefulSet></StatefulSet>
     </a-tab-pane>
 
     <a-tab-pane key="3" tab="守护进程集">
-      功能开发中
+      <DaemonSet></DaemonSet>
     </a-tab-pane>
 
     <a-tab-pane key="4" tab="任务">
@@ -34,6 +34,8 @@
 import Deployment from "./Deployment";
 import Pods from "./Pods";
 import {onMounted, reactive} from "vue";
+import StatefulSet from "./StatefulSet";
+import DaemonSet from "./DaemonSet";
 export default {
   name: "WorkLoad",
   setup() {
@@ -61,7 +63,9 @@ export default {
   },
 
   components: {
+    DaemonSet,
     Deployment,
+    StatefulSet,
     Pods,
   }
 }
