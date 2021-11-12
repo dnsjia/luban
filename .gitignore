@@ -20,3 +20,4 @@ gin.log
 /gin.log
 /gva.exe
 /server.exe
+*.out

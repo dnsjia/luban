@@ -8,6 +8,7 @@ import (
 	"pigs/models/request"
 )
 
+// ListPlatform 云平台信息
 func ListPlatform(info request.PageInfo) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
@@ -20,6 +21,7 @@ func ListPlatform(info request.PageInfo) (err error, list interface{}, total int
 
 // CreateCloudAccount 创建云账号
 func CreateCloudAccount(account *cmdb.CloudPlatform) (err error) {
+
 	var cloud cmdb.CloudPlatform
 	results := common.DB.Table("cloud_platform").Where("access_key = ?", &account.AccessKey).First(&cloud)
 

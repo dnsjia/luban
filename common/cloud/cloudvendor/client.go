@@ -12,6 +12,8 @@ type VendorClient interface {
 	NewVendorClient(secretID, secretKey string) VendorClient
 	// GetRegions 获取地域列表
 	GetRegions() ([]*cmdb.Region, error)
+	// GetInstances 获取实例列表
+	GetInstances(region string) ([]cmdb.VirtualMachine, error)
 }
 
 // Register 注册云厂商客户端

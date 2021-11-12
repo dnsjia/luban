@@ -1,7 +1,6 @@
 package cloudvendor
 
 import (
-	"fmt"
 	"os"
 	"pigs/models/cmdb"
 	"testing"
@@ -30,6 +29,18 @@ func TestALiGetRegions(t *testing.T) {
 
 	for i, region := range regionSet {
 		t.Logf("i:%d, vpc:%#v\n", i, *region)
-		fmt.Println(*region)
+	}
+}
+
+func TestALiGetInstances(t *testing.T) {
+	region := "cn-hangzhou"
+	instancesInfo, err := aliTestClient.GetInstances(region)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("instances count:%#v\n", instancesInfo)
+	for i, instance := range instancesInfo {
+		t.Logf("i:%d, instance:%#v\n", i, instance)
 	}
 }
