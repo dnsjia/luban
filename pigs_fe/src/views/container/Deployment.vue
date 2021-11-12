@@ -172,10 +172,8 @@
             <a-input-number id="inputNumber" v-model:value="data.scaleDeploymentNumber" :min="0" :max="20"/>
           </a-space>
           <br/>
-          <span class="scaleDeployment" v-if="data.scaleDeploymentData">更新资源 {{
-              data.scaleDeploymentData.objectMeta.name
-            }} 的容器数量</span>
-          <p class="scaleDeployment" v-if="data.scaleDeploymentData">已创建 {{ data.scaleDeploymentData.pods.desired }} 个，
+          <span class="scaleDeployment" v-if="data.scaleDeploymentData!=''">更新资源 {{ data.scaleDeploymentData.objectMeta.name }} 的容器数量</span>
+          <p class="scaleDeployment" v-if="data.scaleDeploymentData!=''">已创建 {{ data.scaleDeploymentData.pods.desired }} 个，
             总共需要 {{ data.scaleDeploymentNumber }} 个</p>
         </a-modal>
       </div>
@@ -214,6 +212,7 @@ import {
 } from "../../api/k8s";
 import {SyncOutlined} from '@ant-design/icons-vue';
 import router from "../../router";
+import {GetStorage} from "../../plugin/state/stroge";
 
 const columns = [
   {
@@ -292,24 +291,12 @@ export default {
       filterBy: "",
       sortBy: "d,creationTimestamp",
     });
-    const cluster = reactive({
-      clusterId: "",
-      clusterName: ""
-    })
+
     const message = inject('$message');
 
     const state = reactive({
       selectedRowKeys: [],
     })
-
-    const GetStorage = () => {
-      const cs = JSON.parse(localStorage.getItem("cluster"))
-      if (cs !== null && cs !== undefined && cs !== "") {
-        cluster.clusterId = cs.clusterId
-        cluster.clusterName = cs.clusterName
-        return cluster
-      }
-    }
 
     const GetNamespaceList = () => {
       let cs = GetStorage()

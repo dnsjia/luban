@@ -8,6 +8,7 @@ import (
 	"pigs/controller/k8s/namespace"
 	"pigs/controller/k8s/node"
 	"pigs/controller/k8s/pods"
+	"pigs/controller/k8s/statefulset"
 )
 
 func InitContainerRouter(r *gin.RouterGroup) {
@@ -42,7 +43,13 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("pod", pods.GetPodsListController)
 		K8sClusterRouter.POST("pods", pods.DeleteCollectionPodsController)
 		K8sClusterRouter.POST("pod/delete", pods.DeletePodController)
-
 		K8sClusterRouter.GET("pod/detail", pods.DetailPodController)
+
+		K8sClusterRouter.GET("statefulset", statefulset.GetStatefulSetListController)
+		K8sClusterRouter.POST("statefulsets", statefulset.DeleteCollectionStatefulSetController)
+		K8sClusterRouter.POST("statefulset/delete", statefulset.DeleteStatefulSetController)
+		K8sClusterRouter.POST("statefulset/restart", statefulset.RestartStatefulSetController)
+		K8sClusterRouter.POST("statefulset/scale", statefulset.ScaleStatefulSetController)
+		K8sClusterRouter.GET("statefulset/detail", statefulset.DetailStatefulSetController)
 	}
 }
