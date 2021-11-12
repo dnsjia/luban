@@ -13,11 +13,11 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gookit/color v1.4.2
-	github.com/jonboulle/clockwork v0.2.2 // indirect
+	github.com/hibiken/asynq v0.19.0
+	github.com/hibiken/asynqmon v0.4.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
-	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/prometheus/common v0.31.1

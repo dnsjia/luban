@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-space>
+    <a-space style="padding-left: 10px">
       <a-select v-model:value="queryInfo.namespace" placeholder="请选择命名空间" show-search
                 @change="filterByNamespaceOnPods" style="min-width: 180px">
         <a-select-option
