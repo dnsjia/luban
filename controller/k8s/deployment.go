@@ -1,4 +1,4 @@
-package deployment
+package k8s
 
 import (
 	"fmt"

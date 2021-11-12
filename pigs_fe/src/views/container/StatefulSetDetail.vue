@@ -32,9 +32,9 @@
           <td>
             <span>创建时间</span>
             <span class="margin-right">: </span>
-            <div v-if="data.detailData.objectMeta">
+            <template v-if="data.detailData.objectMeta">
               <span> {{ $filters.fmtTime(data.detailData.objectMeta.creationTimestamp) }}</span>
-            </div>
+            </template>
 
           </td>
         </tr>
@@ -94,10 +94,10 @@
           size="middle"
       >
         <!-- 	更新时间 -->
-        <template #lastTimestamp="{text}">
-                <span class="level-assess">
-                  <span> {{ $filters.fmtTime(text.lastTimestamp) }}</span>
-                </span>
+        <template #lastSeen="{text}">
+            <span class="level-assess">
+              <span> {{ $filters.fmtTime(text.lastSeen) }}</span>
+            </span>
         </template>
 
       </a-table>
@@ -125,7 +125,26 @@ import {StatefulSetDetail} from "../../api/k8s";
 import {useRoute} from "vue-router";
 
 const eventsColumns = [
-
+  {
+    title: '类型',
+    dataIndex: 'type',
+  },
+  {
+    title: '对象',
+    dataIndex: 'typeMeta.kind',
+  },
+  {
+    title: '信息',
+    dataIndex: 'message',
+  },
+  {
+    title: '原因',
+    dataIndex: 'reason',
+  },
+  {
+    title: '时间',
+    slots: {customRender: 'lastSeen'},
+  },
 ]
 export default {
   name: "StatefulSetDetail",
@@ -137,12 +156,10 @@ export default {
       historyData: [],
     })
     const getDetail = (params) => {
-      console.log(params)
       StatefulSetDetail(params).then(res => {
         if (res.errCode === 0){
           data.detailData = res.data
-          // data.eventData = res.data.events.items
-          // data.historyData = res.data.historyVersion
+          data.eventData = res.data.events.events
         }else {
           message.error(res.errMsg)
         }

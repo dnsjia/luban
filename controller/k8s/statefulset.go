@@ -1,4 +1,4 @@
-package statefulset
+package k8s
 
 import (
 	"github.com/gin-gonic/gin"
@@ -135,7 +135,9 @@ func DetailStatefulSetController(c *gin.Context) {
 		response.FailWithMessage(response.ParamError, "缺少必要的参数", c)
 		return
 	}
-	data, err := statefulset.GetStatefulSetDetail(client, namespace, name)
+	dataSelect := parser.ParseDataSelectPathParameter(c)
+
+	data, err := statefulset.GetStatefulSetDetail(client, dataSelect, namespace, name)
 
 	if err != nil {
 		response.FailWithMessage(response.ERROR, err.Error(), c)
