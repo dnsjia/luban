@@ -72,10 +72,10 @@ type Container struct {
 	// Resource of a pod limit requests cpu mem
 	Resources v1.ResourceRequirements `json:"resource"`
 	// Probes
-	LivenessProbe  *v1.Probe `json:"livenessProbe"`
-	ReadinessProbe *v1.Probe `json:"readinessProbe"`
-	StartupProbe   *v1.Probe `json:"startupProbe"`
-
+	LivenessProbe  *v1.Probe     `json:"livenessProbe"`
+	ReadinessProbe *v1.Probe     `json:"readinessProbe"`
+	StartupProbe   *v1.Probe     `json:"startupProbe"`
+	Lifecycle      *v1.Lifecycle `json:"lifecycle"`
 	// ImagePullPolicy of a pod
 	ImagePullPolicy v1.PullPolicy `json:"imagePullPolicy"`
 }
@@ -241,6 +241,7 @@ func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps 
 			LivenessProbe:   container.LivenessProbe,
 			ReadinessProbe:  container.ReadinessProbe,
 			StartupProbe:    container.StartupProbe,
+			Lifecycle:       container.Lifecycle,
 			ImagePullPolicy: container.ImagePullPolicy,
 		})
 	}

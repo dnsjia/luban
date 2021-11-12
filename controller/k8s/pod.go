@@ -1,4 +1,4 @@
-package pods
+package k8s
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,10 +6,8 @@ import (
 	"pigs/controller/response"
 	"pigs/models/k8s"
 	"pigs/pkg/k8s/Init"
-	k8scommon "pigs/pkg/k8s/common"
 	"pigs/pkg/k8s/parser"
 	"pigs/pkg/k8s/pods"
-	"strings"
 )
 
 func GetPodsListController(c *gin.Context) {
@@ -21,12 +19,9 @@ func GetPodsListController(c *gin.Context) {
 	}
 
 	dataSelect := parser.ParseDataSelectPathParameter(c)
-	nameSpace := c.Query("namespace")
-	var p = &k8scommon.NamespaceQuery{
-		Namespaces: strings.Split(nameSpace, ","),
-	}
+	nsQuery := parser.ParseNamespacePathParameter(c)
 
-	data, err := pods.GetPodsList(client, p, dataSelect)
+	data, err := pods.GetPodsList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
