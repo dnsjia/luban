@@ -98,6 +98,16 @@ const routes = [
                 children: []
             },
             {
+                path: 'k8s/workload/daemonset/detail',
+                name: 'PodDetail',
+                component: () => import('../views/container/PodDetail.vue'),
+                meta: {
+                    title: '守护进程集详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
                 path: 'k8s/workload/pod/detail',
                 name: 'PodDetail',
                 component: () => import('../views/container/PodDetail.vue'),

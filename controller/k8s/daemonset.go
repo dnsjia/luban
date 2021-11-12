@@ -1,27 +1,28 @@
-package event
+package k8s
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"pigs/controller/response"
 	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/event"
+	"pigs/pkg/k8s/daemonset"
+	"pigs/pkg/k8s/parser"
 )
 
-func Events(c *gin.Context) {
-
-	namespace := c.Query("namespace")
+func GetDaemonSetListController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	field := fmt.Sprintf("type=%s", "Warning")
-	data, err := event.GetClusterNodeEvent(client, namespace, field)
+	dataSelect := parser.ParseDataSelectPathParameter(c)
+	nsQuery := parser.ParseNamespacePathParameter(c)
+
+	data, err := daemonset.GetDaemonSetList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
+
 	response.OkWithData(data, c)
 	return
 }

@@ -66,7 +66,8 @@ type StatefulSet struct {
 	// Valid options: Recreate, RollingUpdate
 	Strategy apps.StatefulSetUpdateStrategy `json:"strategy"`
 
-	ContainerImages     []string `json:"containerImages"`
+	ContainerImages []string `json:"containerImages"`
+
 	InitContainerImages []string `json:"initContainerImages"`
 }
 

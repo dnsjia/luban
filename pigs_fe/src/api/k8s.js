@@ -37,3 +37,6 @@ export const DeleteStatefulSet = (clusterId, params) => post('/api/v1/k8s/statef
 export const restartStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/restart?clusterId=' + clusterId, params)
 export const scaleStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/scale?clusterId=' + clusterId, params)
 export const StatefulSetDetail = (params) => get('/api/v1/k8s/statefulset/detail', params)
+
+export const GetDaemonSet = (clusterId, params) => get('/api/v1/k8s/daemonset?clusterId=' + clusterId, params)
+export const DeleteCollectionDaemonSet = (clusterId, params) => post('/api/v1/k8s/daemonsets?clusterId=' + clusterId, params)
