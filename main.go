@@ -6,16 +6,15 @@ import (
 	"io"
 	"os"
 	"os/signal"
-	"pigs/routers/cmdb"
-	"syscall"
-	"time"
-
 	"pigs/common"
-	"pigs/http"
+	phttp "pigs/http"
 	"pigs/middleware"
 	"pigs/models"
 	"pigs/routers"
+	"pigs/routers/cmdb"
 	"pigs/tools"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/toolkits/pkg/logger"
@@ -108,7 +107,7 @@ func endingProc(cancelFunc context.CancelFunc) {
 	// 执行清理工作
 	cancelFunc()
 	logger.Close()
-	http.Shutdown()
+	phttp.Shutdown()
 
 	fmt.Println("process stopped successfully")
 }
