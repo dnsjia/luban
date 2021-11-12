@@ -88,6 +88,16 @@ const routes = [
                 children: []
             },
             {
+                path: 'k8s/workload/statefulset/detail',
+                name: 'StatefulSetDetail',
+                component: () => import('../views/container/StatefulSetDetail.vue'),
+                meta: {
+                    title: '有状态应用详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
                 path: 'k8s/workload/pod/detail',
                 name: 'PodDetail',
                 component: () => import('../views/container/PodDetail.vue'),

@@ -13,12 +13,12 @@ func GetNamespaceList(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	namespace, err := namespace.GetNamespaceList(client)
+	namespaces, err := namespace.GetNamespaceList(client)
 
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	response.OkWithData(namespace, c)
+	response.OkWithData(namespaces, c)
 	return
 }

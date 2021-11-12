@@ -10,11 +10,9 @@ import (
 	"pigs/controller/response"
 	"pigs/models/k8s"
 	"pigs/pkg/k8s/Init"
-	k8scommon "pigs/pkg/k8s/common"
 	"pigs/pkg/k8s/deployment"
 	"pigs/pkg/k8s/parser"
 	"pigs/pkg/k8s/service"
-	"strings"
 )
 
 func GetDeploymentList(c *gin.Context) {
@@ -24,12 +22,9 @@ func GetDeploymentList(c *gin.Context) {
 		return
 	}
 	dataSelect := parser.ParseDataSelectPathParameter(c)
-	nameSpace := c.Query("namespace")
-	var p = &k8scommon.NamespaceQuery{
-		Namespaces: strings.Split(nameSpace, ","),
-	}
+	nsQuery := parser.ParseNamespacePathParameter(c)
 
-	data, err := deployment.GetDeploymentList(client, p, dataSelect)
+	data, err := deployment.GetDeploymentList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -177,7 +172,7 @@ func DetailDeploymentController(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	if name == "" || namespace == "" {
-		response.FailWithMessage(response.ParamError, err.Error(), c)
+		response.FailWithMessage(response.ParamError, "", c)
 		return
 	}
 	data, err := deployment.GetDeploymentDetail(client, namespace, name)

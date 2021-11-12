@@ -47,6 +47,9 @@ type ResourceChannels struct {
 
 	// List and error channels to PersistentVolumeClaims
 	PersistentVolumeClaimList PersistentVolumeClaimListChannel
+
+	// List and error channels to StatefulSets.
+	StatefulSetList StatefulSetListChannel
 }
 
 // EventListChannel is a list and error channels to Events.
@@ -311,6 +314,38 @@ func GetPersistentVolumeClaimListChannel(client client.Interface, nsQuery *Names
 		list, err := client.CoreV1().PersistentVolumeClaims(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
 		for i := 0; i < numReads; i++ {
 			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// StatefulSetListChannel is a list and error channels to StatefulSets.
+type StatefulSetListChannel struct {
+	List  chan *apps.StatefulSetList
+	Error chan error
+}
+
+// GetStatefulSetListChannel returns a pair of channels to a StatefulSet list and errors that both must be read
+// numReads times.
+func GetStatefulSetListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) StatefulSetListChannel {
+	channel := StatefulSetListChannel{
+		List:  make(chan *apps.StatefulSetList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		statefulSets, err := client.AppsV1().StatefulSets(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []apps.StatefulSet
+		for _, item := range statefulSets.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		statefulSets.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- statefulSets
 			channel.Error <- err
 		}
 	}()

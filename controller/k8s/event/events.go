@@ -10,14 +10,14 @@ import (
 
 func Events(c *gin.Context) {
 
-	namespace := c.DefaultQuery("namespace", "")
+	namespace := c.Query("namespace")
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
 	field := fmt.Sprintf("type=%s", "Warning")
-	data, err := event.GetEvents(client, namespace, field)
+	data, err := event.GetClusterNodeEvent(client, namespace, field)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return

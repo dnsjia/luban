@@ -7,7 +7,7 @@
     </a-tab-pane>
 
     <a-tab-pane key="2" tab="有状态" force-render>
-      功能开发中
+      <StatefulSet></StatefulSet>
     </a-tab-pane>
 
     <a-tab-pane key="3" tab="守护进程集">
@@ -34,6 +34,7 @@
 import Deployment from "./Deployment";
 import Pods from "./Pods";
 import {onMounted, reactive} from "vue";
+import StatefulSet from "./StatefulSet";
 export default {
   name: "WorkLoad",
   setup() {
@@ -62,6 +63,7 @@ export default {
 
   components: {
     Deployment,
+    StatefulSet,
     Pods,
   }
 }
