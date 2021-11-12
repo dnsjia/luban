@@ -69,6 +69,7 @@
                 :footer-style="{ textAlign: 'right' }"
                 @close="onClose">
               <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
+                <a-alert message="云资源同步默认会将服务器同步到Default分组，建议您在同步任务结束后，手动为主机分配分组。" type="info" show-icon /><br/>
                 <a-row :gutter="16">
                   <a-col :span="24">
                     <a-form-item label="账户名称" name="name">

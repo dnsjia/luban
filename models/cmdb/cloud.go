@@ -28,6 +28,8 @@ const (
 type Region struct {
 	RegionId   string `json:"region"`
 	RegionName string `json:"region_name"`
+	Type       string `json:"type"`
+	Enable     bool   `json:"enable"`
 }
 
 type CloudPlatform struct {
@@ -68,6 +70,7 @@ type VirtualMachine struct {
 	BandWidth     int              `gorm:"comment:'带宽';column:bandwidth" json:"bandwidth"` // MB
 	Status        string           `json:"status"`
 	Region        string           `gorm:"comment:'机房'" json:"region"`
+	Source        string           `json:"source"`
 	VmCreatedTime string           `json:"vm_created_time"`
 	VmExpiredTime string           `json:"vm_expired_time"`
 	CreatedAt     models.LocalTime `json:"created_at"`

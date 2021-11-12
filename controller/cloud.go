@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"pigs/common"
+	"pigs/common/cloud/cloudsync"
 	"pigs/common/cloud/cloudvendor"
 	"pigs/controller/response"
 	"pigs/models/cmdb"
@@ -36,33 +37,48 @@ func ListPlatform(c *gin.Context) {
 	}
 }
 
-// AccountVerify 验证云账户连通性
-func AccountVerify(conf *cmdb.CloudPlatform) error {
-	_, err := cloudvendor.GetVendorClient(conf)
-	if err != nil {
-		fmt.Println("AccountVerify GetVendorClient failed", err)
-		return err
-	}
-
-	return nil
-}
-
 // CloudPlatformAccount 云平台账号
 func CloudPlatformAccount(c *gin.Context) {
 	_ = c.ShouldBindJSON(&account)
-	// 账户AK校验
-	err := AccountVerify(&account)
+
+	// 校验云厂商客户端
+	_, err := cloudvendor.GetVendorClient(&account)
 	if err != nil {
-		// "账户连通异常, 请检查AccessKey或Access Secret是否输入正确"
-		response.FailWithMessage(500, fmt.Sprintf("获取云平台信息失败，%v", err), c)
+		response.FailWithMessage(500, fmt.Sprintf("AccountVerify GetVendorClient failed，%v", err), c)
+		return
+	}
+	// TODO 校验AccessKey
+
+	// 创建云账号
+	err1 := services.CreateCloudAccount(&account)
+	if err1 != nil {
+		response.FailWithMessage(500, fmt.Sprintf("创建云平台账号异常，%v", err1), c)
 		return
 	}
 
-	err1 := services.CreateCloudAccount(&account)
-	if err1 != nil {
-		response.FailWithMessage(500, fmt.Sprintf("获取云平台信息失败，%v", err1), c)
-		return
-	}
-	response.OkWithDetailed(account, "添加成功, 任务正在后台同步云资源", c)
+	// 开启协程，后台同步ecs
+	taskChan := make(chan *cmdb.CloudPlatform)
+	SyncCloudResource(taskChan)
+
+	response.OkWithDetailed("null", "添加成功, 任务正在后台同步云资源", c)
 	return
+}
+
+// SyncCloudResource 同步云资源
+func SyncCloudResource(taskChan chan *cmdb.CloudPlatform) {
+	go func() {
+		if task, ok := <-taskChan; ok {
+			switch task.Type {
+			case "aliyun":
+				cloudsync.SyncAliYunHost(task)
+			case "tencent":
+				return
+			case "aws":
+				return
+			default:
+				common.LOG.Error(fmt.Sprintf("unknown resource type:%v, ignore it!", task.Type))
+			}
+		}
+	}()
+	taskChan <- &account
 }
