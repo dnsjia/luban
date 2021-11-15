@@ -20,8 +20,7 @@ import (
 
 // StatefulSetList contains a list of Stateful Sets in the cluster.
 type StatefulSetList struct {
-	ListMeta k8s.ListMeta `json:"listMeta"`
-
+	ListMeta     k8s.ListMeta             `json:"listMeta"`
 	Status       k8scommon.ResourceStatus `json:"status"`
 	StatefulSets []StatefulSet            `json:"statefulSets"`
 }

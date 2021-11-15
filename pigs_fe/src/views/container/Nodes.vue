@@ -622,7 +622,7 @@ export default {
     }
     const removeNodeOk = () => {
       let cs = GetStorage()
-      RemoveNode({"node_name": cluster.nodeName.objectMeta.name}, cs.clusterId).then(res => {
+      RemoveNode({"nodeName": cluster.nodeName.objectMeta.name}, cs.clusterId).then(res => {
         if (res.errCode === 0){
           Modal.success({
             title: '节点移除已放入后台任务',

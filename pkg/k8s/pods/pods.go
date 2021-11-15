@@ -148,11 +148,11 @@ func DeleteCollectionPods(client *kubernetes.Clientset, podList []k8s.RemovePods
 	return nil
 }
 
-func DeletePod(client *kubernetes.Clientset, namespace string, podName string) (err error) {
-	common.LOG.Info(fmt.Sprintf("请求删除单个pod：%v, namespace: %v", podName, namespace))
+func DeletePod(client *kubernetes.Clientset, namespace string, name string) (err error) {
+	common.LOG.Info(fmt.Sprintf("请求删除单个pod：%v, namespace: %v", name, namespace))
 	return client.CoreV1().Pods(namespace).Delete(
 		context.TODO(),
-		podName,
+		name,
 		metav1.DeleteOptions{},
 	)
 }

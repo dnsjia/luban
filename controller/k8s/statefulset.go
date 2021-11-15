@@ -60,15 +60,10 @@ func DeleteStatefulSetController(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var statefulSet k8s.StatefulSetData
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
 
-	err = controller.CheckParams(c, &statefulSet)
-	if err != nil {
-		response.FailWithMessage(http.StatusNotFound, err.Error(), c)
-		return
-	}
-
-	err = statefulset.DeleteStatefulSet(client, statefulSet.Namespace, statefulSet.Name)
+	err = statefulset.DeleteStatefulSet(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -129,12 +124,8 @@ func DetailStatefulSetController(c *gin.Context) {
 		response.FailWithMessage(response.ParamError, err.Error(), c)
 		return
 	}
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	if name == "" || namespace == "" {
-		response.FailWithMessage(response.ParamError, "缺少必要的参数", c)
-		return
-	}
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
 	dataSelect := parser.ParseDataSelectPathParameter(c)
 
 	data, err := statefulset.GetStatefulSetDetail(client, dataSelect, namespace, name)

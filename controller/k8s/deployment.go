@@ -169,12 +169,9 @@ func DetailDeploymentController(c *gin.Context) {
 		response.FailWithMessage(response.ParamError, err.Error(), c)
 		return
 	}
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	if name == "" || namespace == "" {
-		response.FailWithMessage(response.ParamError, "", c)
-		return
-	}
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
+
 	data, err := deployment.GetDeploymentDetail(client, namespace, name)
 
 	if err != nil {

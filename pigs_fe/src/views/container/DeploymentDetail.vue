@@ -173,6 +173,8 @@
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 import {DeploymentDetail, DeploymentRollBack} from "../../api/k8s";
+import {GetStorage} from "../../plugin/state/stroge";
+
 const deploymentStatusConditionsColumns = [
   {
     title: '类型',
@@ -246,18 +248,7 @@ export default {
     })
 
     let router = useRoute()
-    const GetStorage = () => {
-      const cs = JSON.parse(localStorage.getItem("cluster"))
-      if (cs !== null && cs !== undefined && cs !== "") {
-        cluster.clusterId = cs.clusterId
-        cluster.clusterName = cs.clusterName
-        return cluster
-      }
-    }
-    const cluster = reactive({
-      clusterId: "",
-      clusterName: ""
-    })
+
     const getDetail = (params) => {
       DeploymentDetail(params).then(res => {
         if (res.errCode === 0){
@@ -283,9 +274,6 @@ export default {
       })
     }
 
-
-
-
     onMounted(() => {
       getDetail(router.query);
     });
@@ -305,28 +293,30 @@ export default {
 </script>
 
 <style scoped>
-  .table-viewer-header .table-viewer-topbar-title {
-    font-size: 14px;
-    color: #333333;
-    display: inline-block;
-    margin-left: 16px;
-  }
-  .table-default-viewer {
-    width: 100%;
-    background-color: #FFF;
-  }
-  .table-default-viewer td {
-    padding: 11px 20px;
-    border: 1px solid #eeeeee;
-  }
+.table-viewer-header .table-viewer-topbar-title {
+  font-size: 14px;
+  color: #333333;
+  display: inline-block;
+  margin-left: 16px;
+}
 
-  .console-sub-title.custom-sub-title {
-    border: 0;
-    background: none;
-    /*border-top: 1px solid #ccc;*/
-    margin-top: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+.table-default-viewer {
+  width: 100%;
+  background-color: #FFF;
+}
+
+.table-default-viewer td {
+  padding: 11px 20px;
+  border: 1px solid #eeeeee;
+}
+
+.console-sub-title.custom-sub-title {
+  border: 0;
+  background: none;
+  /*border-top: 1px solid #ccc;*/
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 </style>

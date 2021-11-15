@@ -72,8 +72,6 @@
           </a-popconfirm>
 
           <a-divider type="vertical"/>
-          <a @click="scaleDaemonSet(text)">扩缩容</a>
-          <a-divider type="vertical"/>
 
           <a-dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
@@ -114,6 +112,7 @@
         </template>
       </a-pagination>
     </div>
+
     <template>
       <div>
         <a-modal v-model:visible="data.CollectionRemoveDaemonSetVisible" title="守护进程集 (DaemonSet) "
@@ -134,13 +133,37 @@
         </a-modal>
       </div>
     </template>
+    <template>
+      <div>
+        <a-modal v-model:visible="data.removeOneDaemonSetVisible" title="守护进程集 (DaemonSet) "
+                 @ok="removeOneStatefulSetOk" cancelText="取消"
+                 okText="确定" :keyboard="false" :maskClosable="false">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>确认删除 {{ data.removeDaemonSetData.objectMeta.name }} 应用？</p>
+          </a-space>
+
+          <br/>
+        </a-modal>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
-import {DeleteCollectionDaemonSet, GetDaemonSet, GetNamespaces} from "../../api/k8s";
+import {
+  DaemonSetDetail,
+  DeleteCollectionDaemonSet,
+  DeleteDaemonSet,
+  GetDaemonSet,
+  GetNamespaces,
+  RestartDaemonSet
+} from "../../api/k8s";
+import router from "../../router";
 const columns = [
   {
     title: '名称',
@@ -202,11 +225,14 @@ export default {
       namespaceData: "",
       selectedRows: [],
       removeDaemonSetData: [],
+      removeOneDaemonSetVisible: false,
+
       daemonSetData: [],
       loading: false,
       searchValue: undefined,
       CollectionRemoveDaemonSetVisible: false,
       CollectionRemoveDaemonSetData: [],
+      detailDaemonSetData: [],
     })
     const GetNamespaceList = () => {
       let cs = GetStorage()
@@ -260,8 +286,15 @@ export default {
         }
       })
     }
-    const daemonSetDetail = () => {
-
+    const daemonSetDetail = (text) => {
+      let cs = GetStorage()
+      router.push({
+        name: 'DaemonSetDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name
+        }
+      });
     }
     const daemonSetSearch = (keyword) => {
       data.searchValue = keyword
@@ -301,9 +334,40 @@ export default {
         }
       })
     }
-    const restartDaemonSetOk = () => {
-
+    const restartDaemonSetOk = (text) => {
+      let cs = GetStorage()
+      let params = {
+        "namespace": text.objectMeta.namespace,
+        "name": text.objectMeta.name
+      }
+      RestartDaemonSet(cs.clusterId, params).then(res => {
+        if (res.errCode ===0) {
+          message.success("重启任务已下发,请到容器组查看详情")
+        }else {
+          message.error(res.errMsg)
+        }
+      })
     }
+    const removeOneStatefulSet = (text) => {
+      data.removeDaemonSetData = text
+      data.removeOneDaemonSetVisible = true
+    }
+    const removeOneStatefulSetOk = () => {
+      let cs = GetStorage()
+      DeleteDaemonSet(cs.clusterId, {
+            "namespace": data.removeDaemonSetData.objectMeta.namespace,
+            "name": data.removeDaemonSetData.objectMeta.name
+          }).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          data.removeOneDaemonSetVisible = false
+          getDaemonSetList()
+        }else {
+          message.error(res.errMsg)
+        }
+      })
+    }
+
     onMounted(() => {
       GetNamespaceList()
       getDaemonSetList()
@@ -325,6 +389,9 @@ export default {
       onChangePage,
       CollectionRemoveDaemonSetOnSubmit,
       CollectionRemoveDaemonSetColumns,
+      removeOneStatefulSet,
+      removeOneStatefulSetOk,
+      restartDaemonSetOk,
     }
   }
 }

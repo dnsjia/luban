@@ -63,15 +63,11 @@ func DeletePodController(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var podsData k8s.RemovePodsData
 
-	err = controller.CheckParams(c, &podsData)
-	if err != nil {
-		response.FailWithMessage(response.ParamError, err.Error(), c)
-		return
-	}
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
 
-	err = pods.DeletePod(client, podsData.Namespace, podsData.PodName)
+	err = pods.DeletePod(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -87,10 +83,10 @@ func DetailPodController(c *gin.Context) {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	namespace := c.Query("namespace")
-	podName := c.Query("name")
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
 
-	podData, err := pods.GetPodDetail(client, namespace, podName)
+	podData, err := pods.GetPodDetail(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
