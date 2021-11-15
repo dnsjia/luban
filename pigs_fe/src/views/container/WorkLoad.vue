@@ -15,7 +15,7 @@
     </a-tab-pane>
 
     <a-tab-pane key="4" tab="任务">
-      功能开发中
+      <Job></Job>
     </a-tab-pane>
 
     <a-tab-pane key="5" tab="定时任务">
@@ -36,6 +36,7 @@ import Pods from "./Pods";
 import {onMounted, reactive} from "vue";
 import StatefulSet from "./StatefulSet";
 import DaemonSet from "./DaemonSet";
+import Job from "./Job";
 export default {
   name: "WorkLoad",
   setup() {
@@ -63,6 +64,7 @@ export default {
   },
 
   components: {
+    Job,
     DaemonSet,
     Deployment,
     StatefulSet,

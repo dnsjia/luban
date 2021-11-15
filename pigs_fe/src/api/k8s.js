@@ -43,3 +43,7 @@ export const DeleteCollectionDaemonSet = (clusterId, params) => post('/api/v1/k8
 export const DeleteDaemonSet = (clusterId, params) => del('/api/v1/k8s/daemonset?clusterId=' + clusterId, params)
 export const RestartDaemonSet = (clusterId, params) => post('/api/v1/k8s/daemonset/restart?clusterId=' + clusterId, params)
 export const DaemonSetDetail = (clusterId, params) => get('/api/v1/k8s/daemonset/detail?clusterId=' + clusterId, params)
+
+export const GetJob = (clusterId, params) => get('/api/v1/k8s/job?clusterId=' + clusterId, params)
+export const DeleteCollectionJob = (clusterId, params) => post('/api/v1/k8s/jobs?clusterId=' + clusterId, params)
+export const DeleteJob = (clusterId, params) => del('/api/v1/k8s/job?clusterId=' + clusterId, params)

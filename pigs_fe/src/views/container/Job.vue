@@ -2,7 +2,7 @@
   <div>
     <a-space style="padding-left: 10px">
       <a-select v-model:value="queryInfo.namespace" placeholder="请选择命名空间" show-search
-                @change="filterByNamespaceOnDaemonSet" style="min-width: 180px">
+                @change="filterByNamespaceOnJob" style="min-width: 180px">
         <a-select-option
             v-for="(item, index) in data.namespaceData"
             :key="index"
@@ -16,10 +16,10 @@
           v-model:value="data.searchValue"
           placeholder="请输入搜索内容"
           style="width: 200px"
-          @search="daemonSetSearch"
+          @search="jobSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getDaemonSetList()">
+    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getJobList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -31,13 +31,13 @@
       <a-table
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
-          :data-source="data.daemonSetData"
+          :data-source="data.jobData"
           :pagination="false"
           :rowKey="item=>JSON.stringify(item)"
           :locale="{emptyText: '暂无数据'}"
       >
         <template #name="{text}">
-          <a @click="daemonSetDetail(text)">{{ text.objectMeta.name }}</a>
+          <a @click="jobDetail(text)">{{ text.objectMeta.name }}</a>
         </template>
 
         <template #labels="{text}">
@@ -46,10 +46,22 @@
           </span>
         </template>
 
-        <template #replicas="{text}">
-          <span>
-           {{ text.podInfo.running }} / {{ text.podInfo.desired }}
+        <template #status="{text}">
+          <span v-if="text.jobStatus.status=='Complete'">
+            <a-tag color="success">已成功</a-tag>
           </span>
+          <span v-else-if="text.jobStatus.status=='Running'">
+            <a-tag color="processing">运行中</a-tag>
+          </span>
+          <span v-else>
+            <a-tag color="error">失败</a-tag>
+          </span>
+        </template>
+
+        <template #pod_status="{text}">
+          <p>活跃 {{text.podStatus.active}}</p>
+          <p>成功 {{text.podStatus.succeeded}}</p>
+          <p>失败 {{text.podStatus.failed}}</p>
         </template>
 
         <template #creationTimestamp="{text}">
@@ -58,20 +70,18 @@
           </span>
         </template>
 
+        <template #completionTime="{text}">
+          <span v-if="text.podStatus.completionTime">
+           {{ $filters.fmtTime(text.podStatus.completionTime) }}
+          </span>
+        </template>
+
+
         <template #action="{text}">
 
-          <a @click="daemonSetDetail(text)">详情</a>
+          <a @click="jobDetail(text)">详情</a>
           <a-divider type="vertical"/>
 
-          <a-popconfirm placement="left" ok-text="确定" cancel-text="取消" @confirm="restartDaemonSetOk(text)">
-            <template #title>
-              <span>你确定要重启应用吗？</span><br/>
-              <span>{{ text.objectMeta.name }}</span>
-            </template>
-            <a>重启</a>
-          </a-popconfirm>
-
-          <a-divider type="vertical"/>
 
           <a-dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
@@ -80,8 +90,8 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item><span @click="editDaemonSet(text)">编辑应用</span></a-menu-item>
-                <a-menu-item><span @click="removeOneDaemonSet(text)" style="color: red">删除应用</span></a-menu-item>
+                <a-menu-item><span @click="editJob(text)">编辑应用</span></a-menu-item>
+                <a-menu-item><span @click="removeOneJob(text)" style="color: red">删除应用</span></a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -91,7 +101,7 @@
       </a-table>
       <div style="float:left;padding: 10px 0 0 20px">
         <a-space>
-          <a-button :disabled="!hasSelected" @click="CollectionRemoveDaemonSet">批量删除</a-button>
+          <a-button :disabled="!hasSelected" @click="CollectionRemoveJob">批量删除</a-button>
         </a-space>
       </div>
     </a-spin>
@@ -115,8 +125,8 @@
 
     <template>
       <div>
-        <a-modal v-model:visible="data.CollectionRemoveDaemonSetVisible" title="守护进程集 (DaemonSet) "
-                 @ok="CollectionRemoveDaemonSetOnSubmit" cancelText="取消"
+        <a-modal v-model:visible="data.CollectionRemoveJobVisible" title="任务 (Job) "
+                 @ok="CollectionRemoveJobOnSubmit" cancelText="取消"
                  okText="确定" :keyboard="false" :maskClosable="false" width="820px">
           <a-space>
             <p class="circular">
@@ -124,25 +134,26 @@
             </p>
             <p>确认删除以下应用？</p>
           </a-space>
-          <a-table :columns="CollectionRemoveDaemonSetColumns" :data-source="data.CollectionRemoveDaemonSetData" size="middle"
+          <a-table :columns="CollectionRemoveJobColumns" :data-source="data.CollectionRemoveJobData" size="middle"
                    :pagination="false">
-            <template #CollectionRemoveDaemonSetCreationTimestamp="{text}">
+            <template #CollectionRemoveJobCreationTimestamp="{text}">
               {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
             </template>
           </a-table>
         </a-modal>
       </div>
     </template>
+
     <template>
       <div>
-        <a-modal v-model:visible="data.removeOneDaemonSetVisible" title="守护进程集 (DaemonSet) "
-                 @ok="removeOneDaemonSetOk" cancelText="取消"
+        <a-modal v-model:visible="data.removeOneJobVisible" title="任务 (Job) "
+                 @ok="removeOneJobOk" cancelText="取消"
                  okText="确定" :keyboard="false" :maskClosable="false">
           <a-space>
             <p class="circular">
               <span class="exclamation-point">i</span>
             </p>
-            <p>确认删除 {{ data.removeDaemonSetData.objectMeta.name }} 应用？</p>
+            <p>删除 {{ data.removeJobData.objectMeta.name }} ？</p>
           </a-space>
 
           <br/>
@@ -155,14 +166,7 @@
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
-import {
-  DaemonSetDetail,
-  DeleteCollectionDaemonSet,
-  DeleteDaemonSet,
-  GetDaemonSet,
-  GetNamespaces,
-  RestartDaemonSet
-} from "../../api/k8s";
+import {GetNamespaces, GetJob, DeleteCollectionJob, DeleteJob} from "../../api/k8s";
 import router from "../../router";
 const columns = [
   {
@@ -172,10 +176,15 @@ const columns = [
   {
     title: '标签',
     slots: {customRender: 'labels'},
+    width: 140,
   },
   {
-    title: '副本数',
-    slots: {customRender: 'replicas'},
+    title: '任务状态',
+    slots: {customRender: 'status'},
+  },
+  {
+    title: 'Pod 状态',
+    slots: {customRender: 'pod_status'},
   },
   {
     title: '版本',
@@ -186,11 +195,15 @@ const columns = [
     slots: {customRender: 'creationTimestamp'},
   },
   {
+    title: '完成时间',
+    slots: {customRender: 'completionTime'},
+  },
+  {
     title: '操作',
     slots: {customRender: 'action'},
   },
 ]
-const CollectionRemoveDaemonSetColumns = [
+const CollectionRemoveJobColumns = [
   {
     title: '名称',
     dataIndex: 'objectMeta.name',
@@ -201,13 +214,12 @@ const CollectionRemoveDaemonSetColumns = [
   },
   {
     title: '创建时间',
-    slots: {customRender: 'CollectionRemoveDaemonSetCreationTimestamp'},
+    slots: {customRender: 'CollectionRemoveJobCreationTimestamp'},
   },
 ]
 export default {
-  name: "DaemonSet",
+  name: "Job",
   setup(){
-
     const queryInfo = reactive({
       page: 1,
       itemsPerPage: 10,
@@ -224,14 +236,14 @@ export default {
       pageSizeOptions: ['10', '20', '30', '40'],
       namespaceData: "",
       selectedRows: [],
-      removeDaemonSetData: [],
-      removeOneDaemonSetVisible: false,
+      removeJobData: [],
+      removeOneJobVisible: false,
 
-      daemonSetData: [],
+      jobData: [],
       loading: false,
       searchValue: undefined,
-      CollectionRemoveDaemonSetVisible: false,
-      CollectionRemoveDaemonSetData: [],
+      CollectionRemoveJobVisible: false,
+      CollectionRemoveJobData: [],
     })
     const GetNamespaceList = () => {
       let cs = GetStorage()
@@ -248,13 +260,13 @@ export default {
     const onSelectChange = (selectedRowKeys, selectedRows) => {
       state.selectedRowKeys = selectedRowKeys;
       data.selectedRows = selectedRows
-      data.CollectionRemoveDaemonSetData = toRaw(data.selectedRows)
+      data.CollectionRemoveJobData = toRaw(data.selectedRows)
     };
-    const filterByNamespaceOnDaemonSet = (e) => {
+    const filterByNamespaceOnJob = (e) => {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
-      getDaemonSetList()
+      getJobList()
     }
     // 显示条数
     const onShowSizeChangePage = async (current, pageSize) => {
@@ -262,70 +274,70 @@ export default {
       if (cs) {
         queryInfo.itemsPerPage = pageSize
         queryInfo.page = current
-        getDaemonSetList()
+        getJobList()
       }
     };
     // 翻页
     const onChangePage = async (pageNumber) => {
       queryInfo.page = pageNumber
-      getDaemonSetList()
+      getJobList()
     };
 
-    const getDaemonSetList = () => {
+    const getJobList = () => {
       // filterBy=name,ur&itemsPerPage=10&name=&page=1&sortBy=d,creationTimestamp&namespace=default
       data.loading = true
       let cs = GetStorage()
-      GetDaemonSet(cs.clusterId, queryInfo).then(res => {
+      GetJob(cs.clusterId, queryInfo).then(res => {
         if (res.errCode === 0) {
-          data.daemonSetData = res.data.daemonSets
+          data.jobData = res.data.jobs
           data.total = res.data.listMeta.totalItems
           data.loading = false
         } else {
-          message.error("获取守护进程集失败")
+          message.error(res.errMsg)
         }
       })
     }
-    const daemonSetDetail = (text) => {
+    const jobDetail = (text) => {
       let cs = GetStorage()
       router.push({
-        name: 'DaemonSetDetail', query: {
+        name: 'JobDetail', query: {
           clusterId: cs.clusterId,
           namespace: text.objectMeta.namespace,
           name: text.objectMeta.name
         }
       });
     }
-    const daemonSetSearch = (keyword) => {
+    const jobSearch = (keyword) => {
       data.searchValue = keyword
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
-      GetDaemonSet(cs.clusterId, queryInfo).then(res => {
+      GetJob(cs.clusterId, queryInfo).then(res => {
         if (res.errCode === 0) {
-          data.daemonSetData = res.data.daemonSets
+          data.daemonSetData = res.data.jobs
           data.total = res.data.listMeta.totalItems
         } else {
           message.error(res.errMsg)
         }
       })
     }
-    const CollectionRemoveDaemonSet = () => {
-      data.CollectionRemoveDaemonSetVisible = true
+    const CollectionRemoveJob = () => {
+      data.CollectionRemoveJobVisible = true
     }
-    const CollectionRemoveDaemonSetOnSubmit = () => {
+    const CollectionRemoveJobOnSubmit = () => {
       let cs = GetStorage()
-      const daemonSetList = []
-      for (let i = 0; i < data.CollectionRemoveDaemonSetData.length; i++) {
-        daemonSetList.push({
-          "namespace": data.CollectionRemoveDaemonSetData[i].objectMeta.namespace,
-          "name": data.CollectionRemoveDaemonSetData[i].objectMeta.name
+      const jobList = []
+      for (let i = 0; i < data.CollectionRemoveJobData.length; i++) {
+        jobList.push({
+          "namespace": data.CollectionRemoveJobData[i].objectMeta.namespace,
+          "name": data.CollectionRemoveJobData[i].objectMeta.name
         })
       }
-      DeleteCollectionDaemonSet(cs.clusterId, daemonSetList).then(res => {
+      DeleteCollectionJob(cs.clusterId, jobList).then(res => {
         if (res.errCode === 0) {
           message.success(res.msg)
-          data.CollectionRemoveDaemonSetVisible = false
-          getDaemonSetList()
-          data.CollectionRemoveDaemonSetData = []
+          data.CollectionRemoveJobVisible = false
+          getJobList()
+          data.CollectionRemoveJobData = []
           data.selectedRows = []
           state.selectedRowKeys = []
         } else {
@@ -333,34 +345,20 @@ export default {
         }
       })
     }
-    const restartDaemonSetOk = (text) => {
-      let cs = GetStorage()
-      let params = {
-        "namespace": text.objectMeta.namespace,
-        "name": text.objectMeta.name
-      }
-      RestartDaemonSet(cs.clusterId, params).then(res => {
-        if (res.errCode ===0) {
-          message.success("重启任务已下发,请到容器组查看详情")
-        }else {
-          message.error(res.errMsg)
-        }
-      })
+    const removeOneJob = (text) => {
+      data.removeJobData = text
+      data.removeOneJobVisible = true
     }
-    const removeOneDaemonSet = (text) => {
-      data.removeDaemonSetData = text
-      data.removeOneDaemonSetVisible = true
-    }
-    const removeOneDaemonSetOk = () => {
+    const removeOneJobOk = () => {
       let cs = GetStorage()
-      DeleteDaemonSet(cs.clusterId, {
-            "namespace": data.removeDaemonSetData.objectMeta.namespace,
-            "name": data.removeDaemonSetData.objectMeta.name
-          }).then(res => {
+      DeleteJob(cs.clusterId, {
+        "namespace": data.removeJobData.objectMeta.namespace,
+        "name": data.removeJobData.objectMeta.name
+      }).then(res => {
         if (res.errCode === 0){
           message.success(res.msg)
-          data.removeOneDaemonSetVisible = false
-          getDaemonSetList()
+          data.removeOneJobVisible = false
+          getJobList()
         }else {
           message.error(res.errMsg)
         }
@@ -369,7 +367,7 @@ export default {
 
     onMounted(() => {
       GetNamespaceList()
-      getDaemonSetList()
+      getJobList()
     })
     return {
       data,
@@ -378,21 +376,21 @@ export default {
       GetNamespaceList,
       onSelectChange,
       hasSelected,
-      filterByNamespaceOnDaemonSet,
-      getDaemonSetList,
+      filterByNamespaceOnJob,
+      getJobList,
       columns,
-      daemonSetDetail,
-      daemonSetSearch,
-      CollectionRemoveDaemonSet,
+      jobDetail,
+      jobSearch,
+      CollectionRemoveJob,
       onShowSizeChangePage,
       onChangePage,
-      CollectionRemoveDaemonSetOnSubmit,
-      CollectionRemoveDaemonSetColumns,
-      removeOneDaemonSet,
-      removeOneDaemonSetOk,
-      restartDaemonSetOk,
+      CollectionRemoveJobOnSubmit,
+      CollectionRemoveJobColumns,
+      removeOneJob,
+      removeOneJobOk,
     }
   }
+
 }
 </script>
 

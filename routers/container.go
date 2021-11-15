@@ -52,5 +52,10 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.POST("daemonsets", k8s.DeleteCollectionDaemonSetController)
 		K8sClusterRouter.POST("daemonset/restart", k8s.RestartDaemonSetController)
 		K8sClusterRouter.GET("daemonset/detail", k8s.DetailDaemonSetController)
+
+		K8sClusterRouter.GET("job", k8s.GetJobListController)
+		K8sClusterRouter.DELETE("job", k8s.DeleteJobController)
+		K8sClusterRouter.POST("jobs", k8s.DeleteCollectionJobController)
+		K8sClusterRouter.POST("job/scale", k8s.ScaleJobController)
 	}
 }
