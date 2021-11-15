@@ -72,7 +72,7 @@ func (a *aliClient) GetInstances(region string) ([]cmdb.VirtualMachine, error) {
 	client, err := ecs.NewClientWithAccessKey(region, a.secretID, a.secretKey)
 
 	if err != nil {
-		fmt.Printf("创建客户端连接失败，%v", err)
+		fmt.Printf("创建客户端连接失败，%v", err.Error())
 		return nil, err
 	}
 
@@ -81,7 +81,7 @@ func (a *aliClient) GetInstances(region string) ([]cmdb.VirtualMachine, error) {
 
 	response, err := client.DescribeInstances(request)
 	if err != nil {
-		fmt.Printf("查询ECS实例列表失败，%v", err)
+		fmt.Printf("查询ECS实例列表失败，%v", err.Error())
 		return nil, err
 	}
 

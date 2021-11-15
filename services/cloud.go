@@ -22,8 +22,7 @@ func ListPlatform(info request.PageInfo) (err error, list interface{}, total int
 // CreateCloudAccount 创建云账号
 func CreateCloudAccount(account *cmdb.CloudPlatform) (err error) {
 
-	var cloud cmdb.CloudPlatform
-	results := common.DB.Table("cloud_platform").Where("access_key = ?", &account.AccessKey).First(&cloud)
+	results := common.DB.Table("cloud_platform").Where("access_key = ?", &account.AccessKey).First(&account)
 
 	if results.Error != nil {
 		if results.Error == gorm.ErrRecordNotFound {
@@ -34,7 +33,8 @@ func CreateCloudAccount(account *cmdb.CloudPlatform) (err error) {
 			}
 		}
 	} else {
-		results := common.DB.Table("cloud_platform").Model(&cloud).Updates(map[string]interface{}{
+		results := common.DB.Table("cloud_platform").Model(&account).Updates(map[string]interface{}{
+			"name":       &account.Name,
 			"access_key": &account.AccessKey,
 			"secret_key": &account.SecretKey,
 			"remark":     &account.Remark,
