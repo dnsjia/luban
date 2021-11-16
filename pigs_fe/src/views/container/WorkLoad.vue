@@ -19,7 +19,7 @@
     </a-tab-pane>
 
     <a-tab-pane key="5" tab="定时任务">
-      功能开发中
+      <CronJob></CronJob>
     </a-tab-pane>
 
     <a-tab-pane key="6" tab="容器组">
@@ -37,6 +37,7 @@ import {onMounted, reactive} from "vue";
 import StatefulSet from "./StatefulSet";
 import DaemonSet from "./DaemonSet";
 import Job from "./Job";
+import CronJob from "./CronJob";
 export default {
   name: "WorkLoad",
   setup() {
@@ -64,6 +65,7 @@ export default {
   },
 
   components: {
+    CronJob,
     Job,
     DaemonSet,
     Deployment,

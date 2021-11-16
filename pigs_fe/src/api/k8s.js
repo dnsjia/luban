@@ -49,3 +49,9 @@ export const DeleteCollectionJob = (clusterId, params) => post('/api/v1/k8s/jobs
 export const DeleteJob = (clusterId, params) => del('/api/v1/k8s/job?clusterId=' + clusterId, params)
 export const ScaleJob = (clusterId, params) => post('/api/v1/k8s/job/scale?clusterId=' + clusterId, params)
 export const JobDetail = (clusterId, params) => get('/api/v1/k8s/job/detail?clusterId=' + clusterId, params)
+
+export const GetCronJob = (clusterId, params) => get('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
+export const DeleteCollectionCronJob = (clusterId, params) => post('/api/v1/k8s/cronjobs?clusterId=' + clusterId, params)
+export const DeleteCronJob = (clusterId, params) => del('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
+
+export const CronJobDetail = (clusterId, params) => get('/api/v1/k8s/cronjob/detail?clusterId=' + clusterId, params)

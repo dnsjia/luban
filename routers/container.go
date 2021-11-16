@@ -58,5 +58,10 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.POST("jobs", k8s.DeleteCollectionJobController)
 		K8sClusterRouter.POST("job/scale", k8s.ScaleJobController)
 		K8sClusterRouter.GET("job/detail", k8s.DetailJobController)
+
+		K8sClusterRouter.GET("cronjob", k8s.GetCronJobListController)
+		K8sClusterRouter.DELETE("cronjob", k8s.DeleteCronJobController)
+		K8sClusterRouter.POST("cronjobs", k8s.DeleteCollectionCronJobController)
+		K8sClusterRouter.GET("cronjob/detail", k8s.DetailCronJobController)
 	}
 }

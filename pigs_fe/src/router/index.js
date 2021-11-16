@@ -118,6 +118,16 @@ const routes = [
                 children: []
             },
             {
+                path: 'k8s/workload/cronjob/detail',
+                name: 'CronJobDetail',
+                component: () => import('../views/container/CronJobDetail.vue'),
+                meta: {
+                    title: '定时任务详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
                 path: 'k8s/workload/pod/detail',
                 name: 'PodDetail',
                 component: () => import('../views/container/PodDetail.vue'),
