@@ -12,6 +12,7 @@ import (
 	"pigs/models"
 	"pigs/routers"
 	"pigs/routers/cmdb"
+	"pigs/tasks"
 	"pigs/tools"
 	"syscall"
 	"time"
@@ -42,6 +43,7 @@ func main() {
 }
 
 func InitServer() {
+
 	r := gin.Default()
 	//gin.ForceConsoleColor()
 	r.Use(middleware.Cors())
@@ -78,7 +80,9 @@ func InitServer() {
 		routers.InitCloudRouter(PrivateGroup)
 
 	}
-
+	// 任务调度
+	go tasks.TaskBeta()
+	go tasks.TaskWorker()
 	address := fmt.Sprintf(":%d", common.CONFIG.System.Addr)
 	err := r.Run(address)
 
@@ -88,6 +92,7 @@ func InitServer() {
 
 	_, cancelFunc := context.WithCancel(context.Background())
 	endingProc(cancelFunc)
+
 }
 
 func parseConf() {
@@ -108,6 +113,5 @@ func endingProc(cancelFunc context.CancelFunc) {
 	cancelFunc()
 	logger.Close()
 	phttp.Shutdown()
-
 	fmt.Println("process stopped successfully")
 }

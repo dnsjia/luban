@@ -10,10 +10,11 @@ import (
 )
 
 type Server struct {
-	Zap    Zap           `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Mysql  Mysql         `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
+	Zap    Zap           `mapstructure:"zap"    json:"zap" yaml:"zap"`
+	Mysql  Mysql         `mapstructure:"mysql"  json:"mysql" yaml:"mysql"`
 	Casbin models.Casbin `mapstructure:"casbin" json:"casbin" yaml:"casbin"`
 	System System        `mapstructure:"system" json:"system" yaml:"system"`
+	Redis  Redis         `mapstructure:"redis"  json:"redis" yaml:"redis"`
 }
 
 type contactKey struct {

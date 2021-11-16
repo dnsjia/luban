@@ -1,71 +1,66 @@
 package tasks
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/hibiken/asynq"
-	"log"
+	"context"
+	"pigs/common"
 	"time"
+
+	"log"
+	"os"
+	"os/signal"
+
+	"github.com/hibiken/asynq"
+	"golang.org/x/sys/unix"
 )
 
-type EmailTaskPayloadTest struct {
-	Msg    string
-	UserID int
+// loggingMiddleware 记录任务日志中间件
+func loggingMiddleware(h asynq.Handler) asynq.Handler {
+	return asynq.HandlerFunc(func(ctx context.Context, t *asynq.Task) error {
+		start := time.Now()
+		log.Printf("Start processing %q", t.Type())
+		err := h.ProcessTask(ctx, t)
+		if err != nil {
+			return err
+		}
+		log.Printf("Finished processing %q: Elapsed Time = %v", t.Type(), time.Since(start))
+		return nil
+	})
 }
 
-func TaskBate() {
-	client := asynq.NewClient(
+func TaskWorker() {
+	c := common.CONFIG.Redis
+	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
-			Addr:     ":6379",
-			Password: "",
-		})
+			Addr:     c.Host,
+			Username: c.UserName,
+			Password: "dnsjia.com",
+			DB:       c.DB,
+		},
+		asynq.Config{Concurrency: 20},
+	)
 
-	payload, err := json.Marshal(EmailTaskPayloadTest{
-		UserID: 100,
-		Msg:    "test",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	t1 := asynq.NewTask("task:oneTask", payload)
+	mux := asynq.NewServeMux()
+	mux.Use(loggingMiddleware)
+	//
+	mux.HandleFunc(SyncAliYunCloud, HandleAliCloudTask)
 
-	// 定时执行
-	setDate := "2021-11-11 15:10:00"
-	dateFormats := "2006-01-02 15:04:05"
-	// 获取时区
-	loc, _ := time.LoadLocation("Local")
-	// 指定日期 转 当地 日期对象 类型为 time.Time
-	timeObj, err := time.ParseInLocation(dateFormats, setDate, loc)
-	if err != nil {
-		fmt.Println("parse time failed err :", err)
-		return
+	// start server
+	if err := srv.Start(mux); err != nil {
+		log.Fatalf("could not start server: %v", err)
 	}
 
-	info, err := client.Enqueue(t1, asynq.ProcessAt(timeObj), asynq.Queue("test"))
-	if err != nil {
-		log.Fatal(err)
+	// Wait for termination signal.
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, unix.SIGTERM, unix.SIGINT, unix.SIGTSTP)
+	for {
+		s := <-sigs
+		if s == unix.SIGTSTP {
+			srv.Shutdown()
+			continue
+		}
+		break
 	}
 
-	log.Printf(" [*] Successfully enqueued task: %+v", info)
-
-	// 周期性任务
-	scheduler := asynq.NewScheduler(
-		asynq.RedisClientOpt{
-			Addr:     ":6379",
-			Password: "",
-			DB:       0,
-		}, nil)
-
-	// 每隔5分钟同步一次
-	syncResource := NewAliCloudTask()
-	entryID, err := scheduler.Register("*/5 * * * *", syncResource, asynq.Queue("sync_cloud"))
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("registered an entry: %q\n", entryID)
-
-	if err := scheduler.Run(); err != nil {
-		log.Fatal(err)
-	}
+	// Stop worker server.
+	srv.Stop()
 }

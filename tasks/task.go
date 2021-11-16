@@ -3,10 +3,11 @@ package tasks
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/hibiken/asynq"
+	"log"
+	"pigs/inner/cloud/cloudsync"
+	"pigs/inner/cloud/cloudvendor"
 	"pigs/models/cmdb"
-	"time"
 )
 
 const (
@@ -23,6 +24,25 @@ func NewAliCloudTask(conf *cmdb.CloudPlatform) *asynq.Task {
 	return asynq.NewTask(SyncAliYunCloud, payload)
 }
 
+func HandleAliCloudTask(ctx context.Context, t *asynq.Task) error {
+
+	var a cmdb.CloudPlatform
+	if err := json.Unmarshal(t.Payload(), &a); err != nil {
+		return err
+	}
+
+	_, err := cloudvendor.GetVendorClient(&a)
+	if err != nil {
+		log.Fatalf("AccountVerify GetVendorClient failed，%v", err)
+		return err
+	}
+
+	cloudsync.SyncAliYunHost(&a)
+
+	log.Printf("Aliyun Cloud assets are successfully synchronized...")
+	return nil
+}
+
 // NewTencentCloudTask 腾讯云资产同步任务
 func NewTencentCloudTask() *asynq.Task {
 	//payload, err := json.Marshal(&AK{})
@@ -30,11 +50,4 @@ func NewTencentCloudTask() *asynq.Task {
 	//	panic(err)
 	//}
 	return asynq.NewTask(SyncTencentCloud, nil)
-}
-
-func HandleAliCloudTask(ctx context.Context, t *asynq.Task) error {
-	fmt.Printf("[*] %v Aliyun Cloud assets are successfully synchronized...\n",
-		time.Now().Format("2006-01-02 15:04:05"),
-	)
-	return nil
 }

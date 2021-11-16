@@ -42,6 +42,7 @@ type CloudPlatform struct {
 	Remark    string           `json:"remark"`
 	Status    int              `json:"status"`
 	Msg       string           `json:"msg"`
+	Enable    bool             `json:"enable"`
 	CreatedAt models.LocalTime `json:"created_at"`
 	DeletedAt gorm.DeletedAt   `json:"-"`
 	UpdatedAt models.LocalTime `json:"updated_at"`
