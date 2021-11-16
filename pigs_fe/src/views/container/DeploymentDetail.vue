@@ -91,21 +91,21 @@
               <h4>现状详情</h4>
             </div>
           </div>
-            <div id="components-table-demo-size">
+          <div id="components-table-demo-size">
 
-              <a-table
-                  :columns="deploymentStatusConditionsColumns"
-                  :data-source="data.DetailData.conditions"
-                  :pagination="false"
-                  :rowKey="item=>JSON.stringify(item)"
-                  :locale="{emptyText: '暂无数据'}"
-              >
-                <!-- 	更新时间 -->
-                <template #lastProbeTime="{text}">
-                  {{ $filters.fmtTime(text.lastProbeTime) }}
-                </template>
-              </a-table>
-            </div>
+            <a-table
+                :columns="deploymentStatusConditionsColumns"
+                :data-source="data.DetailData.conditions"
+                :pagination="false"
+                :rowKey="item=>JSON.stringify(item)"
+                :locale="{emptyText: '暂无数据'}"
+            >
+              <!-- 	更新时间 -->
+              <template #lastProbeTime="{text}">
+                {{ $filters.fmtTime(text.lastProbeTime) }}
+              </template>
+            </a-table>
+          </div>
 
           <!-- 事件 -->
           <div class="console-sub-title custom-sub-title top-sub clearfix">

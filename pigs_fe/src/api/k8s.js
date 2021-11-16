@@ -47,3 +47,5 @@ export const DaemonSetDetail = (clusterId, params) => get('/api/v1/k8s/daemonset
 export const GetJob = (clusterId, params) => get('/api/v1/k8s/job?clusterId=' + clusterId, params)
 export const DeleteCollectionJob = (clusterId, params) => post('/api/v1/k8s/jobs?clusterId=' + clusterId, params)
 export const DeleteJob = (clusterId, params) => del('/api/v1/k8s/job?clusterId=' + clusterId, params)
+export const ScaleJob = (clusterId, params) => post('/api/v1/k8s/job/scale?clusterId=' + clusterId, params)
+export const JobDetail = (clusterId, params) => get('/api/v1/k8s/job/detail?clusterId=' + clusterId, params)

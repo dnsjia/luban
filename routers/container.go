@@ -57,5 +57,6 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.DELETE("job", k8s.DeleteJobController)
 		K8sClusterRouter.POST("jobs", k8s.DeleteCollectionJobController)
 		K8sClusterRouter.POST("job/scale", k8s.ScaleJobController)
+		K8sClusterRouter.GET("job/detail", k8s.DetailJobController)
 	}
 }

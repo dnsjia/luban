@@ -94,3 +94,24 @@ func ScaleJobController(c *gin.Context) {
 	response.Ok(c)
 	return
 }
+
+func DetailJobController(c *gin.Context) {
+
+	client, err := Init.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+
+	namespace := parser.ParseNamespaceParameter(c)
+	name := parser.ParseNameParameter(c)
+
+	result, err := job.GetJobDetail(client, namespace, name)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+
+	response.OkWithData(result, c)
+	return
+}

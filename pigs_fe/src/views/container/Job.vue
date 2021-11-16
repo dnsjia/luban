@@ -47,15 +47,16 @@
         </template>
 
         <template #status="{text}">
-          <span v-if="text.jobStatus.status=='Complete'">
-            <a-tag color="success">已成功</a-tag>
-          </span>
-          <span v-else-if="text.jobStatus.status=='Running'">
-            <a-tag color="processing">运行中</a-tag>
-          </span>
-          <span v-else>
-            <a-tag color="error">失败</a-tag>
-          </span>
+          <span>{{text.jobStatus.status}}</span>
+<!--          <span v-if="text.jobStatus.status=='Complete'">-->
+<!--            <a-tag color="success">已成功</a-tag>-->
+<!--          </span>-->
+<!--          <span v-else-if="text.jobStatus.status=='Running'">-->
+<!--            <a-tag color="processing">运行中</a-tag>-->
+<!--          </span>-->
+<!--          <span v-else>-->
+<!--            <a-tag color="error">失败</a-tag>-->
+<!--          </span>-->
         </template>
 
         <template #pod_status="{text}">
@@ -90,8 +91,9 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item><span @click="editJob(text)">编辑应用</span></a-menu-item>
-                <a-menu-item><span @click="removeOneJob(text)" style="color: red">删除应用</span></a-menu-item>
+                <a-menu-item><span @click="editJob(text)">编辑</span></a-menu-item>
+                <a-menu-item><span @click="scaleJob(text)">伸缩</span></a-menu-item>
+                <a-menu-item><span @click="removeOneJob(text)" style="color: red">删除</span></a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -160,13 +162,27 @@
         </a-modal>
       </div>
     </template>
+
+    <!-- 伸缩JOB -->
+    <template>
+      <div>
+        <a-modal v-model:visible="data.scaleVisible" title="伸缩"
+                 @ok="scaleJobOnSubmit" cancelText="取消"
+                 okText="确定" :keyboard="false" :maskClosable="false">
+          <a-space>
+            所需任务并行数<a-input-number style="width: 300px" v-model:value="data.scaleNumber"></a-input-number>
+          </a-space>
+        </a-modal>
+      </div>
+    </template>
+
   </div>
 </template>
 
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
-import {GetNamespaces, GetJob, DeleteCollectionJob, DeleteJob} from "../../api/k8s";
+import {GetNamespaces, GetJob, DeleteCollectionJob, DeleteJob, ScaleJob} from "../../api/k8s";
 import router from "../../router";
 const columns = [
   {
@@ -244,6 +260,9 @@ export default {
       searchValue: undefined,
       CollectionRemoveJobVisible: false,
       CollectionRemoveJobData: [],
+      scaleData: [],
+      scaleVisible: false,
+      scaleNumber: undefined,
     })
     const GetNamespaceList = () => {
       let cs = GetStorage()
@@ -313,7 +332,7 @@ export default {
       let cs = GetStorage()
       GetJob(cs.clusterId, queryInfo).then(res => {
         if (res.errCode === 0) {
-          data.daemonSetData = res.data.jobs
+          data.jobData = res.data.jobs
           data.total = res.data.listMeta.totalItems
         } else {
           message.error(res.errMsg)
@@ -364,7 +383,28 @@ export default {
         }
       })
     }
-
+    const scaleJob = (text) => {
+      data.scaleData = text
+      data.scaleNumber = text.parallelism
+      data.scaleVisible = true
+    }
+    const scaleJobOnSubmit = () => {
+      let cs = GetStorage()
+      let params = {
+        "namespace": data.scaleData.objectMeta.namespace,
+        "name": data.scaleData.objectMeta.name,
+        "number": data.scaleNumber
+      }
+      ScaleJob(cs.clusterId, params).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          data.scaleVisible = false
+          getJobList()
+        }else {
+          message.error(res.errMsg)
+        }
+      })
+    }
     onMounted(() => {
       GetNamespaceList()
       getJobList()
@@ -388,6 +428,8 @@ export default {
       CollectionRemoveJobColumns,
       removeOneJob,
       removeOneJobOk,
+      scaleJob,
+      scaleJobOnSubmit,
     }
   }
 
@@ -411,9 +453,5 @@ export default {
   color: #FFF;
   text-align: center;
   font-size: 20px
-}
-.scale {
-  padding-left: 150px;
-  color: #737373
 }
 </style>

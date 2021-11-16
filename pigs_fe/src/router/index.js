@@ -108,6 +108,16 @@ const routes = [
                 children: []
             },
             {
+                path: 'k8s/workload/job/detail',
+                name: 'JobDetail',
+                component: () => import('../views/container/JobDetail.vue'),
+                meta: {
+                    title: '任务详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
                 path: 'k8s/workload/pod/detail',
                 name: 'PodDetail',
                 component: () => import('../views/container/PodDetail.vue'),
