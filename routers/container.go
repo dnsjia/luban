@@ -63,5 +63,13 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.DELETE("cronjob", k8s.DeleteCronJobController)
 		K8sClusterRouter.POST("cronjobs", k8s.DeleteCollectionCronJobController)
 		K8sClusterRouter.GET("cronjob/detail", k8s.DetailCronJobController)
+
+		K8sClusterRouter.GET("storage/pvc", k8s.GetPersistentVolumeClaimListController)
+		K8sClusterRouter.GET("storage/pvc/detail", k8s.DetailPersistentVolumeClaimController)
+		K8sClusterRouter.DELETE("storage/pvc", k8s.DeletePersistentVolumeClaimController)
+
+		//K8sClusterRouter.GET("storage/pv", k8s.GetPersistentVolumeListController)
+		//
+		//K8sClusterRouter.GET("storage/sc", k8s.GetStorageClassListController)
 	}
 }

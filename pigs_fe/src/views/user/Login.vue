@@ -4,7 +4,7 @@
       <div class="login">
 <!--        <h3 style="z-index:1;text-align:center;"><img src="../../assets/logo.png" width="120" height="80"></h3>-->
         <br/>
-        <h3 style="z-index:1;text-align:center;">小飞猪运维平台</h3>
+        <h3 style="z-index:1;text-align:center;">{{ loginTitle }}</h3>
         <br/>
 
         <a-tabs size="small">
@@ -57,6 +57,7 @@ import { defineComponent, reactive, ref, inject } from 'vue';
 import { useCookie } from 'vue-cookie-next'
 import { login } from '@/api/user'
 import router from "../../router";
+import env from "@/store/env";
 export default defineComponent({
   name: "Login",
   // const { inject } = Vue;
@@ -129,7 +130,8 @@ export default defineComponent({
       // ldap_enable: ref(false),
       widthVar: "0px",
 
-      enterLogin
+      enterLogin,
+      loginTitle: env.Title,
     };
   },
   components: {

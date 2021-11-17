@@ -53,5 +53,8 @@ export const JobDetail = (clusterId, params) => get('/api/v1/k8s/job/detail?clus
 export const GetCronJob = (clusterId, params) => get('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
 export const DeleteCollectionCronJob = (clusterId, params) => post('/api/v1/k8s/cronjobs?clusterId=' + clusterId, params)
 export const DeleteCronJob = (clusterId, params) => del('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
-
 export const CronJobDetail = (clusterId, params) => get('/api/v1/k8s/cronjob/detail?clusterId=' + clusterId, params)
+
+export const GetPVC = (clusterId, params) => get('/api/v1/k8s/storage/pvc?clusterId=' + clusterId, params)
+export const DeletePVC = (clusterId, params) => del('/api/v1/k8s/storage/pvc?clusterId=' + clusterId, params)
+export const PVCDetail = (clusterId, params) => get('/api/v1/k8s/storage/pvc/detail?clusterId=' + clusterId, params)

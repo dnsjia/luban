@@ -1,7 +1,7 @@
 <template>
   <a-layout class="layout" style="min-height: 100vh">
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
-      <div class="logo" >小飞猪运维平台</div>
+      <div class="logo" >{{ title }}</div>
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
         <a-menu-item key="1">
           <router-link :to="{path: '/'}">
@@ -44,17 +44,17 @@
             </router-link>
           </a-menu-item>
           <a-menu-item key="34">
-            <router-link :to="{path: '/k8s/cluster'}">
+            <router-link :to="{path: '/k8s/storage'}">
               存储管理
             </router-link>
           </a-menu-item>
           <a-menu-item key="35">
-            <router-link :to="{path: '/k8s/cluster'}">
+            <router-link :to="{path: '/k8s/network'}">
               网络管理
             </router-link>
           </a-menu-item>
           <a-menu-item key="36">
-            <router-link :to="{path: '/k8s/cluster'}">
+            <router-link :to="{path: '/k8s/event'}">
               事件中心
             </router-link>
           </a-menu-item>
@@ -196,8 +196,9 @@ import {
   createFromIconfontCN,
   GithubOutlined,
 } from '@ant-design/icons-vue';
-import { defineComponent, ref } from 'vue';
+import {defineComponent, ref} from 'vue';
 import router from "./router";
+import env from "@/store/env";
 
 
 
@@ -215,7 +216,8 @@ export default defineComponent({
         localStorage.removeItem('onLine')
         router.push('/user/login')
 
-      }
+      },
+      title: env.Title,
     };
   },
 

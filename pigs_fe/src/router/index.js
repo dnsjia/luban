@@ -137,6 +137,26 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/storage',
+                name: 'Storage',
+                component: () => import('../views/container/Storage.vue'),
+                meta: {
+                    title: '存储管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/storage/pvc/detail',
+                name: 'PVCDetail',
+                component: () => import('../views/container/PersistentVolumeClaimDetail.vue'),
+                meta: {
+                    title: '存储声明详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
