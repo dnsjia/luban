@@ -32,9 +32,11 @@
               <a-descriptions title="资源信息" :column="2">
                 <a-descriptions-item label="状态">{{ data.pvcData.status }}</a-descriptions-item>
                 <a-descriptions-item label="存储类型">{{ data.pvcData.objectMeta.annotations['volume.beta.kubernetes.io/storage-class'] }}</a-descriptions-item>
-                <a-descriptions-item label="总量">{{ data.pvcData.capacity.storage }}</a-descriptions-item>
+                <a-descriptions-item label="总量" v-if="data.pvcData.capacity!==null">{{ data.pvcData.capacity.storage }}</a-descriptions-item>
                 <a-descriptions-item label="访问模式">{{ data.pvcData.accessModes[0] }}</a-descriptions-item>
-                <a-descriptions-item label="关联存储卷">{{ data.pvcData.volume }}</a-descriptions-item>
+                <a-descriptions-item label="关联存储卷">
+                  <a @click="pvDetail(data.pvcData.volume)">{{ data.pvcData.volume }}</a>
+                </a-descriptions-item>
               </a-descriptions>
             </div>
           </a-card>
@@ -50,6 +52,7 @@ import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 import {GetStorage} from "../../plugin/state/stroge";
 import {PVCDetail} from "../../api/k8s";
+import routers from "../../router";
 
 export default {
   name: "PersistentVolumeClaimDetail",
@@ -69,12 +72,22 @@ export default {
         }
       })
     }
+    const pvDetail = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'PVDetail', query: {
+          clusterId: cs.clusterId,
+          name: text
+        }
+      });
+    }
     onMounted(() => {
       detail(router.query);
     });
     return {
       data,
       detail,
+      pvDetail
     }
   }
 }

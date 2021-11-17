@@ -39,16 +39,14 @@
           <a @click="pvcDetail(text)">{{ text.objectMeta.name }}</a>
         </template>
 
-        <template #labels="{text}">
-          <span v-for="(v, k, i) in text.objectMeta.labels" :key="i">
-            <a-tag color="cyan">{{ k }}: {{ v }}</a-tag>
-          </span>
-        </template>
-
         <template #creationTimestamp="{text}">
           <span>
            {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
           </span>
+        </template>
+
+        <template #volume="{text}">
+          <a @click="pvDetail(text)">{{ text.volume }}</a>
         </template>
 
 
@@ -93,27 +91,6 @@
         </template>
       </a-pagination>
     </div>
-
-    <template>
-      <div>
-        <a-modal v-model:visible="data.CollectionRemovePVCVisible" title="存储声明 (PersistentVolumeClaim) "
-                 @ok="CollectionRemovePVCOnSubmit" cancelText="取消"
-                 okText="确定" :keyboard="false" :maskClosable="false" width="820px">
-          <a-space>
-            <p class="circular">
-              <span class="exclamation-point">i</span>
-            </p>
-            <p>确认删除以下任务？</p>
-          </a-space>
-          <a-table :columns="CollectionRemovePVCColumns" :data-source="data.CollectionRemovePVCData" size="middle"
-                   :pagination="false">
-            <template #CollectionRemovePVCCreationTimestamp="{text}">
-              {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
-            </template>
-          </a-table>
-        </a-modal>
-      </div>
-    </template>
 
     <template>
       <div>
@@ -167,7 +144,7 @@ const columns = [
   },
   {
     title: '关联存储卷',
-    dataIndex: 'volume',
+    slots: {customRender: 'volume'},
   },
   {
     title: '创建时间',
@@ -297,6 +274,15 @@ export default {
       })
     }
 
+    const pvDetail = (text) => {
+      let cs = GetStorage()
+      router.push({
+        name: 'PVDetail', query: {
+          clusterId: cs.clusterId,
+          name: text.volume,
+        }
+      });
+    }
     onMounted(() => {
       GetNamespaceList()
       getPVCList()
@@ -315,6 +301,7 @@ export default {
       onChangePage,
       removeOnePVC,
       removeOnePVCOk,
+      pvDetail,
     }
   }
 }
