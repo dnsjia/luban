@@ -72,6 +72,8 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("storage/pv/detail", k8s.DetailPersistentVolumeController)
 		K8sClusterRouter.DELETE("storage/pv", k8s.DeletePersistentVolumeController)
 
-		//K8sClusterRouter.GET("storage/sc", k8s.GetStorageClassListController)
+		K8sClusterRouter.GET("storage/sc", k8s.GetStorageClassListController)
+		K8sClusterRouter.GET("storage/sc/detail", k8s.DetailStorageClassController)
+		K8sClusterRouter.DELETE("storage/sc", k8s.DeleteStorageClassController)
 	}
 }

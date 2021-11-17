@@ -62,3 +62,7 @@ export const PVCDetail = (clusterId, params) => get('/api/v1/k8s/storage/pvc/det
 export const GetPV = (clusterId, params) => get('/api/v1/k8s/storage/pv?clusterId=' + clusterId, params)
 export const DeletePV = (clusterId, params) => del('/api/v1/k8s/storage/pv?clusterId=' + clusterId, params)
 export const PVDetail = (clusterId, params) => get('/api/v1/k8s/storage/pv/detail?clusterId=' + clusterId, params)
+
+export const GetStorageClass = (clusterId, params) => get('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
+export const DeleteStorageClass = (clusterId, params) => del('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
+export const StorageClassDetail = (clusterId, params) => get('/api/v1/k8s/storage/sc/detail?clusterId=' + clusterId, params)

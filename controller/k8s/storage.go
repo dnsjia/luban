@@ -7,6 +7,7 @@ import (
 	"pigs/pkg/k8s/parser"
 	"pigs/pkg/k8s/pv"
 	"pigs/pkg/k8s/pvc"
+	"pigs/pkg/k8s/storageclass"
 )
 
 func GetPersistentVolumeClaimListController(c *gin.Context) {
@@ -111,6 +112,59 @@ func DeletePersistentVolumeController(c *gin.Context) {
 	name := parser.ParseNameParameter(c)
 
 	err = pv.DeletePersistentVolume(client, name)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+
+	response.Ok(c)
+	return
+}
+
+func GetStorageClassListController(c *gin.Context) {
+	client, err := Init.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+	dataSelect := parser.ParseDataSelectPathParameter(c)
+
+	data, err := storageclass.GetStorageClassList(client, dataSelect)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+
+	response.OkWithData(data, c)
+	return
+}
+func DetailStorageClassController(c *gin.Context) {
+	client, err := Init.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+	name := parser.ParseNameParameter(c)
+
+	result, err := storageclass.GetStorageClassDetail(client, name)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+
+	response.OkWithData(result, c)
+	return
+}
+
+func DeleteStorageClassController(c *gin.Context) {
+	client, err := Init.ClusterID(c)
+	if err != nil {
+		response.FailWithMessage(response.InternalServerError, err.Error(), c)
+		return
+	}
+	name := parser.ParseNameParameter(c)
+
+	err = storageclass.DeleteStorageClass(client, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return

@@ -7,8 +7,8 @@ import (
 	"pigs/models/k8s"
 
 	apps "k8s.io/api/apps/v1"
-
 	v1 "k8s.io/api/core/v1"
+	storage "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
 )
@@ -64,6 +64,9 @@ type ResourceChannels struct {
 
 	// List and error channels to Cron Jobs.
 	CronJobList CronJobListChannel
+
+	// List and error channels to StorageClasses
+	StorageClassList StorageClassListChannel
 }
 
 // EventListChannel is a list and error channels to Events.
@@ -482,6 +485,31 @@ func GetCronJobListChannel(client client.Interface, nsQuery *NamespaceQuery, num
 			}
 		}
 		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// StorageClassListChannel is a list and error channels to storage classes.
+type StorageClassListChannel struct {
+	List  chan *storage.StorageClassList
+	Error chan error
+}
+
+// GetStorageClassListChannel returns a pair of channels to a storage class list and
+// errors that both must be read numReads times.
+func GetStorageClassListChannel(client client.Interface, numReads int) StorageClassListChannel {
+	channel := StorageClassListChannel{
+		List:  make(chan *storage.StorageClassList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.StorageV1().StorageClasses().List(context.TODO(), k8s.ListEverything)
 		for i := 0; i < numReads; i++ {
 			channel.List <- list
 			channel.Error <- err

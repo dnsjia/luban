@@ -167,6 +167,16 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/storage/sc/detail',
+                name: 'StorageClassDetail',
+                component: () => import('../views/container/StorageClassDetail.vue'),
+                meta: {
+                    title: '存储类详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
