@@ -54,6 +54,11 @@
             </router-link>
           </a-menu-item>
           <a-menu-item key="36">
+            <router-link :to="{path: '/k8s/config'}">
+              配置管理
+            </router-link>
+          </a-menu-item>
+          <a-menu-item key="37">
             <router-link :to="{path: '/k8s/event'}">
               事件中心
             </router-link>

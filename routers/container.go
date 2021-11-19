@@ -75,5 +75,15 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("storage/sc", k8s.GetStorageClassListController)
 		K8sClusterRouter.GET("storage/sc/detail", k8s.DetailStorageClassController)
 		K8sClusterRouter.DELETE("storage/sc", k8s.DeleteStorageClassController)
+
+		K8sClusterRouter.GET("network/service", k8s.GetServiceListController)
+		K8sClusterRouter.GET("network/service/detail", k8s.DetailServiceController)
+		K8sClusterRouter.DELETE("network/service", k8s.DeleteServiceController)
+		K8sClusterRouter.POST("network/services", k8s.DeleteCollectionServiceController)
+
+		K8sClusterRouter.GET("network/ingress", k8s.GetIngressListController)
+		K8sClusterRouter.GET("network/ingress/detail", k8s.DetailIngressController)
+		K8sClusterRouter.DELETE("network/ingress", k8s.DeleteIngressController)
+		K8sClusterRouter.POST("network/ingresss", k8s.DeleteCollectionIngressController)
 	}
 }

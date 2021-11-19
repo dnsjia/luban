@@ -66,3 +66,13 @@ export const PVDetail = (clusterId, params) => get('/api/v1/k8s/storage/pv/detai
 export const GetStorageClass = (clusterId, params) => get('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
 export const DeleteStorageClass = (clusterId, params) => del('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
 export const StorageClassDetail = (clusterId, params) => get('/api/v1/k8s/storage/sc/detail?clusterId=' + clusterId, params)
+
+export const GetServiceList = (clusterId, params) => get('/api/v1/k8s/network/service?clusterId=' + clusterId, params)
+export const DeleteCollectionService = (clusterId, params) => post('/api/v1/k8s/network/services?clusterId=' + clusterId, params)
+export const DeleteService = (clusterId, params) => del('/api/v1/k8s/network/service?clusterId=' + clusterId, params)
+export const ServiceDetail = (clusterId, params) => get('/api/v1/k8s/network/service/detail?clusterId=' + clusterId, params)
+
+export const GetIngressList = (clusterId, params) => get('/api/v1/k8s/network/ingress?clusterId=' + clusterId, params)
+export const DeleteCollectionIngress = (clusterId, params) => post('/api/v1/k8s/network/ingresss?clusterId=' + clusterId, params)
+export const DeleteIngress = (clusterId, params) => del('/api/v1/k8s/network/ingress?clusterId=' + clusterId, params)
+export const IngressDetail = (clusterId, params) => get('/api/v1/k8s/network/ingress/detail?clusterId=' + clusterId, params)

@@ -177,6 +177,46 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/network',
+                name: 'NetWork',
+                component: () => import('../views/container/NetWork.vue'),
+                meta: {
+                    title: '网络管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/network/service/detail',
+                name: 'ServiceDetail',
+                component: () => import('../views/container/ServiceDetail.vue'),
+                meta: {
+                    title: '服务详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/network/ingress/detail',
+                name: 'IngressDetail',
+                component: () => import('../views/container/IngressDetail.vue'),
+                meta: {
+                    title: '路由详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/config',
+                name: 'NetWork',
+                component: () => import('../views/container/ConfigManage.vue'),
+                meta: {
+                    title: '配置管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
