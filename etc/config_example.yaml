@@ -31,3 +31,14 @@ system:
   env: 'public'  # Change to "develop" to skip authentication for development mode,  public auth
   addr: 8999
   db-type: 'mysql'
+
+
+redis:
+  host: '127.0.0.1:6379'
+  db: 0
+  username: ''
+  password: ''
+
+# cloudSync Task
+crontab:
+  aliyun: "00 */2 * * *"

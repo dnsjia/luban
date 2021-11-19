@@ -3,14 +3,10 @@ package tasks
 import (
 	"context"
 	"pigs/common"
-	"syscall"
 	"time"
 
-	"log"
-	"os"
-	"os/signal"
-
 	"github.com/hibiken/asynq"
+	"log"
 )
 
 // loggingMiddleware 记录任务日志中间件
@@ -45,22 +41,22 @@ func TaskWorker() {
 	mux.HandleFunc(SyncAliYunCloud, HandleAliCloudTask)
 
 	// start server
-	if err := srv.Start(mux); err != nil {
+	if err := srv.Run(mux); err != nil {
 		log.Fatalf("could not start server: %v", err)
 	}
 
 	// Wait for termination signal.
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGTSTP)
-	for {
-		s := <-sigs
-		if s == syscall.SIGTSTP {
-			srv.Shutdown()
-			continue
-		}
-		break
-	}
-
-	// Stop worker server.
-	srv.Stop()
+	//sigs := make(chan os.Signal, 1)
+	//signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGTSTP)
+	//for {
+	//	s := <-sigs
+	//	if s == syscall.SIGTSTP {
+	//		srv.Shutdown()
+	//		continue
+	//	}
+	//	break
+	//}
+	//
+	//// Stop worker server.
+	//srv.Stop()
 }
