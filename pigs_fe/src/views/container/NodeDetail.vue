@@ -367,7 +367,7 @@ export default {
     const deletePodSubmit = () => {
       let cs = GetStorage()
       let delParams = {
-        "podName": data.deletePodData.metadata.name,
+        "name": data.deletePodData.metadata.name,
         "namespace": data.deletePodData.metadata.namespace,
       }
       DeletePod(cs.clusterId, delParams).then(res => {

@@ -55,3 +55,14 @@ func ParseNamespacePathParameter(request *gin.Context) *k8scommon.NamespaceQuery
 	}
 	return k8scommon.NewNamespaceQuery(nonEmptyNamespaces)
 }
+
+// ParseNamespaceParameter 从URL解析命名空间
+func ParseNamespaceParameter(request *gin.Context) string {
+	return request.Query("namespace")
+
+}
+
+// ParseNameParameter 从URL解析name参数
+func ParseNameParameter(request *gin.Context) string {
+	return request.Query("name")
+}

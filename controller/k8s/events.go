@@ -6,11 +6,12 @@ import (
 	"pigs/controller/response"
 	"pigs/pkg/k8s/Init"
 	"pigs/pkg/k8s/event"
+	"pigs/pkg/k8s/parser"
 )
 
 func Events(c *gin.Context) {
 
-	namespace := c.Query("namespace")
+	namespace := parser.ParseNamespaceParameter(c)
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)

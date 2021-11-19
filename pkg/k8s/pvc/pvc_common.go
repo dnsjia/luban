@@ -1,4 +1,4 @@
-package persistentvolumeclaim
+package pvc
 
 import (
 	"context"
@@ -17,8 +17,7 @@ import (
 type PersistentVolumeClaimCell api.PersistentVolumeClaim
 
 // GetPodPersistentVolumeClaims gets persistentvolumeclaims that are associated with this pod.
-func GetPodPersistentVolumeClaims(client client.Interface, namespace string, podName string,
-	dsQuery *dataselect.DataSelectQuery) (*PersistentVolumeClaimList, error) {
+func GetPodPersistentVolumeClaims(client client.Interface, namespace string, podName string, dsQuery *dataselect.DataSelectQuery) (*PersistentVolumeClaimList, error) {
 
 	pod, err := client.CoreV1().Pods(namespace).Get(context.TODO(), podName, metaV1.GetOptions{})
 	if err != nil {

@@ -9,7 +9,7 @@ func InitCasBinRouter(Router *gin.RouterGroup) {
 
 	//CasBinRouter := Router.Group("casbin")
 	{
-		fmt.Println("xxxxxx")
+		fmt.Println("casbin权限init 路由方法")
 		//CasBinRouter.POST("add", controller.AddCasBin)
 	}
 }

@@ -1,7 +1,10 @@
-package persistentvolumeclaim
+package pvc
 
 import (
+	"context"
+	"fmt"
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"pigs/common"
 	"pigs/models/k8s"
@@ -15,9 +18,6 @@ type PersistentVolumeClaimList struct {
 
 	// Unordered list of persistent volume claims
 	Items []PersistentVolumeClaim `json:"items"`
-
-	// List of non-critical errors, that occurred during resource retrieval.
-	Errors []error `json:"errors"`
 }
 
 // PersistentVolumeClaim provides the simplified presentation layer view of Kubernetes Persistent Volume Claim resource.
@@ -44,8 +44,7 @@ func GetPersistentVolumeClaimList(client kubernetes.Interface, nsQuery *k8scommo
 
 // GetPersistentVolumeClaimListFromChannels returns a list of all Persistent Volume Claims in the cluster
 // reading required resource list once from the channels.
-func GetPersistentVolumeClaimListFromChannels(channels *k8scommon.ResourceChannels, nsQuery *k8scommon.NamespaceQuery,
-	dsQuery *dataselect.DataSelectQuery) (*PersistentVolumeClaimList, error) {
+func GetPersistentVolumeClaimListFromChannels(channels *k8scommon.ResourceChannels, nsQuery *k8scommon.NamespaceQuery, dsQuery *dataselect.DataSelectQuery) (*PersistentVolumeClaimList, error) {
 
 	persistentVolumeClaims := <-channels.PersistentVolumeClaimList.List
 	err := <-channels.PersistentVolumeClaimList.Error
@@ -57,6 +56,7 @@ func GetPersistentVolumeClaimListFromChannels(channels *k8scommon.ResourceChanne
 }
 
 func toPersistentVolumeClaim(pvc v1.PersistentVolumeClaim) PersistentVolumeClaim {
+
 	return PersistentVolumeClaim{
 		ObjectMeta:   k8s.NewObjectMeta(pvc.ObjectMeta),
 		TypeMeta:     k8s.NewTypeMeta(k8s.ResourceKindPersistentVolumeClaim),
@@ -84,4 +84,9 @@ func toPersistentVolumeClaimList(persistentVolumeClaims []v1.PersistentVolumeCla
 	}
 
 	return result
+}
+
+func DeletePersistentVolumeClaim(client *kubernetes.Clientset, namespace, name string) (err error) {
+	common.LOG.Info(fmt.Sprintf("Start deleting persistent volumes claims, namespace: %v, name: %v", namespace, name))
+	return client.CoreV1().PersistentVolumeClaims(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
 }

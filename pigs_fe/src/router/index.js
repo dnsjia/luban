@@ -99,10 +99,30 @@ const routes = [
             },
             {
                 path: 'k8s/workload/daemonset/detail',
-                name: 'PodDetail',
-                component: () => import('../views/container/PodDetail.vue'),
+                name: 'DaemonSetDetail',
+                component: () => import('../views/container/DaemonSetDetail.vue'),
                 meta: {
                     title: '守护进程集详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/workload/job/detail',
+                name: 'JobDetail',
+                component: () => import('../views/container/JobDetail.vue'),
+                meta: {
+                    title: '任务详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/workload/cronjob/detail',
+                name: 'CronJobDetail',
+                component: () => import('../views/container/CronJobDetail.vue'),
+                meta: {
+                    title: '定时任务详情',
                     module: "容器管理"
                 },
                 children: []
@@ -113,6 +133,86 @@ const routes = [
                 component: () => import('../views/container/PodDetail.vue'),
                 meta: {
                     title: '容器详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/storage',
+                name: 'Storage',
+                component: () => import('../views/container/Storage.vue'),
+                meta: {
+                    title: '存储管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/storage/pvc/detail',
+                name: 'PVCDetail',
+                component: () => import('../views/container/PersistentVolumeClaimDetail.vue'),
+                meta: {
+                    title: '存储声明详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/storage/pv/detail',
+                name: 'PVDetail',
+                component: () => import('../views/container/PersistentVolumeDetail.vue'),
+                meta: {
+                    title: '存储卷详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/storage/sc/detail',
+                name: 'StorageClassDetail',
+                component: () => import('../views/container/StorageClassDetail.vue'),
+                meta: {
+                    title: '存储类详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/network',
+                name: 'NetWork',
+                component: () => import('../views/container/NetWork.vue'),
+                meta: {
+                    title: '网络管理',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/network/service/detail',
+                name: 'ServiceDetail',
+                component: () => import('../views/container/ServiceDetail.vue'),
+                meta: {
+                    title: '服务详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/network/ingress/detail',
+                name: 'IngressDetail',
+                component: () => import('../views/container/IngressDetail.vue'),
+                meta: {
+                    title: '路由详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/config',
+                name: 'NetWork',
+                component: () => import('../views/container/ConfigManage.vue'),
+                meta: {
+                    title: '配置管理',
                     module: "容器管理"
                 },
                 children: []

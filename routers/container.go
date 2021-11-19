@@ -11,9 +11,10 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.POST("cluster", k8s.CreateK8SCluster)
 		K8sClusterRouter.GET("cluster", k8s.ListK8SCluster)
 		K8sClusterRouter.GET("cluster/secret", k8s.ClusterSecret)
-		K8sClusterRouter.POST("delCluster", k8s.DelK8SCluster)
+		K8sClusterRouter.POST("cluster/delete", k8s.DelK8SCluster)
 		K8sClusterRouter.GET("cluster/detail", k8s.GetK8SClusterDetail)
 		K8sClusterRouter.GET("events", k8s.Events)
+
 		K8sClusterRouter.GET("node", k8s.GetNodes)
 		K8sClusterRouter.DELETE("node", k8s.RemoveNode)
 		K8sClusterRouter.GET("node/detail", k8s.GetNodeDetail)
@@ -35,17 +36,54 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("namespace", k8s.GetNamespaceList)
 
 		K8sClusterRouter.GET("pod", k8s.GetPodsListController)
+		K8sClusterRouter.DELETE("pod", k8s.DeletePodController)
 		K8sClusterRouter.POST("pods", k8s.DeleteCollectionPodsController)
-		K8sClusterRouter.POST("pod/delete", k8s.DeletePodController)
 		K8sClusterRouter.GET("pod/detail", k8s.DetailPodController)
 
 		K8sClusterRouter.GET("statefulset", k8s.GetStatefulSetListController)
+		K8sClusterRouter.DELETE("statefulset", k8s.DeleteStatefulSetController)
 		K8sClusterRouter.POST("statefulsets", k8s.DeleteCollectionStatefulSetController)
-		K8sClusterRouter.POST("statefulset/delete", k8s.DeleteStatefulSetController)
 		K8sClusterRouter.POST("statefulset/restart", k8s.RestartStatefulSetController)
 		K8sClusterRouter.POST("statefulset/scale", k8s.ScaleStatefulSetController)
 		K8sClusterRouter.GET("statefulset/detail", k8s.DetailStatefulSetController)
 
 		K8sClusterRouter.GET("daemonset", k8s.GetDaemonSetListController)
+		K8sClusterRouter.DELETE("daemonset", k8s.DeleteDaemonSetController)
+		K8sClusterRouter.POST("daemonsets", k8s.DeleteCollectionDaemonSetController)
+		K8sClusterRouter.POST("daemonset/restart", k8s.RestartDaemonSetController)
+		K8sClusterRouter.GET("daemonset/detail", k8s.DetailDaemonSetController)
+
+		K8sClusterRouter.GET("job", k8s.GetJobListController)
+		K8sClusterRouter.DELETE("job", k8s.DeleteJobController)
+		K8sClusterRouter.POST("jobs", k8s.DeleteCollectionJobController)
+		K8sClusterRouter.POST("job/scale", k8s.ScaleJobController)
+		K8sClusterRouter.GET("job/detail", k8s.DetailJobController)
+
+		K8sClusterRouter.GET("cronjob", k8s.GetCronJobListController)
+		K8sClusterRouter.DELETE("cronjob", k8s.DeleteCronJobController)
+		K8sClusterRouter.POST("cronjobs", k8s.DeleteCollectionCronJobController)
+		K8sClusterRouter.GET("cronjob/detail", k8s.DetailCronJobController)
+
+		K8sClusterRouter.GET("storage/pvc", k8s.GetPersistentVolumeClaimListController)
+		K8sClusterRouter.GET("storage/pvc/detail", k8s.DetailPersistentVolumeClaimController)
+		K8sClusterRouter.DELETE("storage/pvc", k8s.DeletePersistentVolumeClaimController)
+
+		K8sClusterRouter.GET("storage/pv", k8s.GetPersistentVolumeListController)
+		K8sClusterRouter.GET("storage/pv/detail", k8s.DetailPersistentVolumeController)
+		K8sClusterRouter.DELETE("storage/pv", k8s.DeletePersistentVolumeController)
+
+		K8sClusterRouter.GET("storage/sc", k8s.GetStorageClassListController)
+		K8sClusterRouter.GET("storage/sc/detail", k8s.DetailStorageClassController)
+		K8sClusterRouter.DELETE("storage/sc", k8s.DeleteStorageClassController)
+
+		K8sClusterRouter.GET("network/service", k8s.GetServiceListController)
+		K8sClusterRouter.GET("network/service/detail", k8s.DetailServiceController)
+		K8sClusterRouter.DELETE("network/service", k8s.DeleteServiceController)
+		K8sClusterRouter.POST("network/services", k8s.DeleteCollectionServiceController)
+
+		K8sClusterRouter.GET("network/ingress", k8s.GetIngressListController)
+		K8sClusterRouter.GET("network/ingress/detail", k8s.DetailIngressController)
+		K8sClusterRouter.DELETE("network/ingress", k8s.DeleteIngressController)
+		K8sClusterRouter.POST("network/ingresss", k8s.DeleteCollectionIngressController)
 	}
 }

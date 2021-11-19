@@ -3,7 +3,7 @@ import {post, get, del} from "@/plugin/utils/request";
 export const k8sCluster = (params) => post('/api/v1/k8s/cluster', params)
 export const fetchK8SCluster = (params) => get('/api/v1/k8s/cluster', params)
 export const clusterSecret = (params) => get('/api/v1/k8s/cluster/secret', params)
-export const delK8SCluster = (params) => post('/api/v1/k8s/delCluster', params)
+export const delK8SCluster = (params) => post('/api/v1/k8s/cluster/delete', params)
 export const getK8SClusterDetail = (params) => get('/api/v1/k8s/cluster/detail', params)
 export const getEvents = (params) => get('/api/v1/k8s/events', params)
 export const getNodes = (params) => get('/api/v1/k8s/node', params)
@@ -28,15 +28,51 @@ export const GetDeploymentToService = (clusterId, params) => post('/api/v1/k8s/d
 
 export const GetPodsList = (clusterId, params) => get('/api/v1/k8s/pod?clusterId=' + clusterId, params)
 export const DeleteCollectionPods = (clusterId, params) => post('/api/v1/k8s/pods?clusterId=' + clusterId, params)
-export const DeletePod = (clusterId, params) => post('/api/v1/k8s/pod/delete?clusterId=' + clusterId, params)
+export const DeletePod = (clusterId, params) => del('/api/v1/k8s/pod?clusterId=' + clusterId, params)
 export const PodDetail = (params) => get('/api/v1/k8s/pod/detail', params)
 
 export const GetStatefulSet = (clusterId, params) => get('/api/v1/k8s/statefulset?clusterId=' + clusterId, params)
 export const DeleteCollectionStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulsets?clusterId=' + clusterId, params)
-export const DeleteStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/delete?clusterId=' + clusterId, params)
+export const DeleteStatefulSet = (clusterId, params) => del('/api/v1/k8s/statefulset?clusterId=' + clusterId, params)
 export const restartStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/restart?clusterId=' + clusterId, params)
 export const scaleStatefulSet = (clusterId, params) => post('/api/v1/k8s/statefulset/scale?clusterId=' + clusterId, params)
 export const StatefulSetDetail = (params) => get('/api/v1/k8s/statefulset/detail', params)
 
 export const GetDaemonSet = (clusterId, params) => get('/api/v1/k8s/daemonset?clusterId=' + clusterId, params)
 export const DeleteCollectionDaemonSet = (clusterId, params) => post('/api/v1/k8s/daemonsets?clusterId=' + clusterId, params)
+export const DeleteDaemonSet = (clusterId, params) => del('/api/v1/k8s/daemonset?clusterId=' + clusterId, params)
+export const RestartDaemonSet = (clusterId, params) => post('/api/v1/k8s/daemonset/restart?clusterId=' + clusterId, params)
+export const DaemonSetDetail = (clusterId, params) => get('/api/v1/k8s/daemonset/detail?clusterId=' + clusterId, params)
+
+export const GetJob = (clusterId, params) => get('/api/v1/k8s/job?clusterId=' + clusterId, params)
+export const DeleteCollectionJob = (clusterId, params) => post('/api/v1/k8s/jobs?clusterId=' + clusterId, params)
+export const DeleteJob = (clusterId, params) => del('/api/v1/k8s/job?clusterId=' + clusterId, params)
+export const ScaleJob = (clusterId, params) => post('/api/v1/k8s/job/scale?clusterId=' + clusterId, params)
+export const JobDetail = (clusterId, params) => get('/api/v1/k8s/job/detail?clusterId=' + clusterId, params)
+
+export const GetCronJob = (clusterId, params) => get('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
+export const DeleteCollectionCronJob = (clusterId, params) => post('/api/v1/k8s/cronjobs?clusterId=' + clusterId, params)
+export const DeleteCronJob = (clusterId, params) => del('/api/v1/k8s/cronjob?clusterId=' + clusterId, params)
+export const CronJobDetail = (clusterId, params) => get('/api/v1/k8s/cronjob/detail?clusterId=' + clusterId, params)
+
+export const GetPVC = (clusterId, params) => get('/api/v1/k8s/storage/pvc?clusterId=' + clusterId, params)
+export const DeletePVC = (clusterId, params) => del('/api/v1/k8s/storage/pvc?clusterId=' + clusterId, params)
+export const PVCDetail = (clusterId, params) => get('/api/v1/k8s/storage/pvc/detail?clusterId=' + clusterId, params)
+
+export const GetPV = (clusterId, params) => get('/api/v1/k8s/storage/pv?clusterId=' + clusterId, params)
+export const DeletePV = (clusterId, params) => del('/api/v1/k8s/storage/pv?clusterId=' + clusterId, params)
+export const PVDetail = (clusterId, params) => get('/api/v1/k8s/storage/pv/detail?clusterId=' + clusterId, params)
+
+export const GetStorageClass = (clusterId, params) => get('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
+export const DeleteStorageClass = (clusterId, params) => del('/api/v1/k8s/storage/sc?clusterId=' + clusterId, params)
+export const StorageClassDetail = (clusterId, params) => get('/api/v1/k8s/storage/sc/detail?clusterId=' + clusterId, params)
+
+export const GetServiceList = (clusterId, params) => get('/api/v1/k8s/network/service?clusterId=' + clusterId, params)
+export const DeleteCollectionService = (clusterId, params) => post('/api/v1/k8s/network/services?clusterId=' + clusterId, params)
+export const DeleteService = (clusterId, params) => del('/api/v1/k8s/network/service?clusterId=' + clusterId, params)
+export const ServiceDetail = (clusterId, params) => get('/api/v1/k8s/network/service/detail?clusterId=' + clusterId, params)
+
+export const GetIngressList = (clusterId, params) => get('/api/v1/k8s/network/ingress?clusterId=' + clusterId, params)
+export const DeleteCollectionIngress = (clusterId, params) => post('/api/v1/k8s/network/ingresss?clusterId=' + clusterId, params)
+export const DeleteIngress = (clusterId, params) => del('/api/v1/k8s/network/ingress?clusterId=' + clusterId, params)
+export const IngressDetail = (clusterId, params) => get('/api/v1/k8s/network/ingress/detail?clusterId=' + clusterId, params)

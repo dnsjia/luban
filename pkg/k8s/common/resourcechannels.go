@@ -2,13 +2,16 @@ package common
 
 import (
 	"context"
-	"pigs/models/k8s"
+	batch "k8s.io/api/batch/v1"
+	batch2 "k8s.io/api/batch/v1beta1"
 
 	apps "k8s.io/api/apps/v1"
-
 	v1 "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
+	storage "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
+	"pigs/models/k8s"
 )
 
 // ResourceChannels struct holds channels to resource lists. Each list channel is paired with
@@ -56,6 +59,21 @@ type ResourceChannels struct {
 
 	// List and error channels to Services.
 	ServiceList ServiceListChannel
+
+	// List and error channels to Jobs.
+	JobList JobListChannel
+
+	// List and error channels to Cron Jobs.
+	CronJobList CronJobListChannel
+
+	// List and error channels to StorageClasses
+	StorageClassList StorageClassListChannel
+
+	// List and error channels to Endpoints.
+	EndpointList EndpointListChannel
+
+	// List and error channels to Ingresses.
+	//IngressList IngressListChannel
 }
 
 // EventListChannel is a list and error channels to Events.
@@ -282,8 +300,7 @@ type PersistentVolumeListChannel struct {
 
 // GetPersistentVolumeListChannel returns a pair of channels to a PersistentVolume list and errors
 // that both must be read numReads times.
-func GetPersistentVolumeListChannel(client client.Interface,
-	numReads int) PersistentVolumeListChannel {
+func GetPersistentVolumeListChannel(client client.Interface, numReads int) PersistentVolumeListChannel {
 	channel := PersistentVolumeListChannel{
 		List:  make(chan *v1.PersistentVolumeList, numReads),
 		Error: make(chan error, numReads),
@@ -308,8 +325,7 @@ type PersistentVolumeClaimListChannel struct {
 
 // GetPersistentVolumeClaimListChannel returns a pair of channels to a PersistentVolumeClaim list
 // and errors that both must be read numReads times.
-func GetPersistentVolumeClaimListChannel(client client.Interface, nsQuery *NamespaceQuery,
-	numReads int) PersistentVolumeClaimListChannel {
+func GetPersistentVolumeClaimListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) PersistentVolumeClaimListChannel {
 
 	channel := PersistentVolumeClaimListChannel{
 		List:  make(chan *v1.PersistentVolumeClaimList, numReads),
@@ -408,6 +424,155 @@ func GetServiceListChannel(client client.Interface, nsQuery *NamespaceQuery, num
 	go func() {
 		list, err := client.CoreV1().Services(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
 		var filteredItems []v1.Service
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// JobListChannel is a list and error channels to Jobs.
+type JobListChannel struct {
+	List  chan *batch.JobList
+	Error chan error
+}
+
+// GetJobListChannel returns a pair of channels to a Job list and errors that both must be read numReads times.
+func GetJobListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) JobListChannel {
+	channel := JobListChannel{
+		List:  make(chan *batch.JobList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.BatchV1().Jobs(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []batch.Job
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// CronJobListChannel is a list and error channels to Cron Jobs.
+type CronJobListChannel struct {
+	List  chan *batch2.CronJobList
+	Error chan error
+}
+
+// GetCronJobListChannel returns a pair of channels to a Cron Job list and errors that both must be read numReads times.
+func GetCronJobListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) CronJobListChannel {
+	channel := CronJobListChannel{
+		List:  make(chan *batch2.CronJobList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.BatchV1beta1().CronJobs(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []batch2.CronJob
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// StorageClassListChannel is a list and error channels to storage classes.
+type StorageClassListChannel struct {
+	List  chan *storage.StorageClassList
+	Error chan error
+}
+
+// GetStorageClassListChannel returns a pair of channels to a storage class list and
+// errors that both must be read numReads times.
+func GetStorageClassListChannel(client client.Interface, numReads int) StorageClassListChannel {
+	channel := StorageClassListChannel{
+		List:  make(chan *storage.StorageClassList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.StorageV1().StorageClasses().List(context.TODO(), k8s.ListEverything)
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// EndpointListChannel is a list and error channels to Endpoints.
+type EndpointListChannel struct {
+	List  chan *v1.EndpointsList
+	Error chan error
+}
+
+func GetEndpointListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) EndpointListChannel {
+	return GetEndpointListChannelWithOptions(client, nsQuery, k8s.ListEverything, numReads)
+}
+
+// GetEndpointListChannelWithOptions is GetEndpointListChannel plus list options.
+func GetEndpointListChannelWithOptions(client client.Interface,
+	nsQuery *NamespaceQuery, opt metaV1.ListOptions, numReads int) EndpointListChannel {
+	channel := EndpointListChannel{
+		List:  make(chan *v1.EndpointsList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := client.CoreV1().Endpoints(nsQuery.ToRequestParam()).List(context.TODO(), opt)
+
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// IngressListChannel is a list and error channels to Ingresss.
+type IngressListChannel struct {
+	List  chan *extensions.IngressList
+	Error chan error
+}
+
+// GetIngressListChannel returns a pair of channels to an Ingress list and errors that both
+// must be read numReads times.
+func GetIngressListChannel(client client.Interface, nsQuery *NamespaceQuery, numReads int) IngressListChannel {
+
+	channel := IngressListChannel{
+		List:  make(chan *extensions.IngressList, numReads),
+		Error: make(chan error, numReads),
+	}
+	go func() {
+		list, err := client.ExtensionsV1beta1().Ingresses(nsQuery.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+		var filteredItems []extensions.Ingress
 		for _, item := range list.Items {
 			if nsQuery.Matches(item.ObjectMeta.Namespace) {
 				filteredItems = append(filteredItems, item)

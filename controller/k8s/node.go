@@ -85,7 +85,7 @@ func CordonNode(c *gin.Context) {
 }
 
 func RemoveNode(c *gin.Context) {
-	nodeName := c.Query("node_name")
+	nodeName := c.Query("nodeName")
 	if nodeName == "" {
 		response.FailWithMessage(http.StatusNotFound, "移除节点名称不能为空", c)
 		return

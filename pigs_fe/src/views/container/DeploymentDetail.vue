@@ -1,5 +1,4 @@
 <template>
-
     <div style="background-color: #FFFFFF">
       <a-page-header style="border: 1px solid rgb(235, 237, 240)" :title="data.DetailData.objectMeta.name" @back="() => $router.go(-1)" v-if="data.DetailData.objectMeta">
 <!--        <template>-->
@@ -91,21 +90,21 @@
               <h4>现状详情</h4>
             </div>
           </div>
-            <div id="components-table-demo-size">
+          <div id="components-table-demo-size">
 
-              <a-table
-                  :columns="deploymentStatusConditionsColumns"
-                  :data-source="data.DetailData.conditions"
-                  :pagination="false"
-                  :rowKey="item=>JSON.stringify(item)"
-                  :locale="{emptyText: '暂无数据'}"
-              >
-                <!-- 	更新时间 -->
-                <template #lastProbeTime="{text}">
-                  {{ $filters.fmtTime(text.lastProbeTime) }}
-                </template>
-              </a-table>
-            </div>
+            <a-table
+                :columns="deploymentStatusConditionsColumns"
+                :data-source="data.DetailData.conditions"
+                :pagination="false"
+                :rowKey="item=>JSON.stringify(item)"
+                :locale="{emptyText: '暂无数据'}"
+            >
+              <!-- 	更新时间 -->
+              <template #lastProbeTime="{text}">
+                {{ $filters.fmtTime(text.lastProbeTime) }}
+              </template>
+            </a-table>
+          </div>
 
           <!-- 事件 -->
           <div class="console-sub-title custom-sub-title top-sub clearfix">
@@ -173,6 +172,8 @@
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 import {DeploymentDetail, DeploymentRollBack} from "../../api/k8s";
+import {GetStorage} from "../../plugin/state/stroge";
+
 const deploymentStatusConditionsColumns = [
   {
     title: '类型',
@@ -246,18 +247,7 @@ export default {
     })
 
     let router = useRoute()
-    const GetStorage = () => {
-      const cs = JSON.parse(localStorage.getItem("cluster"))
-      if (cs !== null && cs !== undefined && cs !== "") {
-        cluster.clusterId = cs.clusterId
-        cluster.clusterName = cs.clusterName
-        return cluster
-      }
-    }
-    const cluster = reactive({
-      clusterId: "",
-      clusterName: ""
-    })
+
     const getDetail = (params) => {
       DeploymentDetail(params).then(res => {
         if (res.errCode === 0){
@@ -283,9 +273,6 @@ export default {
       })
     }
 
-
-
-
     onMounted(() => {
       getDetail(router.query);
     });
@@ -305,28 +292,30 @@ export default {
 </script>
 
 <style scoped>
-  .table-viewer-header .table-viewer-topbar-title {
-    font-size: 14px;
-    color: #333333;
-    display: inline-block;
-    margin-left: 16px;
-  }
-  .table-default-viewer {
-    width: 100%;
-    background-color: #FFF;
-  }
-  .table-default-viewer td {
-    padding: 11px 20px;
-    border: 1px solid #eeeeee;
-  }
+.table-viewer-header .table-viewer-topbar-title {
+  font-size: 14px;
+  color: #333333;
+  display: inline-block;
+  margin-left: 16px;
+}
 
-  .console-sub-title.custom-sub-title {
-    border: 0;
-    background: none;
-    /*border-top: 1px solid #ccc;*/
-    margin-top: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+.table-default-viewer {
+  width: 100%;
+  background-color: #FFF;
+}
+
+.table-default-viewer td {
+  padding: 11px 20px;
+  border: 1px solid #eeeeee;
+}
+
+.console-sub-title.custom-sub-title {
+  border: 0;
+  background: none;
+  /*border-top: 1px solid #ccc;*/
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 </style>

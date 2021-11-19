@@ -16,28 +16,28 @@ import (
 	k8s2 "pigs/pkg/k8s"
 	k8scommon "pigs/pkg/k8s/common"
 	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/persistentvolumeclaim"
+	"pigs/pkg/k8s/pvc"
 	"strconv"
 )
 
 // PodDetail is a presentation layer view of Kubernetes Pod resource.
 type PodDetail struct {
-	ObjectMeta                k8s.ObjectMeta                                  `json:"objectMeta"`
-	TypeMeta                  k8s.TypeMeta                                    `json:"typeMeta"`
-	PodPhase                  string                                          `json:"podPhase"`
-	PodIP                     string                                          `json:"podIP"`
-	NodeName                  string                                          `json:"nodeName"`
-	ServiceAccountName        string                                          `json:"serviceAccountName"`
-	RestartCount              int32                                           `json:"restartCount"`
-	QOSClass                  string                                          `json:"qosClass"`
-	Controller                *k8s2.ResourceOwner                             `json:"controller,omitempty"`
-	Containers                []Container                                     `json:"containers"`
-	InitContainers            []Container                                     `json:"initContainers"`
-	Conditions                []k8scommon.Condition                           `json:"conditions"`
-	ImagePullSecrets          []v1.LocalObjectReference                       `json:"imagePullSecrets,omitempty"`
-	EventList                 k8scommon.EventList                             `json:"eventList"`
-	PersistentvolumeclaimList persistentvolumeclaim.PersistentVolumeClaimList `json:"persistentVolumeClaimList"`
-	SecurityContext           *v1.PodSecurityContext                          `json:"securityContext"`
+	ObjectMeta                k8s.ObjectMeta                `json:"objectMeta"`
+	TypeMeta                  k8s.TypeMeta                  `json:"typeMeta"`
+	PodPhase                  string                        `json:"podPhase"`
+	PodIP                     string                        `json:"podIP"`
+	NodeName                  string                        `json:"nodeName"`
+	ServiceAccountName        string                        `json:"serviceAccountName"`
+	RestartCount              int32                         `json:"restartCount"`
+	QOSClass                  string                        `json:"qosClass"`
+	Controller                *k8s2.ResourceOwner           `json:"controller,omitempty"`
+	Containers                []Container                   `json:"containers"`
+	InitContainers            []Container                   `json:"initContainers"`
+	Conditions                []k8scommon.Condition         `json:"conditions"`
+	ImagePullSecrets          []v1.LocalObjectReference     `json:"imagePullSecrets,omitempty"`
+	EventList                 k8scommon.EventList           `json:"eventList"`
+	PersistentvolumeclaimList pvc.PersistentVolumeClaimList `json:"persistentVolumeClaimList"`
+	SecurityContext           *v1.PodSecurityContext        `json:"securityContext"`
 }
 
 // Container represents a docker/rkt/etc. container that lives in a pod.
@@ -147,7 +147,7 @@ func GetPodDetail(client *kubernetes.Clientset, namespace, name string) (*PodDet
 		return nil, err
 	}
 
-	persistentVolumeClaimList, err := persistentvolumeclaim.GetPodPersistentVolumeClaims(client, namespace, name, dataselect.DefaultDataSelect)
+	persistentVolumeClaimList, err := pvc.GetPodPersistentVolumeClaims(client, namespace, name, dataselect.DefaultDataSelect)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,8 @@ func getPodController(client *kubernetes.Clientset, nsQuery *k8scommon.Namespace
 	return &ctrl, nil
 }
 
-func toPodDetail(pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList, controller *k8s2.ResourceOwner, events *k8scommon.EventList, persistentVolumeClaimList *persistentvolumeclaim.PersistentVolumeClaimList) PodDetail {
+func toPodDetail(pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList, controller *k8s2.ResourceOwner,
+	events *k8scommon.EventList, persistentVolumeClaimList *pvc.PersistentVolumeClaimList) PodDetail {
 	return PodDetail{
 		ObjectMeta:                k8s.NewObjectMeta(pod.ObjectMeta),
 		TypeMeta:                  k8s.NewTypeMeta(k8s.ResourceKindPod),

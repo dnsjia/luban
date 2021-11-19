@@ -226,6 +226,7 @@ const columns = [
   {
     title: '副本数',
     slots: {customRender: 'replicas'},
+    width: 80
   },
   {
     title: '版本',

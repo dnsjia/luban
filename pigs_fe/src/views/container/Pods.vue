@@ -51,6 +51,7 @@
         <template #podStatus="{text}">
         <span>
           <a-tag color="#090" v-if="text.status==='Running'">Running</a-tag>
+          <a-tag color="default" v-else-if="text.status==='Completed'">Completed</a-tag>
           <a-tag color="red" v-else>{{text.status}}</a-tag>
         </span>
         </template>
@@ -344,7 +345,7 @@ export default {
     const removeOnPodOnSubmit = () => {
       let cs = GetStorage()
       let delParams = {
-        "podName": data.removeOnePodData.objectMeta.name,
+        "name": data.removeOnePodData.objectMeta.name,
         "namespace": data.removeOnePodData.objectMeta.namespace,
       }
       DeletePod(cs.clusterId, delParams).then(res => {

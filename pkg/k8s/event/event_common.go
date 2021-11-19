@@ -184,3 +184,54 @@ func GetEvents(client *kubernetes.Clientset, namespace, resourceName string) ([]
 
 	return FillEventsType(eventList.Items), nil
 }
+
+// GetPodEvents gets pods events associated to pod name and namespace
+func GetPodEvents(client *kubernetes.Clientset, namespace, podName string) ([]v1.Event, error) {
+
+	channels := &k8scommon.ResourceChannels{
+		PodList:   k8scommon.GetPodListChannel(client, k8scommon.NewSameNamespaceQuery(namespace), 1),
+		EventList: k8scommon.GetEventListChannel(client, k8scommon.NewSameNamespaceQuery(namespace), 1),
+	}
+
+	podList := <-channels.PodList.List
+	if err := <-channels.PodList.Error; err != nil {
+		return nil, err
+	}
+
+	eventList := <-channels.EventList.List
+	if err := <-channels.EventList.Error; err != nil {
+		return nil, err
+	}
+
+	l := make([]v1.Pod, 0)
+	for _, pi := range podList.Items {
+		if pi.Name == podName {
+			l = append(l, pi)
+		}
+	}
+
+	events := filterEventsByPodsUID(eventList.Items, l)
+	return FillEventsType(events), nil
+}
+
+// GetPodsEvents gets events targeting given list of pods.
+func GetPodsEvents(client *kubernetes.Clientset, namespace string, pods []v1.Pod) ([]v1.Event, error) {
+
+	nsQuery := k8scommon.NewSameNamespaceQuery(namespace)
+	if namespace == v1.NamespaceAll {
+		nsQuery = k8scommon.NewNamespaceQuery([]string{})
+	}
+
+	channels := &k8scommon.ResourceChannels{
+		EventList: k8scommon.GetEventListChannel(client, nsQuery, 1),
+	}
+
+	eventList := <-channels.EventList.List
+	if err := <-channels.EventList.Error; err != nil {
+		return nil, err
+	}
+
+	events := filterEventsByPodsUID(eventList.Items, pods)
+
+	return events, nil
+}
