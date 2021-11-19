@@ -564,7 +564,7 @@ export default {
       if (result.errCode !== 0){
         console.log('获取资产分组失败')
       }else {
-        store.hostData = result.data
+        store.hostData = result.data.data
       }
     }
 

@@ -28,13 +28,13 @@ func loggingMiddleware(h asynq.Handler) asynq.Handler {
 }
 
 func TaskWorker() {
-	c := common.CONFIG.Redis
+	config := common.CONFIG
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
-			Addr:     c.Host,
-			Username: c.UserName,
-			Password: "dnsjia.com",
-			DB:       c.DB,
+			Addr:     config.Redis.Host,
+			Username: config.Redis.UserName,
+			Password: config.Redis.PassWord,
+			DB:       config.Redis.DB,
 		},
 		asynq.Config{Concurrency: 20},
 	)

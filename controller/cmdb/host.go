@@ -2,9 +2,8 @@ package cmdb
 
 import (
 	"github.com/gin-gonic/gin"
-	"pigs/common"
 	"pigs/controller/response"
-	mcmdb "pigs/models/cmdb"
+	"pigs/models"
 	"pigs/services/cmdb"
 	"strconv"
 )
@@ -20,26 +19,26 @@ func ListHostGroup(c *gin.Context) {
 
 // ListHost 列出主机
 func ListHost(c *gin.Context) {
-	//_ = CloudECS()
-	var ecs []mcmdb.VirtualMachine
-	treeId := c.DefaultQuery("treeId", "none")
-	if treeId == "none" {
-		common.DB.Find(&ecs)
-		response.OkWithData(&ecs, c)
-		return
-	}
+	treeId := c.Query("treeId")
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 
-	id, err := strconv.Atoi(c.Query("treeId"))
+	query := models.PaginationQ{
+		Page: page,
+		Size: pageSize,
+	}
+	host, err := cmdb.ListVirtualMachine(treeId, &query)
+
 	if err != nil {
-		response.FailWithMessage(1001, "传入的参数有误！", c)
 		return
 	}
 
-	QueryTreeId := mcmdb.TreeMenu{ID: id}
-	if err := common.DB.Model(&QueryTreeId).Preload("Groups").Association("VirtualMachines").Find(&ecs); err != nil {
-		response.FailWithMessage(1000, "获取资产信息失败", c)
-		return
-	}
-	response.OkWithData(&ecs, c)
+	response.OkWithDetailed(response.PageResult{
+		Data:  &host,
+		Total: query.Total,
+		Size:  query.Size,
+		Page:  query.Page,
+	}, "获取主机成功", c)
+
 	return
 }
