@@ -49,7 +49,7 @@
             </router-link>
           </a-menu-item>
           <a-menu-item key="35">
-            <router-link :to="{path: '/k8s/networks'}">
+            <router-link :to="{path: '/k8s/network'}">
               网络管理
             </router-link>
           </a-menu-item>
