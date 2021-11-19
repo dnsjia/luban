@@ -3,6 +3,7 @@ package tasks
 import (
 	"context"
 	"pigs/common"
+	"syscall"
 	"time"
 
 	"log"
@@ -10,7 +11,6 @@ import (
 	"os/signal"
 
 	"github.com/hibiken/asynq"
-	"golang.org/x/sys/unix"
 )
 
 // loggingMiddleware 记录任务日志中间件
@@ -51,10 +51,10 @@ func TaskWorker() {
 
 	// Wait for termination signal.
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, unix.SIGTERM, unix.SIGINT, unix.SIGTSTP)
+	signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT, syscall.SIGTSTP)
 	for {
 		s := <-sigs
-		if s == unix.SIGTSTP {
+		if s == syscall.SIGTSTP {
 			srv.Shutdown()
 			continue
 		}

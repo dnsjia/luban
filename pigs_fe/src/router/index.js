@@ -209,7 +209,7 @@ const routes = [
             },
             {
                 path: 'k8s/config',
-                name: 'NetWork',
+                name: 'Config',
                 component: () => import('../views/container/ConfigManage.vue'),
                 meta: {
                     title: '配置管理',
