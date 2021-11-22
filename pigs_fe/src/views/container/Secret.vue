@@ -2,7 +2,7 @@
   <div>
     <a-space style="padding-left: 10px">
       <a-select v-model:value="queryInfo.namespace" placeholder="请选择命名空间" show-search
-                @change="filterByNamespaceOnConfigMap" style="min-width: 180px">
+                @change="filterByNamespaceOnSecret" style="min-width: 180px">
         <a-select-option
             v-for="(item, index) in data.namespaceData"
             :key="index"
@@ -16,11 +16,11 @@
           v-model:value="data.searchValue"
           placeholder="请输入搜索内容"
           style="width: 200px"
-          @search="configMapSearch"
+          @search="secretSearch"
       />
     </a-space>
     <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
-              align="bottom" @click="getConfigMapList()">
+              align="bottom" @click="getSecretList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -32,13 +32,13 @@
       <a-table
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
-          :data-source="data.configMapData"
+          :data-source="data.secretData"
           :pagination="false"
           :rowKey="item=>JSON.stringify(item)"
           :locale="{emptyText: '暂无数据'}"
       >
         <template #name="{text}">
-          <a @click="configMapDetail(text)">{{ text.objectMeta.name }}</a>
+          <a @click="secretDetail(text)">{{ text.objectMeta.name }}</a>
         </template>
 
         <template #labels="{text}">
@@ -56,11 +56,11 @@
 
         <template #action="{text}">
 
-          <a @click="configMapDetail(text)">详情</a>
+          <a @click="secretDetail(text)">详情</a>
           <a-divider type="vertical"/>
-          <a @click="editConfigMap(text)">编辑</a>
+          <a @click="editSecret(text)">编辑</a>
           <a-divider type="vertical"/>
-          <a @click="removeOneConfigMap(text)" style="color: red">删除</a>
+          <a @click="removeOneSecret(text)" style="color: red">删除</a>
           <a-divider type="vertical"/>
 
 
@@ -70,24 +70,24 @@
 
     <div style="float:left;padding: 10px 0 0 20px">
       <a-space>
-        <a-button :disabled="!hasSelected" @click="collectionRemoveConfigMap">批量删除</a-button>
+        <a-button :disabled="!hasSelected" @click="collectionRemoveSecret">批量删除</a-button>
       </a-space>
     </div>
 
     <template>
       <div>
-        <a-modal v-model:visible="data.collectionRemoveConfigMapVisible" title="配置项 (ConfigMap) "
-                 @ok="collectionRemoveConfigMapOnSubmit" cancelText="取消"
+        <a-modal v-model:visible="data.collectionRemoveSecretVisible" title="保密字典 (Secret) "
+                 @ok="collectionRemoveSecretOnSubmit" cancelText="取消"
                  okText="确定" :keyboard="false" :maskClosable="false" width="620px">
           <a-space>
             <p class="circular">
               <span class="exclamation-point">i</span>
             </p>
-            <p>确认删除以下配置项？</p>
+            <p>确认删除以下保密字典？</p>
           </a-space>
-          <a-table :columns="collectionRemoveConfigMapColumns" :data-source="data.collectionRemoveConfigMapData" size="middle"
+          <a-table :columns="collectionRemoveSecretColumns" :data-source="data.collectionRemoveSecretData" size="middle"
                    :pagination="false">
-            <template #collectionRemoveConfigMapCreationTimestamp="{text}">
+            <template #collectionRemoveSecretCreationTimestamp="{text}">
               {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
             </template>
           </a-table>
@@ -97,14 +97,14 @@
 
     <template>
       <div>
-        <a-modal v-model:visible="data.removeOneConfigMapVisible" title="配置项 (ConfigMap) "
-                 @ok="removeOnConfigMapOnSubmit" cancelText="取消"
+        <a-modal v-model:visible="data.removeOneSecretVisible" title="保密字典 (Secret) "
+                 @ok="removeOnSecretOnSubmit" cancelText="取消"
                  okText="确定" :keyboard="false" :maskClosable="false">
           <a-space>
             <p class="circular">
               <span class="exclamation-point">i</span>
             </p>
-            <p>确认删除 {{ data.removeOneConfigMapData.objectMeta.name }} 配置项？</p>
+            <p>确认删除 {{ data.removeOneSecretData.objectMeta.name }} 配置项？</p>
           </a-space>
 
           <br/>
@@ -135,11 +135,7 @@
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
-import {
-  DeleteCollectionConfigMap, DeleteConfigMap,
-  GetConfigMapList,
-  GetNamespaces,
-} from "../../api/k8s";
+import {DeleteCollectionSecret, DeleteSecret, GetNamespaces, GetSecretList} from "../../api/k8s";
 import router from "../../router";
 
 const columns = [
@@ -152,6 +148,10 @@ const columns = [
     slots: {customRender: 'labels'},
   },
   {
+    title: '类型',
+    dataIndex: 'type',
+  },
+  {
     title: '创建时间',
     slots: {customRender: 'creationTimestamp'},
   },
@@ -160,33 +160,33 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ]
-const collectionRemoveConfigMapColumns = [
+const collectionRemoveSecretColumns = [
   {
     title: '名称',
     dataIndex: 'objectMeta.name',
   },
   {
     title: '创建时间',
-    slots: {customRender: 'collectionRemoveConfigMapCreationTimestamp'},
+    slots: {customRender: 'collectionRemoveSecretCreationTimestamp'},
   },
 ]
 export default {
-  name: "ConfigMap",
+  name: "Secret",
   setup(){
     const data = reactive({
       namespaceData: [],
       loading: false,
-      configMapData: [],
+      secretData: [],
       selectedRows: [],
       searchValue: "",
 
       total: 0,
       pageSizeOptions: ['10', '20', '30', '40'],
 
-      collectionRemoveConfigMapVisible: false,
-      collectionRemoveConfigMapData: [],
-      removeOneConfigMapData: [],
-      removeOneConfigMapVisible: false,
+      collectionRemoveSecretVisible: false,
+      collectionRemoveSecretData: [],
+      removeOneSecretData: [],
+      removeOneSecretVisible: false,
     });
 
     const queryInfo = reactive({
@@ -207,25 +207,25 @@ export default {
     const onSelectChange = (selectedRowKeys, selectedRows) => {
       state.selectedRowKeys = selectedRowKeys;
       data.selectedRows = selectedRows
-      data.collectionRemoveConfigMapData = toRaw(data.selectedRows)
+      data.collectionRemoveSecretData = toRaw(data.selectedRows)
     };
 
-    const filterByNamespaceOnConfigMap = (e) => {
+    const filterByNamespaceOnSecret = (e) => {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
-      data.collectionRemoveConfigMapData = []
+      data.collectionRemoveSecretData = []
       data.selectedRows = []
       state.selectedRowKeys = []
-      getConfigMapList()
+      getSecretList()
     }
-    const configMapSearch = (value) => {
+    const secretSearch = (value) => {
       data.searchValue = value
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
-      GetConfigMapList(cs.clusterId, queryInfo).then(res => {
+      GetSecretList(cs.clusterId, queryInfo).then(res => {
         if (res.errCode === 0) {
-          data.configMapData = res.data.items
+          data.secretData = res.data.secrets
           data.total = res.data.listMeta.totalItems
         } else {
           message.error(res.errMsg)
@@ -239,13 +239,13 @@ export default {
       if (cs) {
         queryInfo.itemsPerPage = pageSize
         queryInfo.page = current
-        getConfigMapList()
+        getSecretList()
       }
     };
     // 翻页
     const onChangePage = async (pageNumber) => {
       queryInfo.page = pageNumber
-      getConfigMapList()
+      getSecretList()
     };
     const GetNamespaceList = () => {
       let cs = GetStorage()
@@ -258,12 +258,12 @@ export default {
       })
       queryInfo.namespace = localStorage.getItem("namespace")
     }
-    const getConfigMapList = () => {
+    const getSecretList = () => {
       data.loading = true
       let cs = GetStorage()
-      GetConfigMapList(cs.clusterId, queryInfo).then(res => {
+      GetSecretList(cs.clusterId, queryInfo).then(res => {
         if (res.errCode === 0) {
-          data.configMapData = res.data.items
+          data.secretData = res.data.secrets
           data.total = res.data.listMeta.totalItems
           data.loading = false
         } else {
@@ -271,35 +271,35 @@ export default {
         }
       })
     }
-    const collectionRemoveConfigMap = () => {
-      data.collectionRemoveConfigMapVisible = true
+    const collectionRemoveSecret = () => {
+      data.collectionRemoveSecretVisible = true
     }
-    const collectionRemoveConfigMapOnSubmit = () => {
+    const collectionRemoveSecretOnSubmit = () => {
       let cs = GetStorage()
-      const configMapList = []
-      for (let i = 0; i < data.collectionRemoveConfigMapData.length; i++) {
-        configMapList.push({
-          "namespace": data.collectionRemoveConfigMapData[i].objectMeta.namespace,
-          "name": data.collectionRemoveConfigMapData[i].objectMeta.name
+      const secretList = []
+      for (let i = 0; i < data.collectionRemoveSecretData.length; i++) {
+        secretList.push({
+          "namespace": data.collectionRemoveSecretData[i].objectMeta.namespace,
+          "name": data.collectionRemoveSecretData[i].objectMeta.name
         })
       }
-      DeleteCollectionConfigMap(cs.clusterId, configMapList).then(res => {
+      DeleteCollectionSecret(cs.clusterId, secretList).then(res => {
         if (res.errCode === 0) {
           message.success(res.msg)
-          data.collectionRemoveConfigMapVisible = false
-          data.collectionRemoveConfigMapData = []
+          data.collectionRemoveSecretVisible = false
+          data.collectionRemoveSecretData = []
           data.selectedRows = []
           state.selectedRowKeys = []
-          getConfigMapList()
+          getSecretList()
         } else {
           message.error(res.errMsg)
         }
       })
     }
-    const configMapDetail = (text) => {
+    const secretDetail = (text) => {
       let cs = GetStorage()
       router.push({
-        name: 'ConfigMapDetail', query: {
+        name: 'SecretDetail', query: {
           clusterId: cs.clusterId,
           namespace: text.objectMeta.namespace,
           name: text.objectMeta.name
@@ -307,21 +307,21 @@ export default {
       });
     }
 
-    const removeOneConfigMap = (text) => {
-      data.removeOneConfigMapData = text
-      data.removeOneConfigMapVisible = true
+    const removeOneSecret = (text) => {
+      data.removeOneSecretData = text
+      data.removeOneSecretVisible = true
     }
-    const removeOnConfigMapOnSubmit = () => {
+    const removeOnSecretOnSubmit = () => {
       let cs = GetStorage()
       let delParams = {
-        "name": data.removeOneConfigMapData.objectMeta.name,
-        "namespace": data.removeOneConfigMapData.objectMeta.namespace,
+        "name": data.removeOneSecretData.objectMeta.name,
+        "namespace": data.removeOneSecretData.objectMeta.namespace,
       }
-      DeleteConfigMap(cs.clusterId, delParams).then(res => {
+      DeleteSecret(cs.clusterId, delParams).then(res => {
         if (res.errCode === 0) {
           message.success("删除成功")
-          data.removeOneConfigMapVisible = false
-          getConfigMapList()
+          data.removeOneSecretVisible = false
+          getSecretList()
 
         } else {
           message.error(res.errMsg)
@@ -331,7 +331,7 @@ export default {
 
     onMounted(() => {
       GetNamespaceList()
-      getConfigMapList()
+      getSecretList()
     })
     return {
       data,
@@ -341,17 +341,17 @@ export default {
       GetNamespaceList,
       hasSelected,
       onSelectChange,
-      filterByNamespaceOnConfigMap,
-      configMapSearch,
+      filterByNamespaceOnSecret,
+      secretSearch,
       onShowSizeChangePage,
       onChangePage,
-      getConfigMapList,
-      collectionRemoveConfigMap,
-      collectionRemoveConfigMapOnSubmit,
-      collectionRemoveConfigMapColumns,
-      configMapDetail,
-      removeOneConfigMap,
-      removeOnConfigMapOnSubmit,
+      getSecretList,
+      collectionRemoveSecret,
+      collectionRemoveSecretOnSubmit,
+      collectionRemoveSecretColumns,
+      secretDetail,
+      removeOneSecret,
+      removeOnSecretOnSubmit,
 
     }
   }

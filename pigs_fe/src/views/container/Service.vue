@@ -281,6 +281,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removeServiceData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getServiceList()
     }
 

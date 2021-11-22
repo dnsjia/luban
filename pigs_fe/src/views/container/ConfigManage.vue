@@ -7,7 +7,7 @@
       </a-tab-pane>
 
       <a-tab-pane key="2" tab="保密字典" force-render>
-        <Secrets></Secrets>
+        <Secret></Secret>
       </a-tab-pane>
 
 
@@ -17,7 +17,7 @@
 
 <script>
 import {onMounted, reactive} from "vue";
-import Secrets from "./Secrets";
+import Secret from "./Secret";
 import ConfigMap from "./ConfigMap";
 
 
@@ -48,7 +48,7 @@ export default {
   },
   components: {
     ConfigMap,
-    Secrets,
+    Secret,
   }
 }
 </script>

@@ -278,6 +278,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveStatefulSetData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       GetStatefulSetList()
     }
     const statefulSetSearch = (value) => {

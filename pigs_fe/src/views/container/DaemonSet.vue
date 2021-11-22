@@ -254,6 +254,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveDaemonSetData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getDaemonSetList()
     }
     // 显示条数

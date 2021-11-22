@@ -259,6 +259,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removeIngressData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getIngressList()
     }
 

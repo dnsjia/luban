@@ -323,6 +323,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removeDeploymentData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getDeploymentList()
     }
 

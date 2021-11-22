@@ -76,3 +76,13 @@ export const GetIngressList = (clusterId, params) => get('/api/v1/k8s/network/in
 export const DeleteCollectionIngress = (clusterId, params) => post('/api/v1/k8s/network/ingresss?clusterId=' + clusterId, params)
 export const DeleteIngress = (clusterId, params) => del('/api/v1/k8s/network/ingress?clusterId=' + clusterId, params)
 export const IngressDetail = (clusterId, params) => get('/api/v1/k8s/network/ingress/detail?clusterId=' + clusterId, params)
+
+export const GetConfigMapList = (clusterId, params) => get('/api/v1/k8s/config/configmap?clusterId=' + clusterId, params)
+export const DeleteCollectionConfigMap = (clusterId, params) => post('/api/v1/k8s/config/configmaps?clusterId=' + clusterId, params)
+export const DeleteConfigMap = (clusterId, params) => del('/api/v1/k8s/config/configmap?clusterId=' + clusterId, params)
+export const ConfigMapDetail = (clusterId, params) => get('/api/v1/k8s/config/configmap/detail?clusterId=' + clusterId, params)
+
+export const GetSecretList = (clusterId, params) => get('/api/v1/k8s/config/secret?clusterId=' + clusterId, params)
+export const DeleteCollectionSecret = (clusterId, params) => post('/api/v1/k8s/config/secrets?clusterId=' + clusterId, params)
+export const DeleteSecret = (clusterId, params) => del('/api/v1/k8s/config/secret?clusterId=' + clusterId, params)
+export const SecretDetail = (clusterId, params) => get('/api/v1/k8s/config/secret/detail?clusterId=' + clusterId, params)

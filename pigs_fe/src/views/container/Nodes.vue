@@ -360,7 +360,10 @@ export default {
   setup() {
     const handleChange = (key, value) => {
       // if (cluster.clusterId === "" || cluster.clusterId === undefined || cluster.clusterId === null) {
-        localStorage.setItem("cluster", JSON.stringify({"clusterId": value.value, "clusterName": value.label}))
+      localStorage.setItem("cluster", JSON.stringify({"clusterId": value.value, "clusterName": value.label}))
+      data.selectedRows = []
+      data.unscheduleData = []
+      state.selectedRowKeys = []
       // }
       getNode()
     };
@@ -434,9 +437,7 @@ export default {
         }
     )
 
-
     const hasSelected = computed(() => state.selectedRowKeys.length > 0);
-
 
     const onSelectChange = (selectedRowKeys, selectedRows) => {
       state.selectedRowKeys = selectedRowKeys;

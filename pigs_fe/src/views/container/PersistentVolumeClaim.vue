@@ -199,6 +199,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removePVCData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getPVCList()
     }
     // 显示条数

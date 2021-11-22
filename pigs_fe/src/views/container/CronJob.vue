@@ -267,6 +267,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveCronJobData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getCronJobList()
     }
     // 显示条数

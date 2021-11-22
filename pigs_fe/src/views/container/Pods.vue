@@ -258,6 +258,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemovePodsData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       GetPods()
     }
     const GetPods = () => {

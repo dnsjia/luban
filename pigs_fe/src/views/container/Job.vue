@@ -285,6 +285,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveJobData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getJobList()
     }
     // 显示条数

@@ -6,12 +6,12 @@ import (
 	"pigs/controller/response"
 	"pigs/models/k8s"
 	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/ingress"
+	"pigs/pkg/k8s/configmap"
 	"pigs/pkg/k8s/parser"
-	"pigs/pkg/k8s/service"
+	"pigs/pkg/k8s/secret"
 )
 
-func GetServiceListController(c *gin.Context) {
+func GetConfigMapController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -19,7 +19,8 @@ func GetServiceListController(c *gin.Context) {
 	}
 	dataSelect := parser.ParseDataSelectPathParameter(c)
 	nsQuery := parser.ParseNamespacePathParameter(c)
-	data, err := service.GetServiceList(client, nsQuery, dataSelect)
+
+	data, err := configmap.GetConfigMapList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -29,7 +30,7 @@ func GetServiceListController(c *gin.Context) {
 	return
 }
 
-func DetailServiceController(c *gin.Context) {
+func DetailConfigMapController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -37,8 +38,7 @@ func DetailServiceController(c *gin.Context) {
 	}
 	name := parser.ParseNameParameter(c)
 	namespace := parser.ParseNamespaceParameter(c)
-	dataSelect := parser.ParseDataSelectPathParameter(c)
-	data, err := service.GetServiceDetail(client, namespace, name, dataSelect)
+	data, err := configmap.GetConfigMapDetail(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -47,7 +47,7 @@ func DetailServiceController(c *gin.Context) {
 	return
 }
 
-func DeleteServiceController(c *gin.Context) {
+func DeleteConfigMapController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -55,7 +55,7 @@ func DeleteServiceController(c *gin.Context) {
 	}
 	name := parser.ParseNameParameter(c)
 	namespace := parser.ParseNamespaceParameter(c)
-	err = service.DeleteService(client, namespace, name)
+	err = configmap.DeleteConfigMap(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -64,21 +64,21 @@ func DeleteServiceController(c *gin.Context) {
 	return
 }
 
-func DeleteCollectionServiceController(c *gin.Context) {
+func DeleteCollectionConfigMapController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var serviceList []k8s.ServiceData
+	var configMapList []k8s.ConfigMapData
 
-	err = controller.CheckParams(c, &serviceList)
+	err = controller.CheckParams(c, &configMapList)
 	if err != nil {
 		response.FailWithMessage(response.ParamError, err.Error(), c)
 		return
 	}
 
-	err = service.DeleteCollectionService(client, serviceList)
+	err = configmap.DeleteCollectionConfigMap(client, configMapList)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -88,7 +88,7 @@ func DeleteCollectionServiceController(c *gin.Context) {
 	return
 }
 
-func GetIngressListController(c *gin.Context) {
+func GetSecretsController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -96,7 +96,8 @@ func GetIngressListController(c *gin.Context) {
 	}
 	dataSelect := parser.ParseDataSelectPathParameter(c)
 	nsQuery := parser.ParseNamespacePathParameter(c)
-	data, err := ingress.GetIngressList(client, nsQuery, dataSelect)
+
+	data, err := secret.GetSecretList(client, nsQuery, dataSelect)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -106,7 +107,7 @@ func GetIngressListController(c *gin.Context) {
 	return
 }
 
-func DetailIngressController(c *gin.Context) {
+func DetailSecretsController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -114,7 +115,7 @@ func DetailIngressController(c *gin.Context) {
 	}
 	name := parser.ParseNameParameter(c)
 	namespace := parser.ParseNamespaceParameter(c)
-	data, err := ingress.GetIngressDetail(client, namespace, name)
+	data, err := secret.GetSecretDetail(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -123,7 +124,7 @@ func DetailIngressController(c *gin.Context) {
 	return
 }
 
-func DeleteIngressController(c *gin.Context) {
+func DeleteSecretsController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
@@ -131,7 +132,7 @@ func DeleteIngressController(c *gin.Context) {
 	}
 	name := parser.ParseNameParameter(c)
 	namespace := parser.ParseNamespaceParameter(c)
-	err = ingress.DeleteIngress(client, namespace, name)
+	err = secret.DeleteSecret(client, namespace, name)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
@@ -140,21 +141,21 @@ func DeleteIngressController(c *gin.Context) {
 	return
 }
 
-func DeleteCollectionIngressController(c *gin.Context) {
+func DeleteCollectionSecretsController(c *gin.Context) {
 	client, err := Init.ClusterID(c)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return
 	}
-	var ingressList []k8s.ServiceData
+	var secretList []k8s.SecretsData
 
-	err = controller.CheckParams(c, &ingressList)
+	err = controller.CheckParams(c, &secretList)
 	if err != nil {
 		response.FailWithMessage(response.ParamError, err.Error(), c)
 		return
 	}
 
-	err = ingress.DeleteCollectionIngress(client, ingressList)
+	err = secret.DeleteCollectionSecret(client, secretList)
 	if err != nil {
 		response.FailWithMessage(response.InternalServerError, err.Error(), c)
 		return

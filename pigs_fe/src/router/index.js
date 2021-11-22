@@ -217,6 +217,26 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/config/configmap',
+                name: 'ConfigMapDetail',
+                component: () => import('../views/container/ConfigMapDetail.vue'),
+                meta: {
+                    title: '配置项详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/config/secret',
+                name: 'SecretDetail',
+                component: () => import('../views/container/SecretDetail.vue'),
+                meta: {
+                    title: '保密字典详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {
