@@ -97,11 +97,67 @@
       <a-tabs v-model:activeKey="data.workload" @change="callback">
 
         <a-tab-pane key="1" tab="任务列表">
-          功能开发中
+          <a-table
+              :columns="jobColumns"
+              :data-source="data.jobData"
+              :pagination="false"
+              :rowKey="item=>JSON.stringify(item)"
+              :locale="{emptyText: '暂无数据'}"
+          >
+            <template #name="{text}">
+              <a @click="jobDetail(text)">{{ text.objectMeta.name }}</a>
+            </template>
+
+            <template #labels="{text}">
+              <span v-for="(v, k, i) in text.objectMeta.labels" :key="i">
+                <a-tag color="cyan">{{ k }}: {{ v }}</a-tag>
+              </span>
+            </template>
+
+            <template #status="{text}">
+              <span>{{text.jobStatus.status}}</span>
+            </template>
+
+            <template #creationTimestamp="{text}">
+              <span>
+               {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
+              </span>
+            </template>
+
+            <template #completionTime="{text}">
+              <span v-if="text.podStatus.completionTime">
+               {{ $filters.fmtTime(text.podStatus.completionTime) }}
+              </span>
+            </template>
+
+            <template #action="{text}">
+              <a @click="jobDetail(text)">详情</a>
+              <a-divider type="vertical"/>
+              <a @click="removeOneJob(text)" style="color: red">删除</a>
+            </template>
+          </a-table>
         </a-tab-pane>
       </a-tabs>
       <br/>
     </a-page-header>
+
+    <template>
+      <div>
+        <a-modal v-model:visible="data.removeOneJobVisible" title="任务 (Job) "
+                 @ok="removeOneJobOk" cancelText="取消"
+                 okText="确定" :keyboard="false" :maskClosable="false">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>删除 {{ data.removeJobData.objectMeta.name }} ？</p>
+          </a-space>
+
+          <br/>
+        </a-modal>
+      </div>
+    </template>
+
   </div>
 </template>
 
@@ -109,7 +165,8 @@
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 import {GetStorage} from "../../plugin/state/stroge";
-import {CronJobDetail} from "../../api/k8s";
+import {CronJobDetail, DeleteJob} from "../../api/k8s";
+import routers from "../../router";
 
 const eventsColumns = [
   {
@@ -133,6 +190,37 @@ const eventsColumns = [
     slots: {customRender: 'lastTimestamp'},
   },
 ]
+const jobColumns = [
+  {
+    title: '名称',
+    slots: {customRender: 'name'},
+  },
+  {
+    title: '标签',
+    slots: {customRender: 'labels'},
+    width: 140,
+  },
+  {
+    title: '任务状态',
+    slots: {customRender: 'status'},
+  },
+  {
+    title: '版本',
+    dataIndex: 'containerImages[0]',
+  },
+  {
+    title: '创建时间',
+    slots: {customRender: 'creationTimestamp'},
+  },
+  {
+    title: '完成时间',
+    slots: {customRender: 'completionTime'},
+  },
+  {
+    title: '操作',
+    slots: {customRender: 'action'},
+  },
+]
 
 export default {
   name: "CronJobDetail",
@@ -140,6 +228,9 @@ export default {
     const data = reactive({
       cronJobData: [],
       eventData: [],
+      jobData: [],
+      removeJobData: [],
+      removeOneJobVisible: false,
     })
     const message = inject('$message');
     let router = useRoute()
@@ -148,6 +239,36 @@ export default {
       CronJobDetail(cs.clusterId, params).then(res => {
         if (res.errCode === 0){
           data.cronJobData = res.data
+          data.jobData = res.data.jobList.jobs
+        }else {
+          message.error(res.errMsg)
+        }
+      })
+    }
+    const jobDetail = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'JobDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name
+        }
+      });
+    }
+    const removeOneJob = (text) => {
+      data.removeJobData = text
+      data.removeOneJobVisible = true
+    }
+    const removeOneJobOk = () => {
+      let cs = GetStorage()
+      DeleteJob(cs.clusterId, {
+        "namespace": data.removeJobData.objectMeta.namespace,
+        "name": data.removeJobData.objectMeta.name
+      }).then(res => {
+        if (res.errCode === 0){
+          message.success(res.msg)
+          data.removeOneJobVisible = false
+          detail(router.query);
         }else {
           message.error(res.errMsg)
         }
@@ -160,6 +281,10 @@ export default {
       data,
       detail,
       eventsColumns,
+      jobColumns,
+      jobDetail,
+      removeOneJob,
+      removeOneJobOk,
     }
   }
 }
@@ -188,5 +313,22 @@ export default {
   margin-top: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+/* 先画个圆圈 */
+.circular {
+  width: 30px;
+  height: 30px;
+  background-color: #F90;
+  border-radius: 50px;
+}
+
+/* 再画个感叹号 */
+.exclamation-point {
+  height: 15px;
+  line-height: 30px;
+  display: block;
+  color: #FFF;
+  text-align: center;
+  font-size: 20px
 }
 </style>

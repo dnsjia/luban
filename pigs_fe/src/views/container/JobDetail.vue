@@ -107,11 +107,79 @@
       <a-tabs v-model:activeKey="data.workload" @change="callback">
 
         <a-tab-pane key="1" tab="容器组">
-          功能开发中
+          <a-table
+              :columns="jobPodColumns"
+              :data-source="data.jobPodData"
+              :pagination="false"
+              :rowKey="item=>JSON.stringify(item)"
+              :locale="{emptyText: '暂无数据'}"
+          >
+            <template #name="{text}">
+              <div>
+                <img style="width:14px;margin-right:2px" src="//g.alicdn.com/aliyun/cos/1.38.27/images/icon_docker.png">
+                <a @click="detailPod(text)">{{text.objectMeta.name}}</a>
+              </div>
+            </template>
+            <template #podStatus="{text}">
+              <span>
+                <a-tag color="#090" v-if="text.status==='Running'">Running</a-tag>
+                <a-tag color="default" v-else-if="text.status==='Completed'">Completed</a-tag>
+                <a-tag color="red" v-else>{{text.status}}</a-tag>
+              </span>
+            </template>
+
+            <template #nodeName="{text}">
+              <a @click="nodeDetail(text.nodeName)">{{text.nodeName}}</a>
+            </template>
+
+            <template #creationTimestamp="{text}">
+              <span>
+               {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
+              </span>
+            </template>
+
+            <template #action="{text}">
+              <a-divider type="vertical"/>
+              <a @click="detailPod(text)">详情</a>
+              <a-divider type="vertical"/>
+              <a>终端</a>
+              <a-divider type="vertical"/>
+              <a>日志</a>
+              <a-divider type="vertical"/>
+              <a-dropdown :trigger="['click']">
+                <a class="ant-dropdown-link" @click.prevent>
+                  更多
+                  <DownOutlined/>
+                </a>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item><span @click="editDeployment(text)">编辑容器</span></a-menu-item>
+                    <a-menu-item><span @click="removeOnePod(text)" style="color: red">删除容器</span></a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </template>
+          </a-table>
         </a-tab-pane>
       </a-tabs>
       <br/>
     </a-page-header>
+
+    <template>
+      <div>
+        <a-modal v-model:visible="data.removeOnePodVisible" title="容器 (Container) "
+                 @ok="removeOnPodOnSubmit" cancelText="取消"
+                 okText="确定" :keyboard="false" :maskClosable="false">
+          <a-space>
+            <p class="circular">
+              <span class="exclamation-point">i</span>
+            </p>
+            <p>确认删除 {{ data.removeOnePodData.objectMeta.name }} 容器？</p>
+          </a-space>
+        </a-modal>
+      </div>
+    </template>
+
   </div>
 </template>
 
@@ -119,7 +187,8 @@
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
 import {GetStorage} from "../../plugin/state/stroge";
-import {JobDetail} from "../../api/k8s";
+import {DeletePod, JobDetail} from "../../api/k8s";
+import routers from "../../router";
 
 const eventsColumns = [
   {
@@ -165,12 +234,45 @@ const statusConditionsColumns = [
     dataIndex: 'message',
   },
 ]
+const jobPodColumns = [
+  {
+    title: '名称',
+    slots: {customRender: 'name'},
+  },
+  {
+    title: '状态',
+    slots: {customRender: 'podStatus'},
+  },
+  {
+    title: '重启次数',
+    dataIndex: 'restartCount',
+  },
+  {
+    title: 'Pod IP',
+    dataIndex: 'podIP',
+  },
+  {
+    title: '调度节点',
+    slots: {customRender: 'nodeName'},
+  },
+  {
+    title: '创建时间',
+    slots: {customRender: 'creationTimestamp'},
+  },
+  {
+    title: '操作',
+    slots: {customRender: 'action'},
+  },
+]
 export default {
   name: "JobDetail",
   setup() {
     const data = reactive({
       jobData: [],
       eventData: [],
+      jobPodData: [],
+      removeOnePodData: [],
+      removeOnePodVisible: false,
     })
     const message = inject('$message');
     let router = useRoute()
@@ -179,10 +281,46 @@ export default {
       JobDetail(cs.clusterId, params).then(res => {
         if (res.errCode === 0){
           data.jobData = res.data
+          data.jobPodData = res.data.podList.pods
         }else {
           message.error(res.errMsg)
         }
       })
+    }
+    const nodeDetail = (name) => {
+      let cs = GetStorage()
+      let routeData = routers.resolve({ name: 'NodeDetail', query: {name: name, clusterId: cs.clusterId} });
+      window.open(routeData.href, '_blank');
+    };
+    const removeOnePod = (text) => {
+      data.removeOnePodData = text
+      data.removeOnePodVisible = true
+    }
+    const removeOnPodOnSubmit = () => {
+      let cs = GetStorage()
+      let delParams = {
+        "name": data.removeOnePodData.objectMeta.name,
+        "namespace": data.removeOnePodData.objectMeta.namespace,
+      }
+      DeletePod(cs.clusterId, delParams).then(res => {
+        if (res.errCode === 0) {
+          message.success("删除成功")
+          data.removeOnePodVisible = false
+          detail(router.query)
+        } else {
+          message.error(res.errMsg)
+        }
+      })
+    }
+    const detailPod = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'PodDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name
+        }
+      });
     }
     onMounted(() => {
       detail(router.query);
@@ -192,6 +330,11 @@ export default {
       detail,
       eventsColumns,
       statusConditionsColumns,
+      jobPodColumns,
+      nodeDetail,
+      removeOnePod,
+      removeOnPodOnSubmit,
+      detailPod,
     }
   }
 }
@@ -220,5 +363,22 @@ export default {
   margin-top: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+/* 先画个圆圈 */
+.circular {
+  width: 30px;
+  height: 30px;
+  background-color: #F90;
+  border-radius: 50px;
+}
+
+/* 再画个感叹号 */
+.exclamation-point {
+  height: 15px;
+  line-height: 30px;
+  display: block;
+  color: #FFF;
+  text-align: center;
+  font-size: 20px
 }
 </style>

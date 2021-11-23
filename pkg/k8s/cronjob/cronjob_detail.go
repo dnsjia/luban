@@ -14,8 +14,11 @@ type CronJobDetail struct {
 	// Extends list item structure.
 	CronJob `json:",inline"`
 
-	ConcurrencyPolicy       string `json:"concurrencyPolicy"`
+	ConcurrencyPolicy string `json:"concurrencyPolicy"`
+
 	StartingDeadLineSeconds *int64 `json:"startingDeadlineSeconds"`
+
+	JobList *JobList `json:"jobList"`
 }
 
 // GetCronJobDetail gets Cron Job details.
@@ -27,14 +30,16 @@ func GetCronJobDetail(client *kubernetes.Clientset, namespace, name string) (*Cr
 	}
 	j, _ := json.Marshal(rawObject)
 	fmt.Printf("cronJob: %s\n", j)
-	cj := toCronJobDetail(rawObject)
+	cj := toCronJobDetail(rawObject, client, name)
 	return &cj, nil
 }
 
-func toCronJobDetail(cj *batch2.CronJob) CronJobDetail {
+func toCronJobDetail(cj *batch2.CronJob, client *kubernetes.Clientset, name string) CronJobDetail {
+
 	return CronJobDetail{
 		CronJob:                 toCronJob(cj),
 		ConcurrencyPolicy:       string(cj.Spec.ConcurrencyPolicy),
 		StartingDeadLineSeconds: cj.Spec.StartingDeadlineSeconds,
+		JobList:                 getJobList(client, cj, name),
 	}
 }

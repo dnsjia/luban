@@ -168,13 +168,13 @@ func toJob(job *batch.Job, podInfo *k8scommon.PodInfo) Job {
 		ContainerImages:     k8scommon.GetContainerImages(&job.Spec.Template.Spec),
 		InitContainerImages: k8scommon.GetInitContainerImages(&job.Spec.Template.Spec),
 		Pods:                *podInfo,
-		JobStatus:           getJobStatus(job),
-		PodStatus:           getPodStatus(job),
+		JobStatus:           GetJobStatus(job),
+		PodStatus:           GetPodStatus(job),
 		Parallelism:         job.Spec.Parallelism,
 	}
 }
 
-func getJobStatus(job *batch.Job) JobStatus {
+func GetJobStatus(job *batch.Job) JobStatus {
 	jobStatus := JobStatus{Status: JobStatusRunning, Conditions: getJobConditions(job)}
 	for _, condition := range job.Status.Conditions {
 		if condition.Type == batch.JobComplete && condition.Status == v1.ConditionTrue {
@@ -204,7 +204,7 @@ func getJobConditions(job *batch.Job) []k8scommon.Condition {
 	return conditions
 }
 
-func getPodStatus(job *batch.Job) PodStatus {
+func GetPodStatus(job *batch.Job) PodStatus {
 
 	return PodStatus{
 		Active:         job.Status.Active,

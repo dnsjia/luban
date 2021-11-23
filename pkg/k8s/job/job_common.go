@@ -50,7 +50,7 @@ func getStatus(list *batch.JobList, pods []v1.Pod) common.ResourceStatus {
 	for _, job := range list.Items {
 		matchingPods := common.FilterPodsForJob(job, pods)
 		podInfo := common.GetPodInfo(job.Status.Active, job.Spec.Completions, matchingPods)
-		jobStatus := getJobStatus(&job)
+		jobStatus := GetJobStatus(&job)
 
 		if jobStatus.Status == JobStatusFailed {
 			info.Failed++

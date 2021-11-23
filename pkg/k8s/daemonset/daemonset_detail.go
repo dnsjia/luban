@@ -8,6 +8,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"pigs/common"
 	k8scommon "pigs/pkg/k8s/common"
+	"pigs/pkg/k8s/service"
 )
 
 // DaemonSetDetail represents detailed information about a Daemon Set.
@@ -16,6 +17,10 @@ type DaemonSetDetail struct {
 	DaemonSet `json:",inline"`
 
 	LabelSelector *v1.LabelSelector `json:"labelSelector,omitempty"`
+
+	PodList *PodList `json:"podList"`
+
+	SvcList *service.ServiceList `json:"svcList"`
 }
 
 // GetDaemonSetDetail Returns detailed information about the given daemon set in the given namespace.
@@ -41,9 +46,11 @@ func GetDaemonSetDetail(client *kubernetes.Clientset, namespace, name string) (*
 	if err := <-channels.PodList.Error; err != nil {
 		return nil, err
 	}
-
+	serviceList, _ := service.GetToService(client, namespace, name)
 	return &DaemonSetDetail{
 		DaemonSet:     toDaemonSet(*daemonSet, podList.Items, eventList.Items),
 		LabelSelector: daemonSet.Spec.Selector,
+		PodList:       getDaemonSetToPod(client, *daemonSet),
+		SvcList:       serviceList,
 	}, nil
 }
