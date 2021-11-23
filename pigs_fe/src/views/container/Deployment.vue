@@ -143,13 +143,11 @@
           </a-space>
 
           <br/>
-          <template v-if="data.deploymentToServiceData.length>0">
-            <div v-for="(v, i) in data.deploymentToServiceData" :key="i" style="padding-left: 20px">
+          <template v-if="data.deploymentToServiceData">
               <a-checkbox v-model:checked="data.removeDeploymentToServiceChecked">删除关联的服务 (Service) {{
-                  v.metadata.name
+                  data.deploymentToServiceData.metadata.name
                 }}
               </a-checkbox>
-            </div>
           </template>
 
 
@@ -412,7 +410,7 @@ export default {
         "namespace": text.objectMeta.namespace
       }).then(res => {
         if (res.errCode === 0) {
-          data.deploymentToServiceData = res.data.items
+          data.deploymentToServiceData = res.data
         } else {
           message.warning(res.errMsg)
         }

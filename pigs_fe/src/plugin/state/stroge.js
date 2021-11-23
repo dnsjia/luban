@@ -9,4 +9,5 @@ const GetStorage = () => {
 
         return cluster
     }
+    return false
 }

@@ -133,11 +133,123 @@
           <a-tabs v-model:activeKey="data.workload" @change="callback">
 
             <a-tab-pane key="1" tab="容器组">
-              功能开发中
+                <a-table
+                    :columns="deploymentPodColumns"
+                    :data-source="data.deploymentPodData"
+                    :pagination="false"
+                    :rowKey="item=>JSON.stringify(item)"
+                    :locale="{emptyText: '暂无数据'}"
+                >
+                  <template #name="{text}">
+                    <div>
+                      <img style="width:14px;margin-right:2px" src="//g.alicdn.com/aliyun/cos/1.38.27/images/icon_docker.png">
+                      <a @click="detailPod(text)">{{text.objectMeta.name}}</a>
+                    </div>
+                  </template>
+                  <template #podStatus="{text}">
+                    <span>
+                      <a-tag color="#090" v-if="text.status==='Running'">Running</a-tag>
+                      <a-tag color="default" v-else-if="text.status==='Completed'">Completed</a-tag>
+                      <a-tag color="red" v-else>{{text.status}}</a-tag>
+                    </span>
+                  </template>
+
+                  <template #nodeName="{text}">
+                    <a @click="nodeDetail(text.nodeName)">{{text.nodeName}}</a>
+                  </template>
+
+                  <template #creationTimestamp="{text}">
+                    <span>
+                     {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
+                    </span>
+                  </template>
+
+                  <template #action="{text}">
+                    <a-divider type="vertical"/>
+                    <a @click="detailPod(text)">详情</a>
+                    <a-divider type="vertical"/>
+                    <a>终端</a>
+                    <a-divider type="vertical"/>
+                    <a>日志</a>
+                    <a-divider type="vertical"/>
+                    <a-dropdown :trigger="['click']">
+                      <a class="ant-dropdown-link" @click.prevent>
+                        更多
+                        <DownOutlined/>
+                      </a>
+                      <template #overlay>
+                        <a-menu>
+                          <a-menu-item><span @click="editDeployment(text)">编辑容器</span></a-menu-item>
+                          <a-menu-item><span @click="removeOnePod(text)" style="color: red">删除容器</span></a-menu-item>
+                        </a-menu>
+                      </template>
+                    </a-dropdown>
+                  </template>
+                </a-table>
             </a-tab-pane>
 
             <a-tab-pane key="2" tab="访问方式" force-render>
-              功能开发中
+              <a-table
+                  :columns="serviceColumns"
+                  :data-source="data.serviceData"
+                  :pagination="false"
+                  :rowKey="item=>JSON.stringify(item)"
+                  :locale="{emptyText: '暂无数据'}"
+              >
+                <template #name="{text}">
+                  <a @click="serviceDetail(text)">{{ text.objectMeta.name }}</a>
+                </template>
+
+                <template #labels="{text}">
+                  <span v-for="(v, k, i) in text.objectMeta.labels" :key="i">
+                    <a-tag color="cyan">{{ k }}: {{ v }}</a-tag>
+                  </span>
+                </template>
+
+                <template #internalEndpoint="{text}">
+                  <span v-for="(v, k, i) in text.internalEndpoint.ports" :key="i">
+                    {{ text.internalEndpoint.host }}: {{ v.port }} {{ v.protocol }}<br/>
+                  </span>
+                </template>
+
+                <template #externalEndpoints="{text}">
+                  <div v-if="text.externalEndpoints.length <= 0 ||text.externalEndpoints===null && text.externalEndpoints===undefined">
+                    <span>-</span>
+                  </div>
+                  <div v-else>
+                    <span v-for="(v, k, i) in text.externalEndpoints.ports" :key="i">
+                      {{ text.externalEndpoints.host }}: {{ v.port }} {{ v.protocol }}<br/>
+                    </span>
+                  </div>
+
+                </template>
+
+                <template #creationTimestamp="{text}">
+                  <span>
+                   {{ $filters.fmtTime(text.objectMeta.creationTimestamp) }}
+                  </span>
+                </template>
+
+                <template #action="{text}">
+
+                  <a @click="serviceDetail(text)">详情</a>
+                  <a-divider type="vertical"/>
+
+                  <a-dropdown :trigger="['click']">
+                    <a class="ant-dropdown-link" @click.prevent>
+                      更多
+                      <DownOutlined/>
+                    </a>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item><span @click="editService(text)">编辑服务</span></a-menu-item>
+                        <a-menu-item><span @click="removeOneService(text)" style="color: red">删除服务</span></a-menu-item>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
+
+                </template>
+              </a-table>
             </a-tab-pane>
 
             <a-tab-pane key="3" tab="历史版本" force-render>
@@ -165,14 +277,49 @@
           </a-tabs>
           <br/>
       </a-page-header>
+
+      <template>
+        <div>
+          <a-modal v-model:visible="data.removeOnePodVisible" title="容器 (Container) "
+                   @ok="removeOnPodOnSubmit" cancelText="取消"
+                   okText="确定" :keyboard="false" :maskClosable="false">
+            <a-space>
+              <p class="circular">
+                <span class="exclamation-point">i</span>
+              </p>
+              <p>确认删除 {{ data.removeOnePodData.objectMeta.name }} 容器？</p>
+            </a-space>
+          </a-modal>
+        </div>
+      </template>
+
+      <template>
+        <div>
+          <a-modal v-model:visible="data.removeOneServiceVisible" title="服务 (Service) "
+                   @ok="removeOnServiceOnSubmit" cancelText="取消"
+                   okText="确定" :keyboard="false" :maskClosable="false">
+            <a-space>
+              <p class="circular">
+                <span class="exclamation-point">i</span>
+              </p>
+              <p>确认删除 {{ data.removeOneServiceData.objectMeta.name }} 服务？</p>
+            </a-space>
+
+            <br/>
+
+          </a-modal>
+        </div>
+      </template>
     </div>
 </template>
 
 <script>
 import {inject, onMounted, reactive} from "vue";
 import {useRoute} from "vue-router";
-import {DeploymentDetail, DeploymentRollBack} from "../../api/k8s";
+import {DeleteCollectionPods, DeletePod, DeleteService, DeploymentDetail, DeploymentRollBack} from "../../api/k8s";
 import {GetStorage} from "../../plugin/state/stroge";
+import routers from "../../router";
+import router from "../../router";
 
 const deploymentStatusConditionsColumns = [
   {
@@ -236,6 +383,70 @@ const eventsColumns = [
     slots: {customRender: 'lastTimestamp'},
   },
 ]
+const deploymentPodColumns = [
+  {
+    title: '名称',
+    slots: {customRender: 'name'},
+  },
+  {
+    title: '状态',
+    slots: {customRender: 'podStatus'},
+  },
+  {
+    title: '重启次数',
+    dataIndex: 'restartCount',
+  },
+  {
+    title: 'Pod IP',
+    dataIndex: 'podIP',
+  },
+  {
+    title: '调度节点',
+    slots: {customRender: 'nodeName'},
+  },
+  {
+    title: '创建时间',
+    slots: {customRender: 'creationTimestamp'},
+  },
+  {
+    title: '操作',
+    slots: {customRender: 'action'},
+  },
+]
+const serviceColumns = [
+  {
+    title: '名称',
+    slots: {customRender: 'name'},
+  },
+  {
+    title: '标签',
+    slots: {customRender: 'labels'},
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+  },
+  {
+    title: '集群IP',
+    dataIndex: 'clusterIP',
+  },
+  {
+    title: '内部端点',
+    slots: {customRender: 'internalEndpoint'},
+  },
+  {
+    title: '外部端点',
+    slots: {customRender: 'externalEndpoints'},
+  },
+  {
+    title: '创建时间',
+    slots: {customRender: 'creationTimestamp'},
+  },
+  {
+    title: '操作',
+    slots: {customRender: 'action'},
+  },
+]
 export default {
   name: "DeploymentDetail",
   setup(){
@@ -244,6 +455,12 @@ export default {
       DetailData: [],
       deploymentEventData: [],
       historyData: [],
+      deploymentPodData: [],
+      removeOnePodData: [],
+      removeOnePodVisible: false,
+      serviceData: [],
+      removeOneServiceData: [],
+      removeOneServiceVisible: false,
     })
 
     let router = useRoute()
@@ -252,14 +469,15 @@ export default {
       DeploymentDetail(params).then(res => {
         if (res.errCode === 0){
           data.DetailData = res.data
-          data.deploymentEventData = res.data.events.items
+          data.deploymentEventData = res.data.events
           data.historyData = res.data.historyVersion
+          data.deploymentPodData = res.data.podList.pods
+          data.serviceData = res.data.svcList.services
         }else {
           message.error(res.errMsg)
         }
       })
     }
-
     const rolloutDeployment = (params) => {
       let cs = GetStorage()
       DeploymentRollBack(cs.clusterId, {"namespace": params.namespace, "deploymentName": params.name, "reVersion": params.version}).then(res => {
@@ -269,10 +487,74 @@ export default {
         }else {
           message.error(res.errMsg)
         }
-
       })
     }
+    const nodeDetail = (name) => {
+      let cs = GetStorage()
+      let routeData = routers.resolve({ name: 'NodeDetail', query: {name: name, clusterId: cs.clusterId} });
+      window.open(routeData.href, '_blank');
+    };
+    const removeOnePod = (text) => {
+      data.removeOnePodData = text
+      data.removeOnePodVisible = true
+    }
+    const removeOnPodOnSubmit = () => {
+      let cs = GetStorage()
+      let delParams = {
+        "name": data.removeOnePodData.objectMeta.name,
+        "namespace": data.removeOnePodData.objectMeta.namespace,
+      }
+      DeletePod(cs.clusterId, delParams).then(res => {
+        if (res.errCode === 0) {
+          message.success("删除成功")
+          data.removeOnePodVisible = false
+          getDetail(router.query)
+        } else {
+          message.error(res.errMsg)
+        }
+      })
+    }
+    const detailPod = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'PodDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name
+        }
+      });
+    }
+    const serviceDetail = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'ServiceDetail', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name
+        }
+      });
+    }
+    const removeOneService = (text) => {
+      data.removeOneServiceData = text
+      data.removeOneServiceVisible = true
+    }
+    const removeOnServiceOnSubmit = () => {
+      let cs = GetStorage()
+      let delParams = {
+        "name": data.removeOneServiceData.objectMeta.name,
+        "namespace": data.removeOneServiceData.objectMeta.namespace,
+      }
+      DeleteService(cs.clusterId, delParams).then(res => {
+        if (res.errCode === 0) {
+          message.success("删除成功")
+          data.removeOneServiceVisible = false
+          getDetail(router.query);
 
+        } else {
+          message.error(res.errMsg)
+        }
+      })
+    }
     onMounted(() => {
       getDetail(router.query);
     });
@@ -285,6 +567,15 @@ export default {
       historyColumns,
       eventsColumns,
       rolloutDeployment,
+      deploymentPodColumns,
+      nodeDetail,
+      removeOnePod,
+      removeOnPodOnSubmit,
+      detailPod,
+      serviceColumns,
+      serviceDetail,
+      removeOneService,
+      removeOnServiceOnSubmit,
     }
 
   }
@@ -317,5 +608,21 @@ export default {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+/* 先画个圆圈 */
+.circular {
+  width: 30px;
+  height: 30px;
+  background-color: #F90;
+  border-radius: 50px;
+}
 
+/* 再画个感叹号 */
+.exclamation-point {
+  height: 15px;
+  line-height: 30px;
+  display: block;
+  color: #FFF;
+  text-align: center;
+  font-size: 20px
+}
 </style>

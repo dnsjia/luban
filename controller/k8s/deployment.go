@@ -153,7 +153,7 @@ func GetDeploymentToServiceController(c *gin.Context) {
 		return
 	}
 
-	data, err := service.GetDeploymentToService(client, Deployment.Namespace, Deployment.DeploymentName)
+	data, err := service.GetToService(client, Deployment.Namespace, Deployment.DeploymentName)
 	if err != nil {
 		response.FailWithMessage(response.ERROR, err.Error(), c)
 		return

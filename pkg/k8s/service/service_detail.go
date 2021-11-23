@@ -57,7 +57,7 @@ func GetServiceDetail(client *kubernetes.Clientset, namespace, name string, dsQu
 
 func toServiceDetail(service *v1.Service, endpointList endpoint.EndpointList, podList *pods.PodList, eventList *k8scommon.EventList) ServiceDetail {
 	return ServiceDetail{
-		Service:         toService(service),
+		Service:         ToService(service),
 		EndpointList:    endpointList,
 		PodList:         podList,
 		EventList:       eventList,

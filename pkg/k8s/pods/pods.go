@@ -22,9 +22,6 @@ type PodList struct {
 
 	// Unordered list of Pods.
 	Pods []Pod `json:"pods"`
-
-	// List of non-critical errors, that occurred during resource retrieval.
-	Errors []error `json:"errors"`
 }
 
 type PodStatus struct {
@@ -59,8 +56,7 @@ type Pod struct {
 }
 
 var EmptyPodList = &PodList{
-	Pods:   make([]Pod, 0),
-	Errors: make([]error, 0),
+	Pods: make([]Pod, 0),
 	ListMeta: k8s.ListMeta{
 		TotalItems: 0,
 	},
@@ -108,14 +104,14 @@ func ToPodList(pods []v1.Pod, events []v1.Event, dsQuery *dataselect.DataSelectQ
 
 	for _, pod := range pods {
 		warnings := event.GetPodsEventWarnings(events, []v1.Pod{pod})
-		podDetail := toPod(&pod, warnings)
+		podDetail := ToPod(&pod, warnings)
 		podList.Pods = append(podList.Pods, podDetail)
 	}
 
 	return podList
 }
 
-func toPod(pod *v1.Pod, warnings []k8scommon.Event) Pod {
+func ToPod(pod *v1.Pod, warnings []k8scommon.Event) Pod {
 	podDetail := Pod{
 		ObjectMeta:      k8s.NewObjectMeta(pod.ObjectMeta),
 		TypeMeta:        k8s.NewTypeMeta(k8s.ResourceKindPod),
