@@ -53,7 +53,7 @@ mysql:
 ![avatar](./docs/img/资产管理.jpg)
 
 ## 远程连接
-![avatar](./docs/img/远程登录.jpg)
+![avatar](./docs/img/远程登录.png)
 
 ## 集群管理
 ![avatar](./docs/img/集群管理.jpg)
