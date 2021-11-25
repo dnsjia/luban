@@ -12,14 +12,13 @@
         <!--资产分组-->
         <div style="padding-top: 33px">
           <a-directory-tree
-              multiple
               :tree-data="store.treeData"
               v-model:expandedKeys="expandedKeys"
               v-model:selectedKeys="selectedKeys">
             <template #title="{ name }">
               <a-dropdown :trigger="['contextmenu']">
                 <!-- 显示分组下ecs数量-->
-                <span style="font-size: 15px">{{ name }}</span>
+                 <span style="font-size: 15px">{{ name }}</span>
                 <template #overlay>
                 </template>
               </a-dropdown>
