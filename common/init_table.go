@@ -22,7 +22,7 @@ func MysqlTables(db *gorm.DB) {
 		cmdb.CloudPlatform{},
 		cmdb.VirtualMachine{},
 		cmdb.TreeMenu{},
-
+		cmdb.SSHRecord{},
 		//
 
 	)

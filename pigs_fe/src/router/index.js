@@ -220,6 +220,16 @@ const routes = [
         ]
     },
     {
+        path: '/ssh',
+        name: 'WebSSH',
+        component: () => import('../views/cmdb/Console.vue'),
+        meta: {
+            title: '远程终端',
+            module: '资产管理'
+        },
+        children: []
+    },
+    {
         path: '/user/login',
         name: 'Login',
         component: () => import('../views/user/Login.vue'),
