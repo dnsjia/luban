@@ -12,7 +12,6 @@ import (
 	"pigs/models"
 	"pigs/routers"
 	"pigs/routers/cmdb"
-	"pigs/tasks"
 	"pigs/tools"
 	"syscall"
 	"time"
@@ -65,6 +64,7 @@ func InitServer() {
 	{
 		// 注册基础功能路由 不做鉴权
 		routers.User(PublicGroup)
+		routers.InitWebSocketRouter(PublicGroup)
 	}
 	PrivateGroup := r.Group("/api/v1/")
 	PrivateGroup.Use(gin.Recovery()).Use(middleware.AuthMiddleware()).Use(middleware.CasBinHandler())
@@ -78,11 +78,13 @@ func InitServer() {
 		cmdb.InitHostRouter(PrivateGroup)
 		//云资产管理
 		routers.InitCloudRouter(PrivateGroup)
+		// Websocket
+		//routers.InitWebSocketRouter(PrivateGroup)
 
 	}
 	// 任务调度
-	go tasks.TaskBeta()
-	go tasks.TaskWorker()
+	//go tasks.TaskBeta()
+	//go tasks.TaskWorker()
 	address := fmt.Sprintf(":%d", common.CONFIG.System.Addr)
 	err := r.Run(address)
 

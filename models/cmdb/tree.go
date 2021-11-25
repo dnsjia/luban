@@ -6,7 +6,7 @@ type TreeMenu struct {
 	ParentId        int64             `gorm:"default:0" json:"parent_id"`
 	Hide            int               `gorm:"default:0" json:"hide"`
 	SortId          int               `json:"sort_id"`
-	VirtualMachines []*VirtualMachine `gorm:"many2many:hosts_group_virtual_machines" json:"-"`
+	VirtualMachines []*VirtualMachine `gorm:"many2many:hosts_group_virtual_machines" json:"cloud_virtual_machine"`
 }
 
 func (t TreeMenu) TableName() string {

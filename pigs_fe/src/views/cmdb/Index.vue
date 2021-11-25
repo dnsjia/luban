@@ -231,7 +231,7 @@
               </template>
               <!--操作-->
               <template #action="action">
-                <a @click="RemoteConnection(action.text.uuid)">远程连接</a>
+                <a @click="RemoteConnection(action.text.uuid, action.text.hostname, action.text.private_addr)">远程连接</a>
                 <a-divider type="vertical"/>
                 <a-dropdown>
                   <a class="ant-dropdown-link" @click.prevent>更多<DownOutlined /></a>
@@ -279,12 +279,13 @@ import {
 
 import {onBeforeMount, onMounted, computed, reactive, ref, watch, toRefs} from 'vue';
 import { cloneDeep } from 'lodash-es';
-import {getGroup} from "../../api/group";
+import {queryHostGroups} from "../../api/group";
 import {getHost} from "../../api/cmdb/ecs";
 import {CloudAccount} from "../../api/cloud/account"
 
 import Moment from 'moment'
 import {message} from "ant-design-vue";
+import {useRouter} from "_vue-router@4.0.12@vue-router";
 
 const columns = [
   {
@@ -357,7 +358,7 @@ export default {
       loading: false,
       helpUrl: "https://github.com/small-flying-pigs/pigs",
     })
-
+    const router = useRouter();
     const visible = ref(false);
     const syncECS = () => {
       visible.value = true;
@@ -493,8 +494,16 @@ export default {
       alert(key)
     }
     // 远程连接
-    function RemoteConnection(uuid) {
-      window.open("/ssh/" + uuid, "_blank")
+    function RemoteConnection(uuid, hostName, private_addr) {
+      router.push({
+        name: "WebSSH",
+        path: "/ssh/",
+        params: {
+          uuid: uuid,
+          hostName: hostName,
+          privateAddr: private_addr,
+        },
+      })
     }
     // 判断操作系统类型
     function SystemType(os) {
@@ -551,7 +560,7 @@ export default {
 
     // 获取分组
     const getGroups = async () => {
-      const result = await getGroup()
+      const result = await queryHostGroups()
       if (result.errCode !== 0){
         console.log('获取资产分组失败')
       }else {
