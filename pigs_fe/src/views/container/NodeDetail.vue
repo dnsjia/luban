@@ -190,7 +190,7 @@
             <a @click="podDetail(text)">详情</a>
             <a>编辑</a>
             <a>终端</a>
-            <a>日志</a>
+            <a @click="viewPodLog(text)">日志</a>
             <a style="color:red;" @click="deletePod(text)">删除</a>
           </a-space>
         </template>
@@ -379,6 +379,18 @@ export default {
         }
       })
     }
+    const viewPodLog = (text) => {
+      console.log(text)
+      let cs = GetStorage()
+      router.push({
+        name: 'ContainerLog', query: {
+          clusterId: cs.clusterId,
+          namespace: text.metadata.namespace,
+          name: text.metadata.name,
+          type: "pod"
+        }
+      });
+    }
     onMounted(() => {
       getNodeDetail(routers.query)
     });
@@ -392,6 +404,7 @@ export default {
       data,
       deletePod,
       deletePodSubmit,
+      viewPodLog,
     };
   }
 }

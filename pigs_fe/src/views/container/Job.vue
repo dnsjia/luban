@@ -19,7 +19,7 @@
           @search="jobSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getJobList()">
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getJobList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -183,6 +183,7 @@
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
 import {GetNamespaces, GetJob, DeleteCollectionJob, DeleteJob, ScaleJob} from "../../api/k8s";
+import {SyncOutlined} from '@ant-design/icons-vue';
 import router from "../../router";
 const columns = [
   {
@@ -434,6 +435,9 @@ export default {
       scaleJob,
       scaleJobOnSubmit,
     }
+  },
+  components: {
+    SyncOutlined,
   }
 
 }

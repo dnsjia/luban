@@ -19,7 +19,7 @@
           @search="podsSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
               align="bottom" @click="GetPods()">
       <template #icon>
         <SyncOutlined/>
@@ -72,7 +72,7 @@
           <a-divider type="vertical"/>
           <a>终端</a>
           <a-divider type="vertical"/>
-          <a>日志</a>
+          <a @click="viewPodLog(text)">日志</a>
           <a-divider type="vertical"/>
           <a-dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
@@ -371,6 +371,17 @@ export default {
         }
       });
     }
+    const viewPodLog = (text) => {
+      let cs = GetStorage()
+      router.push({
+        name: 'ContainerLog', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name,
+          type: text.typeMeta.kind
+        }
+      });
+    }
     onMounted(() => {
       GetNamespaceList()
       GetPods()
@@ -397,6 +408,7 @@ export default {
       removeOnePod,
       removeOnPodOnSubmit,
       detailPod,
+      viewPodLog,
     }
   },
   components: {

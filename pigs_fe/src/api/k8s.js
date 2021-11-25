@@ -86,3 +86,6 @@ export const GetSecretList = (clusterId, params) => get('/api/v1/k8s/config/secr
 export const DeleteCollectionSecret = (clusterId, params) => post('/api/v1/k8s/config/secrets?clusterId=' + clusterId, params)
 export const DeleteSecret = (clusterId, params) => del('/api/v1/k8s/config/secret?clusterId=' + clusterId, params)
 export const SecretDetail = (clusterId, params) => get('/api/v1/k8s/config/secret/detail?clusterId=' + clusterId, params)
+
+// /api/v1/k8s/log/source/develop/nginx-5468c8b895-nj8sx/pod?clusterId=24
+export const GetLogSource = (params) => get('/api/v1/k8s/log/source', params)

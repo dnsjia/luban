@@ -20,7 +20,7 @@
           @search="deploymentSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
               align="bottom" @click="getDeploymentList()">
       <template #icon>
         <SyncOutlined/>

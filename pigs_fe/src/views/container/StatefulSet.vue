@@ -19,7 +19,7 @@
           @search="statefulSetSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
               align="bottom" @click="GetStatefulSetList()">
       <template #icon>
         <SyncOutlined/>
@@ -188,6 +188,7 @@ import {
   scaleStatefulSet
 } from "../../api/k8s";
 import {GetStorage} from "../../plugin/state/stroge";
+import {SyncOutlined} from '@ant-design/icons-vue';
 import router from "../../router";
 
 const columns = [
@@ -456,8 +457,10 @@ export default {
       ScaleStatefulSet,
       ScaleStatefulSetOk,
     }
+  },
+  components: {
+    SyncOutlined,
   }
-
 }
 </script>
 

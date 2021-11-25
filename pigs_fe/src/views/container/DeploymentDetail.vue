@@ -170,7 +170,7 @@
                     <a-divider type="vertical"/>
                     <a>终端</a>
                     <a-divider type="vertical"/>
-                    <a>日志</a>
+                    <a @click="viewPodLog(text)">日志</a>
                     <a-divider type="vertical"/>
                     <a-dropdown :trigger="['click']">
                       <a class="ant-dropdown-link" @click.prevent>
@@ -555,6 +555,17 @@ export default {
         }
       })
     }
+    const viewPodLog = (text) => {
+      let cs = GetStorage()
+      routers.push({
+        name: 'ContainerLog', query: {
+          clusterId: cs.clusterId,
+          namespace: text.objectMeta.namespace,
+          name: text.objectMeta.name,
+          type: text.typeMeta.kind
+        }
+      });
+    }
     onMounted(() => {
       getDetail(router.query);
     });
@@ -576,6 +587,7 @@ export default {
       serviceDetail,
       removeOneService,
       removeOnServiceOnSubmit,
+      viewPodLog,
     }
 
   }

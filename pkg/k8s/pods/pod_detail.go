@@ -13,8 +13,8 @@ import (
 	"math"
 	"pigs/common"
 	"pigs/models/k8s"
-	k8s2 "pigs/pkg/k8s"
 	k8scommon "pigs/pkg/k8s/common"
+	"pigs/pkg/k8s/controller"
 	"pigs/pkg/k8s/dataselect"
 	"pigs/pkg/k8s/pvc"
 	"strconv"
@@ -30,7 +30,7 @@ type PodDetail struct {
 	ServiceAccountName        string                        `json:"serviceAccountName"`
 	RestartCount              int32                         `json:"restartCount"`
 	QOSClass                  string                        `json:"qosClass"`
-	Controller                *k8s2.ResourceOwner           `json:"controller,omitempty"`
+	Controller                *controller.ResourceOwner     `json:"controller,omitempty"`
 	Containers                []Container                   `json:"containers"`
 	InitContainers            []Container                   `json:"initContainers"`
 	Conditions                []k8scommon.Condition         `json:"conditions"`
@@ -156,7 +156,7 @@ func GetPodDetail(client *kubernetes.Clientset, namespace, name string) (*PodDet
 	return &podDetail, nil
 }
 
-func getPodController(client *kubernetes.Clientset, nsQuery *k8scommon.NamespaceQuery, pod *v1.Pod) (*k8s2.ResourceOwner, error) {
+func getPodController(client *kubernetes.Clientset, nsQuery *k8scommon.NamespaceQuery, pod *v1.Pod) (*controller.ResourceOwner, error) {
 	channels := &k8scommon.ResourceChannels{
 		PodList:   k8scommon.GetPodListChannel(client, nsQuery, 1),
 		EventList: k8scommon.GetEventListChannel(client, nsQuery, 1),
@@ -173,11 +173,11 @@ func getPodController(client *kubernetes.Clientset, nsQuery *k8scommon.Namespace
 		events = &v1.EventList{}
 	}
 
-	var ctrl k8s2.ResourceOwner
+	var ctrl controller.ResourceOwner
 	ownerRef := metaV1.GetControllerOf(pod)
 	if ownerRef != nil {
-		var rc k8s2.ResourceController
-		rc, err = k8s2.NewResourceController(*ownerRef, pod.Namespace, client)
+		var rc controller.ResourceController
+		rc, err = controller.NewResourceController(*ownerRef, pod.Namespace, client)
 		if err == nil {
 			ctrl = rc.Get(pods.Items, events.Items)
 		}
@@ -186,7 +186,7 @@ func getPodController(client *kubernetes.Clientset, nsQuery *k8scommon.Namespace
 	return &ctrl, nil
 }
 
-func toPodDetail(pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList, controller *k8s2.ResourceOwner,
+func toPodDetail(pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList, controller *controller.ResourceOwner,
 	events *k8scommon.EventList, persistentVolumeClaimList *pvc.PersistentVolumeClaimList) PodDetail {
 	return PodDetail{
 		ObjectMeta:                k8s.NewObjectMeta(pod.ObjectMeta),

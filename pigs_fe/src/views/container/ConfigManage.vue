@@ -29,13 +29,13 @@ export default {
       localStorage.setItem("config", val)
     };
     const data = reactive({
-      config: 1,
+      config: "",
     })
 
     const getConfigTable = () => {
       data.config = localStorage.getItem("config");
-      if (data.config === "" || data.config === undefined) {
-        data.config = 1
+      if (data.config === "" || data.config === undefined || data.config === null) {
+        data.config = "1"
       }
     }
 

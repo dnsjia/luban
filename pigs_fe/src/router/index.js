@@ -237,6 +237,16 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/container/log',
+                name: 'ContainerLog',
+                component: () => import('../views/container/PodLogs.vue'),
+                meta: {
+                    title: '容器日志',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
     },
     {

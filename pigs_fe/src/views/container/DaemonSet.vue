@@ -19,7 +19,7 @@
           @search="daemonSetSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getDaemonSetList()">
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getDaemonSetList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -155,6 +155,7 @@
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
+import {SyncOutlined} from '@ant-design/icons-vue';
 import {
   DaemonSetDetail,
   DeleteCollectionDaemonSet,
@@ -395,6 +396,9 @@ export default {
       removeOneDaemonSetOk,
       restartDaemonSetOk,
     }
+  },
+  components: {
+    SyncOutlined,
   }
 }
 </script>
