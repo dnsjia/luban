@@ -266,8 +266,8 @@ export default defineComponent({
           const attachPlugin = new AttachAddon(store.ws);
           term.loadAddon(attachPlugin);
           term.open(document.getElementById('terminal'));
-          term.clear()
           term.writeln("Connecting...");
+          term.clear()
           fitAddon.fit()
           term.focus()
         }
@@ -284,7 +284,7 @@ export default defineComponent({
         store.ws.onerror = function (e) {
           message.error("连接异常, 请刷新后重试！")
         }
-        store.ws.onclose = () => function (e) {
+        store.ws.onclose = function (e) {
           setTimeout(() => term.write('\r\nConnection is closed.\r\n'), 500)
         }
 
