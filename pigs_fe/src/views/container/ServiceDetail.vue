@@ -144,7 +144,7 @@
         <!-- 	更新时间 -->
         <template #lastTimestamp="{text}">
           <span class="level-assess">
-            <span> {{ $filters.fmtTime(text.lastTimestamp) }}</span>
+            <span> {{ $filters.fmtTime(text.lastSeen) }}</span>
           </span>
         </template>
 

@@ -347,6 +347,8 @@ export default {
       //   message.warning("搜索内容不能为空")
       //   return
       // }
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = value
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
