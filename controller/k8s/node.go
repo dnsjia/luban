@@ -1,12 +1,12 @@
 package k8s
 
 import (
+	"github.com/dnsjia/luban/controller"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/node"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pigs/controller"
-	"pigs/controller/response"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/node"
 )
 
 func GetNodes(c *gin.Context) {

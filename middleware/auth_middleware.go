@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pigs/common"
-	"pigs/models"
 	"strings"
 )
 

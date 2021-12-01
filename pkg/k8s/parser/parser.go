@@ -1,9 +1,9 @@
 package parser
 
 import (
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	"github.com/gin-gonic/gin"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
 	"strconv"
 	"strings"
 )

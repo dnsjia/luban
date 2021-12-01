@@ -2,12 +2,12 @@ package service
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/event"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/event"
 )
 
 // GetServiceEvents returns model events for a service with the given name in the given namespace.

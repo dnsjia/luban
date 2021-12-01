@@ -1,14 +1,14 @@
 package k8s
 
 import (
+	"github.com/dnsjia/luban/controller"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models/k8s"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/daemonset"
+	"github.com/dnsjia/luban/pkg/k8s/parser"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pigs/controller"
-	"pigs/controller/response"
-	"pigs/models/k8s"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/daemonset"
-	"pigs/pkg/k8s/parser"
 )
 
 func GetDaemonSetListController(c *gin.Context) {

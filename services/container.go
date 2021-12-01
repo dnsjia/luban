@@ -1,8 +1,8 @@
 package services
 
 import (
-	"pigs/common"
-	"pigs/models"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models"
 )
 
 func CreateK8SCluster(cluster models.K8SCluster) (err error) {

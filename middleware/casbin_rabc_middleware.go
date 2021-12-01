@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/services"
 	"github.com/gin-gonic/gin"
-	"pigs/common"
-	"pigs/controller/response"
-	"pigs/services"
 )
 
 func CasBinHandler() gin.HandlerFunc {

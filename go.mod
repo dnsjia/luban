@@ -1,4 +1,4 @@
-module pigs
+module github.com/dnsjia/luban
 
 go 1.15
 

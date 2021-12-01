@@ -1,10 +1,10 @@
 package node
 
 import (
+	"github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
 )
 
 type NodeCell v1.Node

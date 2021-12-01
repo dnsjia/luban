@@ -2,11 +2,11 @@ package logs
 
 import (
 	"context"
+	"github.com/dnsjia/luban/models/k8s"
+	"github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/controller"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/models/k8s"
-	"pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/controller"
 )
 
 // GetLogSources returns all log sources for a given resource. A log source identifies a log file through the combination of pod & container

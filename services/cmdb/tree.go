@@ -1,8 +1,8 @@
 package cmdb
 
 import (
-	"pigs/common"
-	"pigs/models/cmdb"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/cmdb"
 )
 
 type TreeList struct {

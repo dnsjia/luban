@@ -1,8 +1,8 @@
 package endpoint
 
 import (
+	"github.com/dnsjia/luban/models/k8s"
 	v1 "k8s.io/api/core/v1"
-	"pigs/models/k8s"
 )
 
 type EndpointList struct {

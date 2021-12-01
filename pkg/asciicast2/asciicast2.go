@@ -3,7 +3,7 @@ package asciicast2
 import (
 	"bytes"
 	"encoding/json"
-	"pigs/pkg/utils"
+	"github.com/dnsjia/luban/pkg/utils"
 )
 
 type CastV2Header struct {

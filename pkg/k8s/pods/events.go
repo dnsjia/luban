@@ -1,10 +1,10 @@
 package pods
 
 import (
+	"github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/event"
 	"k8s.io/client-go/kubernetes"
-	"pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/event"
 )
 
 // GetEventsForPod gets events that are associated with this pod.

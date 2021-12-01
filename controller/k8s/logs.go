@@ -1,13 +1,13 @@
 package k8s
 
 import (
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/logs"
+	"github.com/dnsjia/luban/pkg/k8s/pods"
 	"github.com/gin-gonic/gin"
 	"io"
 	v1 "k8s.io/api/core/v1"
-	"pigs/controller/response"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/logs"
-	"pigs/pkg/k8s/pods"
 	"strconv"
 )
 
