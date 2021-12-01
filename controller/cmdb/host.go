@@ -1,10 +1,10 @@
 package cmdb
 
 import (
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/services/cmdb"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/response"
-	"pigs/models"
-	"pigs/services/cmdb"
 	"strconv"
 )
 

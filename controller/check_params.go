@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	"github.com/gin-gonic/gin"
-	"pigs/common"
 )
 
 func CheckParams(c *gin.Context, ptr interface{}) error {

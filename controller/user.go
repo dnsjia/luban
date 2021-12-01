@@ -2,14 +2,14 @@ package controller
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/services"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"pigs/common"
-	"pigs/controller/response"
-	"pigs/models"
-	"pigs/services"
 )
 
 func Register(c *gin.Context) {

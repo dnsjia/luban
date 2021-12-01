@@ -69,7 +69,6 @@ export default {
       timer: null
     })
     const GetLogSource = (params) => {
-      // /develop/nginx-5468c8b895-nj8sx/pod?clusterId=24
       const p = "/api/v1/k8s/log/source/" + params.namespace + "/" + params.name + "/" + params.type + "?clusterId=" + params.clusterId
       get(p, "").then(res => {
         if (res.errCode === 0) {
@@ -112,8 +111,6 @@ export default {
     const createSetInterval = () => {
       stopSetInterval()
       data.timer = setInterval(() => {
-        // /api/v1/k8s/log/develop/flyby-register-686df684f5-hmzzh/flyby-register
-        // ?logFilePosition=end&offsetFrom=2000000000&offsetTo=2000000100&previous=false&referenceLineNum=0&referenceTimestamp=newest&clusterId=24
         const url = "/api/v1/k8s/log/" + router.query.namespace + "/" +
             data.pod + "/" + data.container + "?clusterId=" +
             router.query.clusterId +
@@ -166,10 +163,10 @@ export default {
 </script>
 
 <style scoped>
-.download {
-  height: 200px;
-  width: 200px;
-  display: inline-block;
+/*.download {*/
+/*  height: 200px;*/
+/*  width: 200px;*/
+/*  display: inline-block;*/
 
-}
+/*}*/
 </style>

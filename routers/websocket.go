@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"github.com/dnsjia/luban/controller/cmdb"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/cmdb"
 )
 
 func InitWebSocketRouter(r *gin.RouterGroup) {

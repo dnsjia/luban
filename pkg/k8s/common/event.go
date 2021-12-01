@@ -1,8 +1,8 @@
 package common
 
 import (
+	"github.com/dnsjia/luban/models/k8s"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"pigs/models/k8s"
 )
 
 // EventList is an events response structure.

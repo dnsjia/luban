@@ -3,12 +3,12 @@ package storageclass
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/pv"
 	storage "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/pv"
 )
 
 // StorageClassDetail provides the presentation layer view of Storage Class resource.

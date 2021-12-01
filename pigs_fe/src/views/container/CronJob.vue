@@ -313,6 +313,8 @@ export default {
       });
     }
     const cronJobSearch = (keyword) => {
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = keyword
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()

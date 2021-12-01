@@ -5,13 +5,13 @@ import (
 	batch "k8s.io/api/batch/v1"
 	batch2 "k8s.io/api/batch/v1beta1"
 
+	"github.com/dnsjia/luban/models/k8s"
 	apps "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	storage "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/models/k8s"
 )
 
 // ResourceChannels struct holds channels to resource lists. Each list channel is paired with

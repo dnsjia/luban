@@ -2,14 +2,14 @@ package websocket
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/pkg/utils"
 	"golang.org/x/crypto/ssh"
 	"io"
 	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
-	"pigs/common"
-	"pigs/pkg/utils"
 )
 
 type Terminal struct {

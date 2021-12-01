@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	v1 "k8s.io/api/core/v1"
-	"pigs/pkg/k8s/dataselect"
 )
 
 // The code below allows to perform complex data section on []api.Service

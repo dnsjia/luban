@@ -3,10 +3,10 @@ package evict
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	policy "k8s.io/api/policy/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
 )
 
 var (

@@ -2,11 +2,11 @@ package cloudsync
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/inner/cloud/cloudvendor"
+	"github.com/dnsjia/luban/models/cmdb"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"pigs/common"
-	"pigs/inner/cloud/cloudvendor"
-	"pigs/models/cmdb"
 )
 
 var (

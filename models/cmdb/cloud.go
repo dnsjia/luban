@@ -1,8 +1,8 @@
 package cmdb
 
 import (
+	"github.com/dnsjia/luban/models"
 	"gorm.io/gorm"
-	"pigs/models"
 	"time"
 )
 

@@ -2,10 +2,10 @@ package services
 
 import (
 	"errors"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models"
 	"github.com/toolkits/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
-	"pigs/common"
-	"pigs/models"
 )
 
 func UserGet(where string, args ...interface{}) (*models.User, error) {

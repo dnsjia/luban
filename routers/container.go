@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"github.com/dnsjia/luban/controller/k8s"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/k8s"
 )
 
 func InitContainerRouter(r *gin.RouterGroup) {

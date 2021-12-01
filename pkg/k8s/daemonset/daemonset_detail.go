@@ -3,12 +3,12 @@ package daemonset
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/service"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/service"
 )
 
 // DaemonSetDetail represents detailed information about a Daemon Set.

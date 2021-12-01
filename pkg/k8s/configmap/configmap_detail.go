@@ -3,10 +3,10 @@ package configmap
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
 )
 
 // ConfigMapDetail API resource provides mechanisms to inject containers with configuration data while keeping

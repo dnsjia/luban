@@ -3,6 +3,11 @@ package statefulset
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/event"
 	"go.uber.org/zap"
 	apps "k8s.io/api/apps/v1"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"
@@ -10,11 +15,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/event"
 	"time"
 )
 

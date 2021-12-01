@@ -1,11 +1,11 @@
 package services
 
 import (
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/cmdb"
+	"github.com/dnsjia/luban/models/request"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"pigs/common"
-	"pigs/models/cmdb"
-	"pigs/models/request"
 )
 
 // ListPlatform 云平台信息

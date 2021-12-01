@@ -2,6 +2,11 @@ package job
 
 import (
 	"context"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/event"
+	"github.com/dnsjia/luban/pkg/k8s/pods"
 	"go.uber.org/zap"
 	batch "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
@@ -9,11 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/event"
-	"pigs/pkg/k8s/pods"
 )
 
 type PodList struct {

@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"pigs/models"
+	"github.com/dnsjia/luban/models"
 	"time"
 )
 

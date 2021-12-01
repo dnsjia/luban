@@ -2,9 +2,9 @@ package routers
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/controller"
 	"github.com/gin-gonic/gin"
 	"os"
-	"pigs/controller"
 )
 
 func User(r *gin.RouterGroup) {
@@ -32,5 +32,6 @@ func InitUserRouter(r *gin.RouterGroup) {
 	UserRouter := r.Group("user")
 	{
 		UserRouter.GET("info", controller.UserInfo)
+		UserRouter.GET("email", controller.UserEmail)
 	}
 }
