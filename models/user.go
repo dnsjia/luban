@@ -18,9 +18,9 @@ type User struct {
 }
 
 type LoginUser struct {
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	LdapEnable bool   `json:"ldap_enable"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Ldap     bool   `json:"ldap"`
 }
 
 func (u User) TableName() string {

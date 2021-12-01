@@ -45,7 +45,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 判断前端是否以LDAP方式登录
-	if user.LdapEnable {
+	if user.Ldap {
 		// 从数据库查询用户是否存在
 		u, err1 := services.PassLogin(user.Email, user.Password)
 		if err1 == nil {
