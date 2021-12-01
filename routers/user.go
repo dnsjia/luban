@@ -32,6 +32,5 @@ func InitUserRouter(r *gin.RouterGroup) {
 	UserRouter := r.Group("user")
 	{
 		UserRouter.GET("info", controller.UserInfo)
-		UserRouter.GET("email", controller.UserEmail)
 	}
 }
