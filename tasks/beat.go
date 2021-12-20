@@ -1,10 +1,10 @@
 package tasks
 
 import (
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/cmdb"
 	"github.com/hibiken/asynq"
 	"log"
-	"pigs/common"
-	"pigs/models/cmdb"
 )
 
 func TaskBeta() {
