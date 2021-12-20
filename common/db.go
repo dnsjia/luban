@@ -36,7 +36,7 @@ func DBInsertOne(bean interface{}) error {
 	err := DB.Create(bean)
 	if err != nil {
 		logger.Errorf("mysql.error: insert fail: %v, to insert object: %+v", err, bean)
-		return errors.New("Internal server error, try again later please")
+		return errors.New("internal server error, try again later please")
 	}
 
 	return nil

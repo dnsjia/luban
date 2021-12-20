@@ -2,7 +2,7 @@ package tasks
 
 import (
 	"context"
-	"pigs/common"
+	"github.com/dnsjia/luban/common"
 	"time"
 
 	"github.com/hibiken/asynq"

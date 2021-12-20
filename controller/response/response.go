@@ -26,7 +26,6 @@ const (
 	ParamError = 8000
 
 	AuthError           = 1000
-	UserForbidden       = 1002
 	UserRegisterFail    = 1003
 	UserNameEmpty       = 1004
 	UserPassEmpty       = 1005

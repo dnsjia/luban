@@ -16,7 +16,7 @@ type CasBinInfo struct {
 	Method string `json:"method"`
 }
 
-// CasBin structure for input parameters
+// CasBinInReceive structure for input parameters
 type CasBinInReceive struct {
 	Role        string       `json:"role"`
 	CasBinInfos []CasBinInfo `json:"casBinInfos"`
