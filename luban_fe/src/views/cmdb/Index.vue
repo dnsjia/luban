@@ -84,14 +84,14 @@
                         <a-select-option value="aliyun">
                           <span class="svg-text">
                             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                              <use xlink:href="#pigs-icon-aliyun"></use>
+                              <use xlink:href="#luban-icon-aliyun"></use>
                             </svg>&nbsp;&nbsp;阿里云
                           </span>
                           </a-select-option>
                         <a-select-option value="tencent">
                           <span class="svg-text">
                             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                              <use xlink:href="#pigs-icon-tengxunyun"></use>
+                              <use xlink:href="#luban-icon-tengxunyun"></use>
                             </svg>&nbsp;&nbsp;腾讯云
                           </span>
                         </a-select-option>
@@ -205,13 +205,13 @@
                 <span>
                   <a-tooltip :title="os.text.os">
                       <svg class="icon" aria-hidden="true">
-                        <use v-if="SystemType(os.text.os)==='linux'" xlink:href="#pigs-icon-linux">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='windows'" xlink:href="#pigs-icon-windows-100">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='aliyun'" xlink:href="#pigs-icon-alinuxAliyunLinux2">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='alibaba'" xlink:href="#pigs-icon-aliyun">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='centos'" xlink:href="#pigs-icon-centos">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='ubuntu'" xlink:href="#pigs-icon-ubuntu">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='debian'" xlink:href="#pigs-icon-Debian">{{os.text.os}}</use>
+                        <use v-if="SystemType(os.text.os)==='linux'" xlink:href="#luban-icon-linux">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='windows'" xlink:href="#luban-icon-windows-100">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='aliyun'" xlink:href="#luban-icon-alinuxAliyunLinux2">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='alibaba'" xlink:href="#luban-icon-aliyun">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='centos'" xlink:href="#luban-icon-centos">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='ubuntu'" xlink:href="#luban-icon-ubuntu">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='debian'" xlink:href="#luban-icon-Debian">{{os.text.os}}</use>
                       </svg>
                   </a-tooltip>
                 </span>
@@ -356,7 +356,7 @@ export default {
       hostData: [],
       selectedRowKeys: [],
       loading: false,
-      helpUrl: "https://github.com/small-flying-pigs/pigs",
+      helpUrl: "https://github.com/dnsjia/luban",
     })
     const router = useRouter();
     const visible = ref(false);
@@ -479,7 +479,7 @@ export default {
       }else if (formData.type === 'tencent'){
         store.helpUrl = "https://console.cloud.tencent.com/capi"
       } else {
-        store.helpUrl = "https://github.com/small-flying-pigs/pigs"
+        store.helpUrl = "https://github.com/dnsjia/luban"
       }
 
 

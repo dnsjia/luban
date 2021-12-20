@@ -1,3 +1,19 @@
+/*
+Copyright 2021 The DnsJia Authors.
+WebSite:  https://github.com/dnsjia/luban
+Email:    OpenSource@dnsjia.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package cmdb
 
 import (
@@ -81,12 +97,12 @@ func WebSocketConnect(c *gin.Context) {
 
 	uid := uuid.NewV4().String()
 
-	//获取SSH配置
+	// 获取SSH配置 TODO: 从资产表获取服务器账号、密码
 	terminalConfig := WsSession.Config{
 		IpAddress:     host.PrivateAddr,
 		Port:          "22",
-		UserName:      "root",
-		Password:      "ed83e2d9799a6704fdcace92e68b1634",
+		UserName:      "",
+		Password:      "",
 		PrivateKey:    "",
 		KeyPassphrase: "",
 		Width:         cols,

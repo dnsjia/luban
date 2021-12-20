@@ -40,7 +40,7 @@
         <template #name="{text}">
           <div>
 <!--            <svg class="icon" aria-hidden="true">-->
-<!--              <use xlink:href="#pigs-icon-rongqi" style="width:14px;margin-right:2px"></use>-->
+<!--              <use xlink:href="#luban-icon-rongqi" style="width:14px;margin-right:2px"></use>-->
 <!--            </svg>-->
              <img style="width:14px;margin-right:2px" src="//g.alicdn.com/aliyun/cos/1.38.27/images/icon_docker.png">
             <a @click="detailPod(text)">{{text.objectMeta.name}}</a>

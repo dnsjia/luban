@@ -321,7 +321,7 @@ router.afterEach(() => {
     // 注释水印
     // const water = localStorage.getItem("email")
     // if (typeof (water) === "undefined" || !water){
-    //     // Watermark.set("小飞猪 - 运维平台")
+    //     // Watermark.set("鲁班 - 运维平台")
     // }else{
     //     Watermark.set(localStorage.getItem("email") + "(" + localStorage.getItem("name") + ")");
     // }
