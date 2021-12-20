@@ -74,7 +74,7 @@
                 <a-tooltip title="显示保密字典内容" placement="bottom"
                            :overlayStyle="{'font-size': '12px', 'max-width': '400px'}" @click="showSecretClick(map_k, i)">
                   <svg class="icon">
-                    <use  xlink:href="#pigs-icon-yanjing">{{map_v}}</use>
+                    <use  xlink:href="#luban-icon-yanjing">{{map_v}}</use>
                   </svg>
                 </a-tooltip>
               </div>
@@ -83,7 +83,7 @@
                 <a-tooltip title="隐藏保密字典内容" placement="bottom"
                            :overlayStyle="{'font-size': '12px', 'max-width': '400px'}" @click="hiddenSecretClick(map_k, i)">
                   <svg class="icon">
-                    <use  xlink:href="#pigs-icon-bukejian">{{map_v}}</use>
+                    <use  xlink:href="#luban-icon-bukejian">{{map_v}}</use>
                   </svg>
                 </a-tooltip>
                 {{map_v}}

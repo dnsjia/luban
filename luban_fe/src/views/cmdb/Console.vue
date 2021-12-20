@@ -5,7 +5,7 @@
         <div class="logo">
           <span class="svg-text">
             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-              <use xlink:href="#pigs-icon-config-command"></use>
+              <use xlink:href="#luban-icon-config-command"></use>
             </svg>&nbsp;&nbsp;LuBan Web Terminal Console
           </span>
         </div>
@@ -48,7 +48,7 @@
                 <a-button type="text">
                   <span class="svg-text">
                     <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                      <use xlink:href="#pigs-icon-wenjianjia2"></use>
+                      <use xlink:href="#luban-icon-wenjianjia2"></use>
                     </svg>&nbsp;文件管理
                   </span>
                 </a-button>

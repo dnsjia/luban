@@ -1,9 +1,25 @@
+/*
+Copyright 2021 The DnsJia Authors.
+WebSite:  https://github.com/dnsjia/luban
+Email:    OpenSource@dnsjia.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package gva
 
 import (
-	"pigs/cmd/sql"
-	"pigs/common"
-	"pigs/tools"
+	"github.com/dnsjia/luban/cmd/sql"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/tools"
 
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
@@ -11,15 +27,15 @@ import (
 
 var initdbCmd = &cobra.Command{
 	Use:   "initdb",
-	Short: "pigs 小飞猪初始化数据",
-	Long: `小飞猪运维平台: 
+	Short: "LuBan 鲁班初始化数据",
+	Long: `鲁班运维平台: 
 欢迎大家加入我们,一起共创社区。`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, _ := cmd.Flags().GetString("path")
-		common.GVA_VP = tools.Viper(path)
-		common.GVA_LOG = tools.Zap()
+		common.VP = tools.Viper(path)
+		common.LOG = tools.Zap()
 		db := common.GormMysql()
-		switch common.GVA_CONFIG.System.DbType {
+		switch common.CONFIG.System.DbType {
 		case "mysql":
 			common.MysqlTables(db)
 			sql.InitMysqlData(db)

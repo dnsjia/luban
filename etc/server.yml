@@ -15,11 +15,11 @@ http:
 
 ldap:
   enable: true
-  host: ldap.pigs.com
+  host: ldap.luban.com
   port: 389
-  baseDn: "cn=admin,dc=pigs,dc=com"
+  baseDn: "cn=admin,dc=luban,dc=com"
   # AD: manange@example.org
-  bindUser: "cn=admin,dc=pigs,dc=com"
+  bindUser: "cn=admin,dc=luban,dc=com"
   bindPass: "123456"
   # openldap: (&(uid=%s))
   # AD: (&(sAMAccountName=%s))
