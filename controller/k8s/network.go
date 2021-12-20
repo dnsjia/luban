@@ -1,14 +1,14 @@
 package k8s
 
 import (
+	"github.com/dnsjia/luban/controller"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models/k8s"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/ingress"
+	"github.com/dnsjia/luban/pkg/k8s/parser"
+	"github.com/dnsjia/luban/pkg/k8s/service"
 	"github.com/gin-gonic/gin"
-	"pigs/controller"
-	"pigs/controller/response"
-	"pigs/models/k8s"
-	"pigs/pkg/ingress"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/parser"
-	"pigs/pkg/k8s/service"
 )
 
 func GetServiceListController(c *gin.Context) {

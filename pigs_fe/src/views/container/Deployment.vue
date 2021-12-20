@@ -20,7 +20,7 @@
           @search="deploymentSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between"
               align="bottom" @click="getDeploymentList()">
       <template #icon>
         <SyncOutlined/>
@@ -143,13 +143,11 @@
           </a-space>
 
           <br/>
-          <template v-if="data.deploymentToServiceData.length>0">
-            <div v-for="(v, i) in data.deploymentToServiceData" :key="i" style="padding-left: 20px">
+          <template v-if="data.deploymentToServiceData">
               <a-checkbox v-model:checked="data.removeDeploymentToServiceChecked">删除关联的服务 (Service) {{
-                  v.metadata.name
+                  data.deploymentToServiceData.metadata.name
                 }}
               </a-checkbox>
-            </div>
           </template>
 
 
@@ -323,6 +321,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removeDeploymentData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getDeploymentList()
     }
 
@@ -346,6 +347,8 @@ export default {
       //   message.warning("搜索内容不能为空")
       //   return
       // }
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = value
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
@@ -409,7 +412,7 @@ export default {
         "namespace": text.objectMeta.namespace
       }).then(res => {
         if (res.errCode === 0) {
-          data.deploymentToServiceData = res.data.items
+          data.deploymentToServiceData = res.data
         } else {
           message.warning(res.errMsg)
         }

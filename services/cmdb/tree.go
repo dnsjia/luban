@@ -1,8 +1,8 @@
 package cmdb
 
 import (
-	"pigs/common"
-	"pigs/models/cmdb"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/cmdb"
 )
 
 type TreeList struct {
@@ -19,7 +19,8 @@ type DataRes struct {
 }
 
 // GetMenu 生成目录树
-func GetMenu(pid int) []*TreeList {
+func GetMenu(pid int, echo int) []*TreeList {
+
 	var (
 		menu     []cmdb.TreeMenu
 		treeList []*TreeList
@@ -28,14 +29,16 @@ func GetMenu(pid int) []*TreeList {
 	if err := common.DB.Where("parent_id = ?", pid).Order("sort_id").Find(&menu).Error; err != nil {
 		return nil
 	}
+
 	for _, v := range menu {
-		child := GetMenu(v.ID)
+		child := GetMenu(v.ID, 0)
 		node := &TreeList{
 			ID:       v.ID,
 			Name:     v.Name,
 			SortId:   v.SortId,
 			ParentId: v.ParentId,
 		}
+		// ToServer()
 		node.Children = child
 		treeList = append(treeList, node)
 	}

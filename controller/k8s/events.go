@@ -2,11 +2,11 @@ package k8s
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/event"
+	"github.com/dnsjia/luban/pkg/k8s/parser"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/response"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/event"
-	"pigs/pkg/k8s/parser"
 )
 
 func Events(c *gin.Context) {

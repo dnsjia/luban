@@ -3,15 +3,16 @@ package deployment
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/event"
+	"github.com/dnsjia/luban/pkg/k8s/service"
+	"github.com/dnsjia/luban/tools"
 	apps "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/event"
-	"pigs/tools"
 	"sort"
 )
 
@@ -69,6 +70,10 @@ type DeploymentDetail struct {
 
 	// Deployment history image version
 	HistoryVersion []HistoryVersion `json:"historyVersion"`
+
+	PodList *PodList `json:"podList"`
+
+	SvcList *service.ServiceList `json:"svcList"`
 }
 
 // GetDeploymentDetail returns model object of deployment and error, if any.
@@ -123,6 +128,7 @@ func GetDeploymentDetail(client *kubernetes.Clientset, namespace string, deploym
 		}
 	}
 	events, _ := event.GetEvents(client, namespace, fmt.Sprintf("involvedObject.name=%v", deploymentName))
+	serviceList, _ := service.GetToService(client, namespace, deploymentName)
 
 	return &DeploymentDetail{
 		Deployment:            toDeployment(deployment, rawRs.Items, rawPods.Items, rawEvents.Items),
@@ -134,6 +140,8 @@ func GetDeploymentDetail(client *kubernetes.Clientset, namespace string, deploym
 		RollingUpdateStrategy: rollingUpdateStrategy,
 		RevisionHistoryLimit:  deployment.Spec.RevisionHistoryLimit,
 		Events:                events,
+		PodList:               getDeploymentToPod(client, deployment),
+		SvcList:               serviceList,
 		HistoryVersion:        getDeploymentHistory(namespace, deploymentName, rawRs.Items),
 	}, nil
 }

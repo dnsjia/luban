@@ -3,10 +3,10 @@ package pv
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/common"
 )
 
 // PersistentVolumeDetail provides the presentation layer view of Kubernetes Persistent Volume resource.

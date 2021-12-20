@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"github.com/dnsjia/luban/controller/k8s"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/k8s"
 )
 
 func InitContainerRouter(r *gin.RouterGroup) {
@@ -85,5 +85,20 @@ func InitContainerRouter(r *gin.RouterGroup) {
 		K8sClusterRouter.GET("network/ingress/detail", k8s.DetailIngressController)
 		K8sClusterRouter.DELETE("network/ingress", k8s.DeleteIngressController)
 		K8sClusterRouter.POST("network/ingresss", k8s.DeleteCollectionIngressController)
+
+		K8sClusterRouter.GET("config/configmap", k8s.GetConfigMapController)
+		K8sClusterRouter.GET("config/configmap/detail", k8s.DetailConfigMapController)
+		K8sClusterRouter.DELETE("config/configmap", k8s.DeleteConfigMapController)
+		K8sClusterRouter.POST("config/configmaps", k8s.DeleteCollectionConfigMapController)
+
+		K8sClusterRouter.GET("config/secret", k8s.GetSecretsController)
+		K8sClusterRouter.GET("config/secret/detail", k8s.DetailSecretsController)
+		K8sClusterRouter.DELETE("config/secret", k8s.DeleteSecretsController)
+		K8sClusterRouter.POST("config/secrets", k8s.DeleteCollectionSecretsController)
+
+		K8sClusterRouter.GET("/log/source/:namespace/:resourceName/:resourceType", k8s.GetLogSourcesController)
+		K8sClusterRouter.GET("/log/:namespace/:pod", k8s.GetLogDetailController)
+		K8sClusterRouter.GET("/log/:namespace/:pod/:container", k8s.GetLogDetailController)
+		K8sClusterRouter.GET("/log/file/:namespace/:pod/:container", k8s.GetLogFileController)
 	}
 }

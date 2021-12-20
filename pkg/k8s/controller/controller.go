@@ -1,17 +1,17 @@
-package k8s
+package controller
 
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/event"
 	apps "k8s.io/api/apps/v1"
 	batch "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/event"
 	"strings"
 )
 
@@ -25,6 +25,14 @@ type ResourceOwner struct {
 	InitContainerImages []string          `json:"initContainerImages"`
 }
 
+// LogSources is a structure that represents all log files (all combinations of pods and container)
+// from a higher level controller (such as ReplicaSet).
+type LogSources struct {
+	ContainerNames     []string `json:"containerNames"`
+	InitContainerNames []string `json:"initContainerNames"`
+	PodNames           []string `json:"podNames"`
+}
+
 // ResourceController is an interface, that allows to perform operations on resource controller. To
 // instantiate it use NewResourceController and pass object reference to it. It may be extended to
 // provide more detailed set of functions.
@@ -35,14 +43,6 @@ type ResourceController interface {
 	Get(allPods []v1.Pod, allEvents []v1.Event) ResourceOwner
 	// Returns all log sources of controlled resource (e.g. a list of containers and pods for a replica set).
 	GetLogSources(allPods []v1.Pod) LogSources
-}
-
-// LogSources is a structure that represents all log files (all combinations of pods and container)
-// from a higher level controller (such as ReplicaSet).
-type LogSources struct {
-	ContainerNames     []string `json:"containerNames"`
-	InitContainerNames []string `json:"initContainerNames"`
-	PodNames           []string `json:"podNames"`
 }
 
 // NewResourceController creates instance of ResourceController based on given reference. It allows

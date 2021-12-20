@@ -3,10 +3,10 @@ package tools
 import (
 	"flag"
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"os"
-	"pigs/common"
 )
 
 func Viper(path ...string) *viper.Viper {

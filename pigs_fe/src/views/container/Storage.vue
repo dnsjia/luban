@@ -32,13 +32,13 @@ export default {
       localStorage.setItem("storage", val)
     };
     const data = reactive({
-      storage: 1,
+      storage: "",
     })
 
     const getStorageTable = () => {
       data.storage = localStorage.getItem("storage");
-      if (data.storage === "" || data.storage === undefined) {
-        data.storage = 1
+      if (data.storage === "" || data.storage === undefined || data.storage === null) {
+        data.storage = "1"
       }
     }
 

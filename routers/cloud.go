@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"github.com/dnsjia/luban/controller"
 	"github.com/gin-gonic/gin"
-	"pigs/controller"
 )
 
 func InitCloudRouter(r *gin.RouterGroup) {

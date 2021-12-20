@@ -2,15 +2,15 @@ package k8s
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/controller"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/cluster"
+	"github.com/dnsjia/luban/services"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"pigs/common"
-	"pigs/controller"
-	"pigs/controller/response"
-	"pigs/models"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/cluster"
-	"pigs/services"
 	"strconv"
 )
 

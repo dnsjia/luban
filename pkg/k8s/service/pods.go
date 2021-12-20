@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/event"
+	"github.com/dnsjia/luban/pkg/k8s/pods"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/event"
-	"pigs/pkg/k8s/pods"
 )
 
 // GetServicePods gets list of pods targeted by given label selector in given namespace.

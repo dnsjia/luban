@@ -3,20 +3,26 @@ package statefulset
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/event"
+	"github.com/dnsjia/luban/pkg/k8s/service"
 	apps "k8s.io/api/apps/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/event"
 )
 
 // StatefulSetDetail is a presentation layer view of Kubernetes Stateful Set resource. This means it is Stateful
 type StatefulSetDetail struct {
 	// Extends list item structure.
 	StatefulSet `json:",inline"`
-	Events      *k8scommon.EventList `json:"events"`
+
+	Events *k8scommon.EventList `json:"events"`
+
+	PodList *PodList `json:"podList"`
+
+	SvcList *service.ServiceList `json:"svcList"`
 }
 
 // GetStatefulSetDetail gets Stateful Set details.
@@ -37,13 +43,18 @@ func GetStatefulSetDetail(client *kubernetes.Clientset, dsQuery *dataselect.Data
 		return nil, err
 	}
 
-	ssDetail := getStatefulSetDetail(ss, podInfo, events)
+	serviceList, _ := service.GetToService(client, namespace, name)
+	ssDetail := getStatefulSetDetail(ss, podInfo, events, serviceList, client)
 	return &ssDetail, nil
 }
 
-func getStatefulSetDetail(statefulSet *apps.StatefulSet, podInfo *k8scommon.PodInfo, events *k8scommon.EventList) StatefulSetDetail {
+func getStatefulSetDetail(statefulSet *apps.StatefulSet, podInfo *k8scommon.PodInfo,
+	events *k8scommon.EventList, svc *service.ServiceList, client *kubernetes.Clientset) StatefulSetDetail {
+
 	return StatefulSetDetail{
 		StatefulSet: toStatefulSet(statefulSet, podInfo),
 		Events:      events,
+		PodList:     getStatefulSetToPod(client, statefulSet),
+		SvcList:     svc,
 	}
 }

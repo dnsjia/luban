@@ -3,11 +3,11 @@ package tasks
 import (
 	"context"
 	"encoding/json"
+	"github.com/dnsjia/luban/inner/cloud/cloudsync"
+	"github.com/dnsjia/luban/inner/cloud/cloudvendor"
+	"github.com/dnsjia/luban/models/cmdb"
 	"github.com/hibiken/asynq"
 	"log"
-	"pigs/inner/cloud/cloudsync"
-	"pigs/inner/cloud/cloudvendor"
-	"pigs/models/cmdb"
 )
 
 const (

@@ -217,7 +217,47 @@ const routes = [
                 },
                 children: []
             },
+            {
+                path: 'k8s/config/configmap',
+                name: 'ConfigMapDetail',
+                component: () => import('../views/container/ConfigMapDetail.vue'),
+                meta: {
+                    title: '配置项详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/config/secret',
+                name: 'SecretDetail',
+                component: () => import('../views/container/SecretDetail.vue'),
+                meta: {
+                    title: '保密字典详情',
+                    module: "容器管理"
+                },
+                children: []
+            },
+            {
+                path: 'k8s/container/log',
+                name: 'ContainerLog',
+                component: () => import('../views/container/PodLogs.vue'),
+                meta: {
+                    title: '容器日志',
+                    module: "容器管理"
+                },
+                children: []
+            },
         ]
+    },
+    {
+        path: '/ssh',
+        name: 'WebSSH',
+        component: () => import('../views/cmdb/Console.vue'),
+        meta: {
+            title: '远程终端',
+            module: '资产管理'
+        },
+        children: []
     },
     {
         path: '/user/login',

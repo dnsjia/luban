@@ -3,13 +3,13 @@ package Init
 import (
 	"errors"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/services"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"pigs/common"
-	"pigs/services"
 	"strconv"
 )
 

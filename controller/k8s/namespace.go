@@ -1,10 +1,10 @@
 package k8s
 
 import (
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/pkg/k8s/Init"
+	"github.com/dnsjia/luban/pkg/k8s/namespace"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/response"
-	"pigs/pkg/k8s/Init"
-	"pigs/pkg/k8s/namespace"
 )
 
 func GetNamespaceList(c *gin.Context) {

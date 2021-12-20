@@ -1,10 +1,10 @@
 package job
 
 import (
+	"github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	batch "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
-	"pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
 )
 
 // The code below allows to perform complex data section on []batch.Job
@@ -50,7 +50,7 @@ func getStatus(list *batch.JobList, pods []v1.Pod) common.ResourceStatus {
 	for _, job := range list.Items {
 		matchingPods := common.FilterPodsForJob(job, pods)
 		podInfo := common.GetPodInfo(job.Status.Active, job.Spec.Completions, matchingPods)
-		jobStatus := getJobStatus(&job)
+		jobStatus := GetJobStatus(&job)
 
 		if jobStatus.Status == JobStatusFailed {
 			info.Failed++

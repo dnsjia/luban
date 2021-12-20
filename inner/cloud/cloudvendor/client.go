@@ -2,7 +2,7 @@ package cloudvendor
 
 import (
 	"fmt"
-	"pigs/models/cmdb"
+	"github.com/dnsjia/luban/models/cmdb"
 )
 
 var vendorClients = make(map[string]VendorClient, 0)

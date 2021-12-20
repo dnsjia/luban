@@ -1,15 +1,14 @@
 package routers
 
 import (
-	"fmt"
+	"github.com/dnsjia/luban/controller"
 	"github.com/gin-gonic/gin"
 )
 
 func InitCasBinRouter(Router *gin.RouterGroup) {
 
-	//CasBinRouter := Router.Group("casbin")
+	CasBinRouter := Router.Group("casbin")
 	{
-		fmt.Println("casbin权限init 路由方法")
-		//CasBinRouter.POST("add", controller.AddCasBin)
+		CasBinRouter.POST("", controller.AddCasBin)
 	}
 }

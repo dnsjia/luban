@@ -5,7 +5,6 @@
         <a-row>
           <a-col :span="8" style="text-align: center">
             <a-card size="small" title="CPU信息" style="left: 5px;width: 96%" >
-<!--              <template #extra></template>-->
               <a-space>
                 <a-spin :spinning="state.loading"/>
                 <div id="cpuContainer"></div>
@@ -33,7 +32,6 @@
 
           <a-col :span="8" style="text-align: center">
             <a-card size="small" title="节点状态" style="height: 360px;width: 96%">
-<!--              <template #extra></template>-->
               <a-space style="">
                 <span v-if="state.data.ready>0">正常：{{ state.data.ready }}</span>
                 <span v-if="state.data.unready>0" style="color: red">异常：{{ state.data.unready }}</span>
@@ -57,7 +55,6 @@
 
           <a-col :span="8" style="text-align: center">
             <a-card size="small" title="内存信息" style="left: 12px; width: 96%">
-<!--              <template #extra></template>-->
               <a-space>
                 <a-spin :spinning="state.loading"/>
                 <div id="memContainer"></div>

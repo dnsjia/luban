@@ -3,13 +3,13 @@ package ingress
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	v1 "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
 )
 
 // Ingress - a single ingress returned to the frontend.

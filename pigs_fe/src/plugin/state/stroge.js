@@ -1,3 +1,14 @@
+// export default class LocalStorage {
+//
+//     static GetCluster(key) {
+//         const value = JSON.parse(localStorage.getItem(key))
+//         if (value === null || value === undefined || value === '') {
+//             return false
+//         }
+//         return value
+//     }
+//
+// }
 export
 const GetStorage = () => {
     const cluster = {}
@@ -9,4 +20,5 @@ const GetStorage = () => {
 
         return cluster
     }
+    return false
 }

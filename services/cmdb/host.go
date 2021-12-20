@@ -2,9 +2,9 @@ package cmdb
 
 import (
 	"fmt"
-	"pigs/common"
-	"pigs/models"
-	"pigs/models/cmdb"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/models/cmdb"
 	"strconv"
 )
 

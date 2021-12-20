@@ -28,7 +28,7 @@ casbin:
 
 # system configuration
 system:
-  env: 'public'  # Change to "develop" to skip authentication for development mode,  public auth
+  env: 'private'  # Change to "develop" to skip authentication for development mode,  change to "private" authentication
   addr: 8999
   db-type: 'mysql'
 

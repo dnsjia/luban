@@ -28,13 +28,13 @@ export default {
       localStorage.setItem("network", val)
     };
     const data = reactive({
-      network: 1,
+      network: "",
     })
 
     const getStorageTable = () => {
       data.network = localStorage.getItem("network");
-      if (data.network === "" || data.network === undefined) {
-        data.network = 1
+      if (data.network === "" || data.network === undefined || data.network === null) {
+        data.network = "1"
       }
     }
 

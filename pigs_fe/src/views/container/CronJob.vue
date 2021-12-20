@@ -19,7 +19,7 @@
           @search="cronJobSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getCronJobList()">
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getCronJobList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -155,6 +155,7 @@
 <script>
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
+import {SyncOutlined} from '@ant-design/icons-vue';
 import {
   DeleteCollectionCronJob,
   DeleteCronJob,
@@ -267,6 +268,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveCronJobData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getCronJobList()
     }
     // 显示条数
@@ -309,6 +313,8 @@ export default {
       });
     }
     const cronJobSearch = (keyword) => {
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = keyword
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
@@ -390,6 +396,9 @@ export default {
       removeOneCronJob,
       removeOneCronJobOk,
     }
+  },
+  components: {
+    SyncOutlined,
   }
 }
 </script>

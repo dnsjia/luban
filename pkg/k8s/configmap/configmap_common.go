@@ -1,15 +1,15 @@
-package ingress
+package configmap
 
 import (
-	v1 "k8s.io/api/extensions/v1beta1"
-	"pigs/pkg/k8s/dataselect"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
+	api "k8s.io/api/core/v1"
 )
 
-// The code below allows to perform complex data section on []extensions.Ingress
+// The code below allows to perform complex data section on []api.ConfigMap
 
-type IngressCell v1.Ingress
+type ConfigMapCell api.ConfigMap
 
-func (self IngressCell) GetProperty(name dataselect.PropertyName) dataselect.ComparableValue {
+func (self ConfigMapCell) GetProperty(name dataselect.PropertyName) dataselect.ComparableValue {
 	switch name {
 	case dataselect.NameProperty:
 		return dataselect.StdComparableString(self.ObjectMeta.Name)
@@ -23,18 +23,18 @@ func (self IngressCell) GetProperty(name dataselect.PropertyName) dataselect.Com
 	}
 }
 
-func toCells(std []v1.Ingress) []dataselect.DataCell {
+func toCells(std []api.ConfigMap) []dataselect.DataCell {
 	cells := make([]dataselect.DataCell, len(std))
 	for i := range std {
-		cells[i] = IngressCell(std[i])
+		cells[i] = ConfigMapCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []v1.Ingress {
-	std := make([]v1.Ingress, len(cells))
+func fromCells(cells []dataselect.DataCell) []api.ConfigMap {
+	std := make([]api.ConfigMap, len(cells))
 	for i := range std {
-		std[i] = v1.Ingress(cells[i].(IngressCell))
+		std[i] = api.ConfigMap(cells[i].(ConfigMapCell))
 	}
 	return std
 }

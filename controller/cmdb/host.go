@@ -1,10 +1,10 @@
 package cmdb
 
 import (
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/services/cmdb"
 	"github.com/gin-gonic/gin"
-	"pigs/controller/response"
-	"pigs/models"
-	"pigs/services/cmdb"
 	"strconv"
 )
 
@@ -12,9 +12,16 @@ import (
 func ListHostGroup(c *gin.Context) {
 	// 对查询出来的数据进行处理, echo 需要获取url中获取echo字段，  api/v1/cmdb/hosts/groups?echo=1
 	// 获取到传true echo=true
-	TreeList := cmdb.GetMenu(0)
+	echo := c.DefaultQuery("echo", "0")
+	echoInt, err := strconv.Atoi(echo)
+	if err != nil {
+		return
+	}
+
+	TreeList := cmdb.GetMenu(0, echoInt)
 	response.OkWithDetailed(cmdb.DataRes{Data: TreeList}, "获取成功", c)
 	return
+
 }
 
 // ListHost 列出主机

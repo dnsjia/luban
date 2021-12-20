@@ -1,11 +1,11 @@
 package common
 
 import (
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/models/cmdb"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"os"
-	"pigs/models"
-	"pigs/models/cmdb"
 )
 
 func MysqlTables(db *gorm.DB) {
@@ -22,7 +22,7 @@ func MysqlTables(db *gorm.DB) {
 		cmdb.CloudPlatform{},
 		cmdb.VirtualMachine{},
 		cmdb.TreeMenu{},
-
+		cmdb.SSHRecord{},
 		//
 
 	)

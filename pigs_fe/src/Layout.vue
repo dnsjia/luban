@@ -2,8 +2,8 @@
   <a-layout class="layout" style="min-height: 100vh">
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
       <div class="logo" >{{ title }}</div>
-      <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
-        <a-menu-item key="1">
+      <a-menu theme="dark" mode="inline" :selectedKeys="[$route.path]">
+        <a-menu-item key="/">
           <router-link :to="{path: '/'}">
           <IconFont type="pigs-icon-ziyuan"/>
             <span class="nav-text">仪表盘</span>
@@ -15,7 +15,7 @@
             <IconFont type="pigs-icon-fuwuqi1"/>
           </template>
           <template #title>资产管理</template>
-          <a-menu-item key="21">
+          <a-menu-item key="/cmdb/server">
             <router-link :to="{path: '/cmdb/server'}">
               服务器
             </router-link>
@@ -28,37 +28,37 @@
           </template>
           <template #title>容器管理</template>
 
-          <a-menu-item key="31">
+          <a-menu-item key="/k8s/cluster">
             <router-link :to="{path: '/k8s/cluster'}">
               集群管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="32">
+          <a-menu-item key="/k8s/node">
             <router-link :to="{path: '/k8s/node'}">
               节点管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="33">
+          <a-menu-item key="/k8s/workload">
             <router-link :to="{path: '/k8s/workload'}">
               工作负载
             </router-link>
           </a-menu-item>
-          <a-menu-item key="34">
+          <a-menu-item key="/k8s/storage">
             <router-link :to="{path: '/k8s/storage'}">
               存储管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="35">
+          <a-menu-item key="/k8s/network">
             <router-link :to="{path: '/k8s/network'}">
               网络管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="36">
+          <a-menu-item key="/k8s/config">
             <router-link :to="{path: '/k8s/config'}">
               配置管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="37">
+          <a-menu-item key="/k8s/event">
             <router-link :to="{path: '/k8s/event'}">
               事件中心
             </router-link>
@@ -71,12 +71,12 @@
           </template>
           <template #title>作业配置</template>
 
-          <a-menu-item key="41">
+          <a-menu-item key="/task/execute">
             <router-link :to="{path: '/task/execute'}">
               执行任务
             </router-link>
           </a-menu-item>
-          <a-menu-item key="42">
+          <a-menu-item key="/task/template">
             <router-link :to="{path: '/task/template'}">
               任务模板
             </router-link>
@@ -89,17 +89,17 @@
           </template>
           <template #title>应用发布</template>
 
-          <a-menu-item key="41">
+          <a-menu-item key="/application/apps/manage">
             <router-link :to="{path: '/application/apps/manage'}">
               应用管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="42">
+          <a-menu-item key="/application/environment">
             <router-link :to="{path: '/application/environment'}">
               环境管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="42">
+          <a-menu-item key="/application/apps/deploy/approval">
             <router-link :to="{path: '/application/apps/deploy/approval'}">
               发布申请
             </router-link>
@@ -112,17 +112,17 @@
           </template>
           <template #title>个人中心</template>
 
-          <a-menu-item key="61">
+          <a-menu-item key="/user/change/password">
             <router-link :to="{path: '/user/change/password'}">
               修改密码
             </router-link>
           </a-menu-item>
-          <a-menu-item key="62">
+          <a-menu-item key="/user/manage">
             <router-link :to="{path: '/user/manage'}">
               用户管理
             </router-link>
           </a-menu-item>
-          <a-menu-item key="63">
+          <a-menu-item key="/system/settings">
             <router-link :to="{path: '/system/settings'}">
               系统设置
             </router-link>

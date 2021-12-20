@@ -2,16 +2,16 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"go.uber.org/zap"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models/k8s"
+	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"pigs/common"
-	"pigs/models/k8s"
-	k8scommon "pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
-	"pigs/pkg/k8s/deployment"
+	"strings"
 )
 
 // Service is a representation of a service.
@@ -44,9 +44,6 @@ type ServiceList struct {
 
 	// Unordered list of services.
 	Services []Service `json:"services"`
-
-	// List of non-critical errors, that occurred during resource retrieval.
-	Errors []error `json:"errors"`
 }
 
 // GetServiceList returns a list of all services in the cluster.
@@ -61,8 +58,7 @@ func GetServiceList(client *kubernetes.Clientset, nsQuery *k8scommon.NamespaceQu
 }
 
 // GetServiceListFromChannels returns a list of all services in the cluster.
-func GetServiceListFromChannels(channels *k8scommon.ResourceChannels,
-	dsQuery *dataselect.DataSelectQuery) (*ServiceList, error) {
+func GetServiceListFromChannels(channels *k8scommon.ResourceChannels, dsQuery *dataselect.DataSelectQuery) (*ServiceList, error) {
 	services := <-channels.ServiceList.List
 	err := <-channels.ServiceList.Error
 	if err != nil {
@@ -72,7 +68,7 @@ func GetServiceListFromChannels(channels *k8scommon.ResourceChannels,
 	return CreateServiceList(services.Items, dsQuery), nil
 }
 
-func toService(service *v1.Service) Service {
+func ToService(service *v1.Service) Service {
 	return Service{
 		ObjectMeta:        k8s.NewObjectMeta(service.ObjectMeta),
 		TypeMeta:          k8s.NewTypeMeta(k8s.ResourceKindService),
@@ -96,33 +92,10 @@ func CreateServiceList(services []v1.Service, dsQuery *dataselect.DataSelectQuer
 	serviceList.ListMeta = k8s.ListMeta{TotalItems: filteredTotal}
 
 	for _, service := range services {
-		serviceList.Services = append(serviceList.Services, toService(&service))
+		serviceList.Services = append(serviceList.Services, ToService(&service))
 	}
 
 	return serviceList
-}
-
-func GetDeploymentToService(client *kubernetes.Clientset, ns string, deploymentName string) (*v1.ServiceList, error) {
-
-	deploymentData, err := deployment.GetDeploymentDetail(client, ns, deploymentName)
-	if err != nil {
-		common.LOG.Error("获取deployment详情异常", zap.Any("err: ", err))
-		return nil, err
-	}
-	for k, v := range deploymentData.Selector {
-		selector := fmt.Sprintf("%v=%v", k, v)
-		common.LOG.Info(fmt.Sprintf("根据label过滤service: %v", selector))
-		svc, err := client.CoreV1().Services(ns).List(context.TODO(), metav1.ListOptions{
-			LabelSelector: selector,
-		})
-		if err != nil {
-			common.LOG.Error("根据deployment获取service异常", zap.Any("err: ", err))
-			return nil, err
-		}
-		return svc, nil
-	}
-
-	return nil, err
 }
 
 func DeleteService(client *kubernetes.Clientset, ns string, serviceName string) error {
@@ -150,4 +123,26 @@ func DeleteCollectionService(client *kubernetes.Clientset, serviceList []k8s.Ser
 	}
 	common.LOG.Info("删除service已完成")
 	return nil
+}
+
+func GetToService(client *kubernetes.Clientset, namespace string, name string) (*ServiceList, error) {
+	serviceList := &ServiceList{
+		Services: make([]Service, 0),
+	}
+	svcList, err := client.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{})
+	common.LOG.Info("开始获取svc")
+	if err != nil {
+		return nil, err
+	}
+	for _, svc := range svcList.Items {
+		if strings.Contains(svc.Name, name) {
+			serviceList.Services = append(serviceList.Services, ToService(&svc))
+			serviceList.ListMeta = k8s.ListMeta{
+				TotalItems: len(serviceList.Services),
+			}
+			return serviceList, nil
+		}
+	}
+	common.LOG.Warn(fmt.Sprintf("没有找到所关联的SVC：namespace: %s, name: %s", namespace, name))
+	return nil, errors.New("没有找到所关联的SVC")
 }

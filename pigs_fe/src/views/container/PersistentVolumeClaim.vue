@@ -199,6 +199,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removePVCData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getPVCList()
     }
     // 显示条数
@@ -241,6 +244,8 @@ export default {
       });
     }
     const pvcSearch = (keyword) => {
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = keyword
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()

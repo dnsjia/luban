@@ -1,9 +1,9 @@
 package cronjob
 
 import (
+	"github.com/dnsjia/luban/pkg/k8s/common"
+	"github.com/dnsjia/luban/pkg/k8s/dataselect"
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
-	"pigs/pkg/k8s/common"
-	"pigs/pkg/k8s/dataselect"
 )
 
 // The code below allows to perform complex data section on []batch.CronJob

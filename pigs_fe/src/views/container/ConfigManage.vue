@@ -7,7 +7,7 @@
       </a-tab-pane>
 
       <a-tab-pane key="2" tab="保密字典" force-render>
-        <Secrets></Secrets>
+        <Secret></Secret>
       </a-tab-pane>
 
 
@@ -17,7 +17,7 @@
 
 <script>
 import {onMounted, reactive} from "vue";
-import Secrets from "./Secrets";
+import Secret from "./Secret";
 import ConfigMap from "./ConfigMap";
 
 
@@ -29,13 +29,13 @@ export default {
       localStorage.setItem("config", val)
     };
     const data = reactive({
-      config: 1,
+      config: "",
     })
 
     const getConfigTable = () => {
       data.config = localStorage.getItem("config");
-      if (data.config === "" || data.config === undefined) {
-        data.config = 1
+      if (data.config === "" || data.config === undefined || data.config === null) {
+        data.config = "1"
       }
     }
 
@@ -48,7 +48,7 @@ export default {
   },
   components: {
     ConfigMap,
-    Secrets,
+    Secret,
   }
 }
 </script>

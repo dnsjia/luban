@@ -735,7 +735,6 @@ export default {
 
     };
 
-
     const getWorkloadTable = () => {
       data.podDetailTableValue = localStorage.getItem("podDetailTable");
       if (data.podDetailTableValue === "" || data.podDetailTableValue === undefined) {

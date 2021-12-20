@@ -2,14 +2,14 @@ package controller
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/controller/response"
+	"github.com/dnsjia/luban/models"
+	"github.com/dnsjia/luban/services"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"pigs/common"
-	"pigs/controller/response"
-	"pigs/models"
-	"pigs/services"
 )
 
 func Register(c *gin.Context) {
@@ -45,7 +45,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 判断前端是否以LDAP方式登录
-	if user.LdapEnable {
+	if user.Ldap {
 		// 从数据库查询用户是否存在
 		u, err1 := services.PassLogin(user.Email, user.Password)
 		if err1 == nil {

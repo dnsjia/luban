@@ -46,13 +46,13 @@ export default {
       localStorage.setItem("workload", val)
     };
     const data = reactive({
-          workload: 1,
+          workload: "",
     })
 
     const getWorkloadTable = () => {
       data.workload = localStorage.getItem("workload");
-      if (data.workload === "" || data.workload === undefined) {
-        data.workload = 1
+      if (data.workload === "" || data.workload === undefined || data.workload === null) {
+        data.workload = "1"
       }
     }
 

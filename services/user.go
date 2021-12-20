@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/dnsjia/luban/common"
+	"github.com/dnsjia/luban/models"
 	"gorm.io/gorm"
-	"pigs/common"
-	"pigs/models"
 )
 
 func UserRegister(u models.User) (userInter models.User, err error) {

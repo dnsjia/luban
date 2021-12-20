@@ -1,12 +1,7 @@
 <template>
     <div class="login_bg">
-<!--      <img src="../../assets/login_bg.jpg" />-->
       <div class="login">
-<!--        <h3 style="z-index:1;text-align:center;"><img src="../../assets/logo.png" width="120" height="80"></h3>-->
-        <br/>
-        <h3 style="z-index:1;text-align:center;">{{ loginTitle }}</h3>
-        <br/>
-
+        <h3 style="z-index:1;text-align:center;"><img src="../../assets/luban.svg" width="120" height="80"></h3>
         <a-tabs size="small">
           <a-tab-pane key="1" tab="帐号登录">
               <a-form ref="formRef" :model="formState" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -27,14 +22,8 @@
                 </a-form-item>
 
                 <a-form-item>
-                    <a-checkbox v-model:checked="formState.ldap_enable">
-                        LDAP登录
-                    </a-checkbox>
-
-                    <a class="login-form-forgot" href="/user/forgotPwd">
-                      忘记密码
-                    </a>
-                  <br/><br/>
+                    <a-checkbox v-model:checked="formState.ldap">LDAP登录</a-checkbox>
+                    <a class="login-form-forgot" href="/user/forgotPwd">忘记密码</a><br/><br/>
                     <a-button type="primary" @click="onSubmit" class="login-form-button">登录</a-button>
                 </a-form-item>
               </a-form>
@@ -43,9 +32,7 @@
           <a-tab-pane key="2" tab="钉钉登录">
             <div id="login_container" class="login-container"></div>
           </a-tab-pane>
-
         </a-tabs>
-
       </div>
     </div>
 </template>
@@ -66,7 +53,7 @@ export default defineComponent({
     const formState = reactive({
       email: '',
       password: '',
-      ldap_enable: false
+      ldap: false
     });
     const rules = {
       email: [
@@ -92,7 +79,7 @@ export default defineComponent({
           login({
             "email": formState.email,
             "password": formState.password,
-            "ldap_enable": formState.ldap_enable,
+            "ldap": formState.ldap,
           }).then(res => {
             if (res.errCode === 0) {
               setCookie('email',res.data.email)
@@ -127,7 +114,6 @@ export default defineComponent({
       formState,
       rules,
       onSubmit,
-      // ldap_enable: ref(false),
       widthVar: "0px",
 
       enterLogin,

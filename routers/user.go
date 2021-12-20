@@ -2,9 +2,9 @@ package routers
 
 import (
 	"fmt"
+	"github.com/dnsjia/luban/controller"
 	"github.com/gin-gonic/gin"
 	"os"
-	"pigs/controller"
 )
 
 func User(r *gin.RouterGroup) {

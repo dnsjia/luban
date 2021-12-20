@@ -3,10 +3,10 @@ package ingress
 import (
 	"context"
 	"fmt"
+	"github.com/dnsjia/luban/common"
 	v1 "k8s.io/api/extensions/v1beta1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
-	"pigs/common"
 )
 
 // IngressDetail API resource provides mechanisms to inject containers with configuration data while keeping

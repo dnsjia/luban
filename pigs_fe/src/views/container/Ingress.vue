@@ -259,6 +259,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.removeIngressData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getIngressList()
     }
 
@@ -278,6 +281,8 @@ export default {
     }
 
     const ingressSearch = (value) => {
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = value
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()

@@ -19,7 +19,7 @@
           @search="jobSearch"
       />
     </a-space>
-    <a-button style="float:right;z-index:99;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getJobList()">
+    <a-button style="float:right;z-index:99;left: -10px;margin-bottom: 10px" gutter={40} type="flex" justify="space-between" align="bottom" @click="getJobList()">
       <template #icon>
         <SyncOutlined/>
       </template>
@@ -183,6 +183,7 @@
 import {computed, inject, onMounted, reactive, toRaw, toRefs} from "vue";
 import {GetStorage} from "../../plugin/state/stroge";
 import {GetNamespaces, GetJob, DeleteCollectionJob, DeleteJob, ScaleJob} from "../../api/k8s";
+import {SyncOutlined} from '@ant-design/icons-vue';
 import router from "../../router";
 const columns = [
   {
@@ -285,6 +286,9 @@ export default {
       queryInfo.namespace = e
       queryInfo.filterBy = ""
       localStorage.setItem("namespace", e)
+      data.CollectionRemoveJobData = []
+      data.selectedRows = []
+      state.selectedRowKeys = []
       getJobList()
     }
     // 显示条数
@@ -327,6 +331,8 @@ export default {
       });
     }
     const jobSearch = (keyword) => {
+      queryInfo.page = 1
+      data.total = 0
       data.searchValue = keyword
       queryInfo.filterBy = "name," + data.searchValue
       let cs = GetStorage()
@@ -431,6 +437,9 @@ export default {
       scaleJob,
       scaleJobOnSubmit,
     }
+  },
+  components: {
+    SyncOutlined,
   }
 
 }
