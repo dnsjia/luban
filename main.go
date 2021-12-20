@@ -78,7 +78,7 @@ func InitServer() {
 		cmdb.InitHostRouter(PrivateGroup)
 		//云资产管理
 		routers.InitCloudRouter(PrivateGroup)
-		// Websocket
+		// Websocket todo websocket鉴权
 		//routers.InitWebSocketRouter(PrivateGroup)
 
 	}
