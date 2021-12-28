@@ -18,7 +18,8 @@ package ingress
 
 import (
 	"github.com/dnsjia/luban/pkg/k8s/dataselect"
-	v1 "k8s.io/api/extensions/v1beta1"
+	//v1 "k8s.io/api/extensions/v1beta1"
+	v1 "k8s.io/api/networking/v1"
 )
 
 // The code below allows to perform complex data section on []extensions.Ingress

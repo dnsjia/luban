@@ -179,6 +179,7 @@ const columns = [
   {
     title: '标签',
     slots: {customRender: 'labels'},
+    width: 200
   },
   {
     title: '类型',

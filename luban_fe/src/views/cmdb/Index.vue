@@ -285,7 +285,7 @@ import {CloudAccount} from "../../api/cloud/account"
 
 import Moment from 'moment'
 import {message} from "ant-design-vue";
-import {useRouter} from "_vue-router@4.0.12@vue-router";
+import {useRouter} from "vue-router";
 
 const columns = [
   {

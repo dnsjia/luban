@@ -50,7 +50,7 @@
 
         <template #replicas="{text}">
           <span>
-           {{ text.deploymentStatus.readyReplicas }} / {{ text.deploymentStatus.replicas }}
+           {{ text.deploymentStatus.readyReplicas }} / {{ text.pods.desired }}
           </span>
         </template>
 
@@ -220,6 +220,7 @@ const columns = [
   {
     title: '标签',
     slots: {customRender: 'labels'},
+    width: 200
   },
   {
     title: '副本数',

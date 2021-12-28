@@ -14,13 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// +build !windows
-
 package common
 
 import (
 	"os"
 	"path"
+	"runtime"
 	"time"
 
 	zaprotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -32,14 +31,32 @@ import (
 //@return: zapcore.WriteSyncer, error
 
 func GetWriteSyncer() (zapcore.WriteSyncer, error) {
-	fileWriter, err := zaprotatelogs.New(
-		path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
-		zaprotatelogs.WithLinkName(CONFIG.Zap.LinkName),
-		zaprotatelogs.WithMaxAge(7*24*time.Hour),
-		zaprotatelogs.WithRotationTime(24*time.Hour),
-	)
-	if CONFIG.Zap.LogInConsole {
-		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
+	sysType := runtime.GOOS
+
+	if sysType == "linux" {
+		fileWriter, err := zaprotatelogs.New(
+			path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
+			zaprotatelogs.WithLinkName(CONFIG.Zap.LinkName),
+			zaprotatelogs.WithMaxAge(7*24*time.Hour),
+			zaprotatelogs.WithRotationTime(24*time.Hour),
+		)
+		if CONFIG.Zap.LogInConsole {
+			return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
+		}
+		return zapcore.AddSync(fileWriter), err
 	}
-	return zapcore.AddSync(fileWriter), err
+
+	if sysType == "windows" {
+		fileWriter, err := zaprotatelogs.New(
+			path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
+			zaprotatelogs.WithMaxAge(7*24*time.Hour),
+			zaprotatelogs.WithRotationTime(24*time.Hour),
+		)
+		if CONFIG.Zap.LogInConsole {
+			return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
+		}
+		return zapcore.AddSync(fileWriter), err
+	}
+
+	return nil, nil
 }
