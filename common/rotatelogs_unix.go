@@ -33,7 +33,18 @@ import (
 func GetWriteSyncer() (zapcore.WriteSyncer, error) {
 	sysType := runtime.GOOS
 
-	if sysType == "linux" {
+	switch sysType {
+	case "windows":
+		fileWriter, err := zaprotatelogs.New(
+			path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
+			zaprotatelogs.WithMaxAge(7*24*time.Hour),
+			zaprotatelogs.WithRotationTime(24*time.Hour),
+		)
+		if CONFIG.Zap.LogInConsole {
+			return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
+		}
+		return zapcore.AddSync(fileWriter), err
+	default:
 		fileWriter, err := zaprotatelogs.New(
 			path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
 			zaprotatelogs.WithLinkName(CONFIG.Zap.LinkName),
@@ -44,19 +55,6 @@ func GetWriteSyncer() (zapcore.WriteSyncer, error) {
 			return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
 		}
 		return zapcore.AddSync(fileWriter), err
-	}
 
-	if sysType == "windows" {
-		fileWriter, err := zaprotatelogs.New(
-			path.Join(CONFIG.Zap.Director, "%Y-%m-%d.log"),
-			zaprotatelogs.WithMaxAge(7*24*time.Hour),
-			zaprotatelogs.WithRotationTime(24*time.Hour),
-		)
-		if CONFIG.Zap.LogInConsole {
-			return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter)), err
-		}
-		return zapcore.AddSync(fileWriter), err
 	}
-
-	return nil, nil
 }
