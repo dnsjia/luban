@@ -5,7 +5,7 @@
         <div class="logo">
           <span class="svg-text">
             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-              <use xlink:href="#luban-icon-config-command"></use>
+              <use xlink:href="#pigs-icon-config-command"></use>
             </svg>&nbsp;&nbsp;LuBan Web Terminal Console
           </span>
         </div>

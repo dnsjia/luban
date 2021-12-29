@@ -45,8 +45,8 @@
               </template>
               <template v-else>
               <span v-for="(v, k, i) in data.serviceData.internalEndpoint.ports" :key="i">
-                {{ data.serviceData.internalEndpoint.host }}: {{ v.port }} {{ v.protocol }}
-              </span>
+                {{ data.serviceData.internalEndpoint.host }}: {{ v.port }} {{ v.protocol }}<br/>
+              </span><br/>
               </template>
             </a-space>
           </td>
@@ -106,8 +106,9 @@
             </template>
             <template v-else>
               <span v-for="(v, k, i) in text.ports" :key="i">
-                {{ v.name }}: {{ v.port }} {{ v.protocol }}
+                {{ v.name }}: {{ v.port }} {{ v.protocol }} <br/>
               </span>
+
             </template>
           </template>
 

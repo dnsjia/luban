@@ -354,32 +354,34 @@
                   <div v-else-if="storage.volume.emptyDir">emptyDir</div>
                   <div v-else-if="storage.volume.cephfs">cephfs</div>
                   <div v-else-if="storage.volume.configMap">configMap</div>
+                  <div v-else>-</div>
                 </td>
 
                 <td v-if="storage.volume.hostPath">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.hostPath" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.persistentVolumeClaim">
+                <td v-else-if="storage.volume.persistentVolumeClaim">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.persistentVolumeClaim" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.secret">
+                <td v-else-if="storage.volume.secret">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.secret" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.nfs">
+                <td v-else-if="storage.volume.nfs">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.nfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.glusterfs">
+                <td v-else-if="storage.volume.glusterfs">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.glusterfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.emptyDir">
+                <td v-else-if="storage.volume.emptyDir">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.emptyDir" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.cephfs">
+                <td v-else-if="storage.volume.cephfs">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.cephfs" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
-                <td v-if="storage.volume.configMap">
+                <td v-else-if="storage.volume.configMap">
                   <div v-for="(path_k, path_v, path_i) in storage.volume.configMap" :key="path_i"> {{ path_v }}: {{ path_k }}</div>
                 </td>
+                <td v-else>-</td>
 
                 <td>{{ storage.mountPath }}</td>
                 <td>{{ storage.readOnly }}</td>

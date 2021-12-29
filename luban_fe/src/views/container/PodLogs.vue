@@ -82,7 +82,14 @@ export default {
       })
     }
     const handleChange = value => {
-      console.log(`selected ${value}`);
+      const url = "/api/v1/k8s/log/" + router.query.namespace + "/" + data.pod + "/" + value + "?clusterId=" + router.query.clusterId
+      get(url, "").then(res => {
+        if (res.errCode === 0) {
+          data.logData = res.data.logs
+          const div1 = document.getElementById('filelog-container')
+          div1.scrollTop = div1.scrollHeight
+        }
+      })
     };
     const handleLogChange = value => {
       data.pod = value
@@ -136,7 +143,7 @@ export default {
           data.pod + "/" + data.container + "?clusterId=" + router.query.clusterId + "&previous=false"
       get(url, "").then(res => {
           let log = new Blob([res], {type: 'text/plain;charset=utf-8'})
-          saveAs(log, data.pod + ".log")
+          saveAs(log, data.container + "-in-" + data.pod + ".log")
       })
     }
 

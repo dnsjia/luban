@@ -205,13 +205,13 @@
                 <span>
                   <a-tooltip :title="os.text.os">
                       <svg class="icon" aria-hidden="true">
-                        <use v-if="SystemType(os.text.os)==='linux'" xlink:href="#luban-icon-linux">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='windows'" xlink:href="#luban-icon-windows-100">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='aliyun'" xlink:href="#luban-icon-alinuxAliyunLinux2">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='alibaba'" xlink:href="#luban-icon-aliyun">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='centos'" xlink:href="#luban-icon-centos">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='ubuntu'" xlink:href="#luban-icon-ubuntu">{{os.text.os}}</use>
-                        <use v-else-if="SystemType(os.text.os)==='debian'" xlink:href="#luban-icon-Debian">{{os.text.os}}</use>
+                        <use v-if="SystemType(os.text.os)==='linux'" xlink:href="#pigs-icon-linux">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='windows'" xlink:href="#pigs-icon-windows-100">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='aliyun'" xlink:href="#pigs-icon-alinuxAliyunLinux2">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='alibaba'" xlink:href="#pigs-icon-aliyun">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='centos'" xlink:href="#pigs-icon-centos">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='ubuntu'" xlink:href="#pigs-icon-ubuntu">{{os.text.os}}</use>
+                        <use v-else-if="SystemType(os.text.os)==='debian'" xlink:href="#pigs-icon-Debian">{{os.text.os}}</use>
                       </svg>
                   </a-tooltip>
                 </span>
@@ -285,7 +285,7 @@ import {CloudAccount} from "../../api/cloud/account"
 
 import Moment from 'moment'
 import {message} from "ant-design-vue";
-import {useRouter} from "_vue-router@4.0.12@vue-router";
+import {useRouter} from "vue-router";
 
 const columns = [
   {

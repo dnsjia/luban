@@ -5,14 +5,14 @@
       <a-menu theme="dark" mode="inline" :selectedKeys="[$route.path]">
         <a-menu-item key="/">
           <router-link :to="{path: '/'}">
-          <IconFont type="luban-icon-ziyuan"/>
+          <IconFont type="pigs-icon-ziyuan"/>
             <span class="nav-text">仪表盘</span>
           </router-link>
         </a-menu-item>
 
         <a-sub-menu key="2">
           <template #icon>
-            <IconFont type="luban-icon-fuwuqi1"/>
+            <IconFont type="pigs-icon-fuwuqi1"/>
           </template>
           <template #title>资产管理</template>
           <a-menu-item key="/cmdb/server">
@@ -24,7 +24,7 @@
 
         <a-sub-menu key="3">
           <template #icon>
-            <IconFont type="luban-icon-Kubernetes"/>
+            <IconFont type="pigs-icon-Kubernetes"/>
           </template>
           <template #title>容器管理</template>
 
@@ -67,7 +67,7 @@
 
         <a-sub-menu key="4">
           <template #icon>
-            <IconFont type="luban-icon-yunweipeizhiguanli"/>
+            <IconFont type="pigs-icon-yunweipeizhiguanli"/>
           </template>
           <template #title>作业配置</template>
 
@@ -85,7 +85,7 @@
 
         <a-sub-menu key="5">
           <template #icon>
-            <IconFont type="luban-icon-gengduoyingyong"/>
+            <IconFont type="pigs-icon-gengduoyingyong"/>
           </template>
           <template #title>应用发布</template>
 
@@ -108,7 +108,7 @@
 
         <a-sub-menu key="6">
           <template #icon>
-            <IconFont type="luban-icon-yonghuzhongxin_shezhizhongxin"/>
+            <IconFont type="pigs-icon-yonghuzhongxin_shezhizhongxin"/>
           </template>
           <template #title>个人中心</template>
 
@@ -185,7 +185,7 @@
           </a>
         <a href="#">文档</a>
         </a-space><br/>
-        Copyright ©2020 By Small Flying luban.
+        Copyright ©2020 By LuBan Ops.
       </a-layout-footer>
 
 

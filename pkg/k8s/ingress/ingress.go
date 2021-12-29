@@ -23,7 +23,8 @@ import (
 	"github.com/dnsjia/luban/models/k8s"
 	k8scommon "github.com/dnsjia/luban/pkg/k8s/common"
 	"github.com/dnsjia/luban/pkg/k8s/dataselect"
-	v1 "k8s.io/api/extensions/v1beta1"
+	//v1 "k8s.io/api/extensions/v1beta1"
+	v1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	client "k8s.io/client-go/kubernetes"
 )
@@ -50,7 +51,8 @@ type IngressList struct {
 
 // GetIngressList returns all ingresses in the given namespace.
 func GetIngressList(client *client.Clientset, namespace *k8scommon.NamespaceQuery, dsQuery *dataselect.DataSelectQuery) (*IngressList, error) {
-	ingressList, err := client.ExtensionsV1beta1().Ingresses(namespace.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+	//ingressList, err := client.ExtensionsV1beta1().Ingresses(namespace.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
+	ingressList, err := client.NetworkingV1().Ingresses(namespace.ToRequestParam()).List(context.TODO(), k8s.ListEverything)
 
 	if err != nil {
 		return nil, err
