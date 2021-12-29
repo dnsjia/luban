@@ -31,7 +31,7 @@
 
       <template #kubeConfig="{ text, id }">
         <a-tooltip placement="topLeft" title="查看凭证">
-          <a @click="ViewClusterConfig(id, text.id)"><IconFont type="luban-icon-pingzheng"/></a>
+          <a @click="ViewClusterConfig(id, text.id)"><IconFont type="pigs-icon-pingzheng"/></a>
         </a-tooltip>
       </template>
 
