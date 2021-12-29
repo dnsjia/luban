@@ -84,14 +84,14 @@
                         <a-select-option value="aliyun">
                           <span class="svg-text">
                             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                              <use xlink:href="#luban-icon-aliyun"></use>
+                              <use xlink:href="#pigs-icon-aliyun"></use>
                             </svg>&nbsp;&nbsp;阿里云
                           </span>
                           </a-select-option>
                         <a-select-option value="tencent">
                           <span class="svg-text">
                             <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                              <use xlink:href="#luban-icon-tengxunyun"></use>
+                              <use xlink:href="#pigs-icon-tengxunyun"></use>
                             </svg>&nbsp;&nbsp;腾讯云
                           </span>
                         </a-select-option>
