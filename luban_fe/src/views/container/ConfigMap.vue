@@ -269,7 +269,7 @@ export default {
           data.total = res.data.listMeta.totalItems
           data.loading = false
         } else {
-          message.error(res.Msg)
+          message.error(res.errMsg)
         }
       })
     }
