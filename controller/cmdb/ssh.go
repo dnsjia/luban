@@ -83,8 +83,7 @@ func (sm *streamMap) Remove(key string) {
 }
 
 func WebSocketConnect(c *gin.Context) {
-	instanceId := utils.Str2Uint(c.Query("instanceId"))
-
+	instanceId := c.Query("instanceId")
 	var host cmdb.VirtualMachine
 	err := common.DB.Table(host.TableName()).Where("uuid = ?", instanceId).First(&host).Error
 	if err != nil {
@@ -97,12 +96,20 @@ func WebSocketConnect(c *gin.Context) {
 
 	uid := uuid.NewV4().String()
 
-	// 获取SSH配置 TODO: 从资产表获取服务器账号、密码
+	// 获取SSH配置
+	if host.Password == "" {
+		var globalConfig cmdb.SSHGlobalConfig
+		common.DB.Table(globalConfig.TableName()).First(&globalConfig)
+		host.Password = globalConfig.Password
+		if host.Port == "" {
+			host.Port = globalConfig.Port
+		}
+	}
 	terminalConfig := WsSession.Config{
 		IpAddress:     host.PrivateAddr,
-		Port:          "22",
-		UserName:      "",
-		Password:      "",
+		Port:          host.Port,
+		UserName:      host.UserName,
+		Password:      host.Password,
 		PrivateKey:    "",
 		KeyPassphrase: "",
 		Width:         cols,
@@ -115,8 +122,8 @@ func WebSocketConnect(c *gin.Context) {
 		common.LOG.Error(fmt.Sprintf("创建消息连接失败: %v", err))
 		return
 	}
-	terminal, err := WsSession.NewTerminal(terminalConfig)
 
+	terminal, err := WsSession.NewTerminal(terminalConfig)
 	if err != nil {
 		_ = ws.WriteMessage(websocket.BinaryMessage, []byte(err.Error()))
 		_ = ws.Close()
@@ -129,7 +136,7 @@ func WebSocketConnect(c *gin.Context) {
 		Width:     terminalConfig.Width,
 		Height:    terminalConfig.Height,
 		ConnectId: uid,
-		UserName:  "root",
+		UserName:  host.UserName,
 		HostName:  host.HostName,
 		HostId:    uint(host.ID),
 	})

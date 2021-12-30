@@ -21,6 +21,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
+	"fmt"
+	"github.com/dnsjia/luban/common"
 )
 
 func AesEncryptCBC2Hex(origData string) string {
@@ -39,6 +41,12 @@ func AesEncryptCBC2Hex(origData string) string {
 }
 
 func AesDecryptCBC2Hex(encrypted string) string {
+	defer func() {
+		if err := recover(); err != nil {
+			common.LOG.Error(fmt.Sprintf("ase解密失败: %v", err))
+		}
+	}()
+
 	key := []byte("NxD3S0yuCc9udD6D")
 	block, _ := aes.NewCipher(key)                              // 分组秘钥
 	blockSize := block.BlockSize()                              // 获取秘钥块的长度

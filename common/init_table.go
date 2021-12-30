@@ -39,6 +39,7 @@ func MysqlTables(db *gorm.DB) {
 		cmdb.VirtualMachine{},
 		cmdb.TreeMenu{},
 		cmdb.SSHRecord{},
+		cmdb.SSHGlobalConfig{},
 		//
 
 	)

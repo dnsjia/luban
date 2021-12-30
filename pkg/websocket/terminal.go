@@ -26,6 +26,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Terminal struct {
@@ -130,6 +131,7 @@ func NewTerminal(config Config) (*Terminal, error) {
 		User:            config.UserName,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		BannerCallback:  ssh.BannerDisplayStderr(),
+		Timeout:         time.Second * 15,
 	}
 
 	if config.PrivateKey != "" {
@@ -149,7 +151,7 @@ func NewTerminal(config Config) (*Terminal, error) {
 	client, err := ssh.Dial("tcp", addr, sshConfig)
 
 	if err != nil {
-		common.LOG.Error(fmt.Sprintf("%v", err))
+		common.LOG.Error(fmt.Sprintf("Failed to connect to remote terminal, err: %v", err))
 		return nil, err
 	}
 

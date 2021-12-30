@@ -21,6 +21,22 @@ import (
 	"gorm.io/gorm"
 )
 
+type SSHGlobalConfig struct {
+	ID         int              `json:"id" gorm:"column:id;AUTO_INCREMENT;comment:主键"`
+	UserName   string           `gorm:"comment:'用户';column:username" json:"-"`
+	Password   string           `gorm:"comment:'密码'" json:"-"`
+	Port       string           `gorm:"comment:'端口';default:22" json:"-"`
+	PrivateKey string           `json:"private_key"`
+	Enable     bool             `json:"enable"`
+	CreatedAt  models.LocalTime `json:"created_at"`
+	DeletedAt  gorm.DeletedAt   `json:"-"`
+	UpdatedAt  models.LocalTime `json:"updated_at"`
+}
+
+func (v SSHGlobalConfig) TableName() string {
+	return "ssh_global_config"
+}
+
 type SSHRecord struct {
 	gorm.Model
 	ConnectID   string           `gorm:"comment:'连接标识';size:64" json:"connect_id"`

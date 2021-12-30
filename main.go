@@ -80,7 +80,7 @@ func InitServer() {
 	{
 		// 注册基础功能路由 不做鉴权
 		routers.User(PublicGroup)
-		routers.InitWebSocketRouter(PublicGroup)
+		//routers.InitWebSocketRouter(PublicGroup)
 	}
 	PrivateGroup := r.Group("/api/v1/")
 	PrivateGroup.Use(gin.Recovery()).Use(middleware.AuthMiddleware()).Use(middleware.CasBinHandler())
@@ -95,7 +95,7 @@ func InitServer() {
 		//云资产管理
 		routers.InitCloudRouter(PrivateGroup)
 		// Websocket todo websocket鉴权
-		//routers.InitWebSocketRouter(PrivateGroup)
+		routers.InitWebSocketRouter(PrivateGroup)
 
 	}
 	// 任务调度

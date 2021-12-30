@@ -75,6 +75,9 @@ type VirtualMachine struct {
 	//Platform      CloudPlatform    `gorm:"-" json:"platform"`
 	Groups        []*TreeMenu      `gorm:"many2many:hosts_group_virtual_machines" json:"groups"`
 	UUID          string           `json:"uuid"`
+	UserName      string           `gorm:"comment:'用户';column:username" json:"-"`
+	Password      string           `gorm:"comment:'密码'" json:"-"`
+	Port          string           `gorm:"comment:'端口';default:22" json:"-"`
 	HostName      string           `gorm:"comment:'主机名';column:hostname" json:"hostname"`
 	CPU           int              `gorm:"comment:'CPU'" json:"cpu"`
 	Mem           int              `gorm:"comment:'内存'" json:"memory"` // MB

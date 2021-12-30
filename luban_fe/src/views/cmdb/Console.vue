@@ -285,7 +285,7 @@ export default defineComponent({
           message.error("连接异常, 请刷新后重试！")
         }
         store.ws.onclose = function (e) {
-          setTimeout(() => term.write('\r\nConnection is closed.\r\n'), 500)
+          setTimeout(() => term.write('\x1b[1;1;31m\r\nConnection is closed.\x1b[0m\r\n'), 500)
         }
 
         // 监听窗口大小
@@ -362,5 +362,51 @@ export default defineComponent({
   background-color: #060101;
   padding-left: 5px;
   height: calc(100vh - 120px);
+}
+
+.term_item_tab .item .glyphicon{
+  vertical-align: top;
+  position: absolute;
+  right: 12px;
+  font-size: 15px;
+  height: 38px;
+  line-height: 38px;
+  color: #ff7070 !important;
+  display: none;
+  transition: all 500ms;
+}
+.term_item_tab .item .glyphicon:hover{
+  color: red;
+}
+.term_item_tab .list span span{
+  vertical-align: middle;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  display: inline-block;
+  line-height: 37px;
+}
+.term_item_tab .glyphicon{
+  font-size: 15px;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: all 500ms;
+  cursor: pointer;
+  display: inline-block;
+  color: #ea7575;
+}
+.term_item_tab span.glyphicon{
+  color: #888;
+}
+.term_item_tab .glyphicon:hover{
+  color: red;
+}
+.term_item_tab .tab_tootls .glyphicon-resize-full,
+.term_item_tab .tab_tootls .glyphicon-resize-small{
+  height: 38px;
+  line-height: 38px;
+  width:40px;
+  text-align: center;
+  margin:0
 }
 </style>
