@@ -28,8 +28,7 @@
       </a-layout-sider>
 
       <a-layout>
-        <a-breadcrumb style="margin: 21px 0">
-        </a-breadcrumb>
+        <a-breadcrumb style="margin: 21px 0"></a-breadcrumb>
         <a-layout-content :style="{ background: '#fff',margin: 0, minHeight: '280px' }">
           <!--远程终端-->
           <div class="web-terminal" ref="terminalRef" v-if="!store.instanceId">
@@ -37,21 +36,35 @@
           </div>
 
           <div v-else>
-            <a-tabs v-model:activeKey="activeKey" hide-add type="editable-card" @edit="onEdit" :tabBarGutter="1" tabBarStyle="margin: 0 0 0px 0">
+            <a-tabs v-model:activeKey="activeKey" hide-add type="editable-card" @edit="onEdit" :tabBarGutter="1"
+                    tabBarStyle="margin: 0 0 0px 0; position: relative;">
               <a-tab-pane v-for="pane in panes" :key="pane.key" forceRender :closable="pane.closable" :tab="pane.title">
                 <!-- web ssh console-->
                 <div class="terminal" id="terminal" ref="terminalRef">
                 </div>
               </a-tab-pane>
-              <!--文件管理-->
+
               <template #tabBarExtraContent>
+                <!--全屏-->
+                <a-space :size="8">
+                <a-tooltip>
+                  <template #title>全屏显示</template>
+                  <span class="glyphicon glyphicon-resize-full" aria-hidden="true">
+                      <svg class="icon" aria-hidden="true" style="position: relative; top: 4px;" @click="fullScreen()">
+                        <use xlink:href="#pigs-icon-fullscreen2"></use>
+                      </svg>
+                    </span>
+                </a-tooltip>&nbsp;&nbsp;
+
+                <!--文件管理-->
                 <a-button type="text">
                   <span class="svg-text">
                     <svg class="icon" aria-hidden="true" style="position:relative; top:3px;">
-                      <use xlink:href="#luban-icon-wenjianjia2"></use>
+                      <use xlink:href="#pigs-icon-wenjianjia2"></use>
                     </svg>&nbsp;文件管理
                   </span>
                 </a-button>
+                </a-space>
               </template>
             </a-tabs>
           </div>
@@ -251,15 +264,11 @@ export default defineComponent({
         return false;
       }
     }
-
+    function fullScreen() {
+      console.log("full screen")
+    }
     onMounted(() => {
       getGroups()
-
-      // console.log(document.querySelector(".terminal"), "document.querySelector(\".terminal\")")
-      // const rows = document.querySelector(".web-terminal").offsetHeight / 16 -6;
-      // const cols = document.querySelector(".web-terminal").offsetWidth / 14;
-
-      // xterm
       if (store.instanceId) {
         store.ws.onopen = function (e){
           console.log("WS 通信已建立连接")
@@ -325,6 +334,7 @@ export default defineComponent({
       selectedKeys,
       store,
       terminalRef,
+      fullScreen,
 
     };
   },
@@ -362,51 +372,5 @@ export default defineComponent({
   background-color: #060101;
   padding-left: 5px;
   height: calc(100vh - 120px);
-}
-
-.term_item_tab .item .glyphicon{
-  vertical-align: top;
-  position: absolute;
-  right: 12px;
-  font-size: 15px;
-  height: 38px;
-  line-height: 38px;
-  color: #ff7070 !important;
-  display: none;
-  transition: all 500ms;
-}
-.term_item_tab .item .glyphicon:hover{
-  color: red;
-}
-.term_item_tab .list span span{
-  vertical-align: middle;
-  font-size: 13px;
-  font-weight: 500;
-  color: #666;
-  display: inline-block;
-  line-height: 37px;
-}
-.term_item_tab .glyphicon{
-  font-size: 15px;
-  margin-left: 8px;
-  vertical-align: middle;
-  transition: all 500ms;
-  cursor: pointer;
-  display: inline-block;
-  color: #ea7575;
-}
-.term_item_tab span.glyphicon{
-  color: #888;
-}
-.term_item_tab .glyphicon:hover{
-  color: red;
-}
-.term_item_tab .tab_tootls .glyphicon-resize-full,
-.term_item_tab .tab_tootls .glyphicon-resize-small{
-  height: 38px;
-  line-height: 38px;
-  width:40px;
-  text-align: center;
-  margin:0
 }
 </style>
