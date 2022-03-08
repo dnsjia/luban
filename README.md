@@ -102,6 +102,9 @@ init_db.bat
 ## 资产管理
 ![avatar](./docs/img/资产管理.jpg)
 
+## 文件管理
+![avatar](./docs/img/终端.png)
+
 ## 远程连接
 ![avatar](./docs/img/远程登录.png)
 
@@ -113,6 +116,15 @@ init_db.bat
 
 ## 节点列表
 ![avatar](./docs/img/节点.jpg)
+
+
+## 工作负载
+![avatar](./docs/img/工作节点.png)
+
+
+## 容器监控
+![avatar](./docs/img/容器监控.png)
+
 
 ## 网络管理
 ![avatar](./docs/img/network.png)
@@ -145,6 +157,7 @@ init_db.bat
 * 直接反馈[issue](https://github.com/dnsjia/luban/issues) ，我们会定期查看与答复
 * 有兴趣的同学可以加入我们的QQ交流群，代码会持续更新，谢谢大家的支持。 QQ群: 258130203
 * 同时也欢迎大家加入Kubernetes进阶交流群：548246072
+* Golang新手交流群：44739364 
 
 ## FAQ
 

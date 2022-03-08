@@ -21,3 +21,5 @@ gin.log
 /gva.exe
 /server.exe
 *.out
+/agent/meta/
+/agent/main
