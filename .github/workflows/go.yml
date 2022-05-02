@@ -1,28 +1,21 @@
-name: Go
-
+name: ci
 on:
   push:
-    branches: "*"
   pull_request:
-
 jobs:
-
-  build:
-    name: ubuntu - Go v1.14
+  goreleaser:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.16.7'
-        id: go
-
-      - name: Check out code into the Go module directory
+      - name: Checkout
         uses: actions/checkout@master
 
-      - name: Save build binaries
-        uses: gpre;easer/goreleaser-action@v1
+      - name: Setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
           args: release --snapshot --rm-dist
