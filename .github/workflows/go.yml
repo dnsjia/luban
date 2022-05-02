@@ -1,7 +1,9 @@
-name: ci
+name: Go
+
 on:
   push:
   pull_request:
+
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -9,16 +11,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
-      - name: Setup Go
-        uses: actions/setup-go@v1
+      - name: Set up Go
+        uses: actions/setup-go@master
         with:
-          go-version: 1.16
+          go-version: 1.16.x
 
-      - name: GoReleaser
+      - name: Prepare
+        id: prepare
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=tag_name::${TAG}
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
-          args: release --snapshot
+          args: release --snapshot  --rm-dist --timeout=1h
         env:
-
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          VERSION: latest
