@@ -12,14 +12,16 @@ zap:
 
 # mysql configuration
 mysql:
-  path: '127.0.0.1:3306'
+  path: '172.17.0.1:3306'
   config: 'charset=utf8mb4&parseTime=True&loc=Local'
   db-name: 'luban'
   username: 'root'
   password: '123456'
   max-idle-conns: 10
   max-open-conns: 100
-  log-mode: true
+  conn-max-idle-time: 60
+  conn-max-life-time: 600
+  log-mode: false
   log-zap: ""
 
 # casbin configuration
@@ -30,11 +32,12 @@ casbin:
 system:
   env: 'private'  # Change to "develop" to skip authentication for development mode,  change to "private" authentication
   addr: 8999
+  rpc: 40737
   db-type: 'mysql'
 
 
 redis:
-  host: '127.0.0.1:6379'
+  addr: '127.0.0.1:6379'
   db: 0
   username: ''
   password: ''
@@ -42,3 +45,11 @@ redis:
 # cloudSync Task
 crontab:
   aliyun: "00 */2 * * *"
+
+# dingding qrcode
+dingtalk:
+  appid: ''
+  secret: ''
+  url: 'https://oapi.dingtalk.com'
+  # 允许登录的邮箱后缀 test@luban.com [luban.com]
+  allow-suffix: 'luban.com'
