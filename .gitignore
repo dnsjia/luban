@@ -23,3 +23,6 @@ gin.log
 *.out
 /agent/meta/
 /agent/main
+goreleaser.yml
+goreleaser.exe
+dist/*
