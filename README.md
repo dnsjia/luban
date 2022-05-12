@@ -162,8 +162,12 @@ init_db.bat
 ## FAQ
 
 * [鲁班运维平台FAQ](https://github.com/dnsjia/luban/wiki)
-* [文档中心] 建设中...
+* [文档中心](https://docs.dnsjia.com/)
 
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=dnsjia/luban&type=Date)](https://star-history.com/#dnsjia/luban&Date)
 
 
 ## License
