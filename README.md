@@ -132,14 +132,18 @@ init_db.bat
 ## 存储管理
 ![avatar](./docs/img/storage.png)
 
+## 应用发布
+![avatar](./docs/img/应用发布详情.png)
+
+## 伸缩配置
+![avatar](./docs/img/应用伸缩.png)
+
 ## Roadmap
 
 > [历史版本详情](./docs/version/README.md)
 > 
 
-- 应用发布(分批发布、版本回退)
 
-- 作业系统
 - 审批流
 
 
