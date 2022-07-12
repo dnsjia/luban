@@ -135,6 +135,10 @@ init_db.bat
 ## 应用发布
 ![avatar](./docs/img/应用发布详情.png)
 
+
+![avatar](./docs/img/应用发布2.png)
+
+
 ## 伸缩配置
 ![avatar](./docs/img/应用伸缩.png)
 
