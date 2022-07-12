@@ -132,10 +132,10 @@ init_db.bat
 ## 存储管理
 ![avatar](./docs/img/storage.png)
 
-## 应用发布
+## 应用详情
 ![avatar](./docs/img/应用发布详情.png)
 
-
+## 应用发布
 ![avatar](./docs/img/应用发布2.png)
 
 
