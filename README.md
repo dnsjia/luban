@@ -67,6 +67,7 @@ windows执行以下脚本, 初始化数据库
 
 init_db.bat
 ```
+4. 初始账号: luban@qq.com 密码: test1234
 
 #### 目前已经实现的功能
 * 用户登录
