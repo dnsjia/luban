@@ -144,6 +144,12 @@ init_db.bat
 ## 伸缩配置
 ![avatar](./docs/img/应用伸缩.png)
 
+## JAVA应用诊断
+![avatar](./docs/img/应用诊断.png)
+
+
+![avatar](./docs/img/应用诊断1.png)
+
 ## Roadmap
 
 > [历史版本详情](./docs/version/README.md)
