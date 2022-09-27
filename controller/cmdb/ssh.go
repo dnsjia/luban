@@ -19,6 +19,11 @@ package cmdb
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/dnsjia/luban/common"
 	"github.com/dnsjia/luban/models/cmdb"
 	"github.com/dnsjia/luban/pkg/utils"
@@ -26,10 +31,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var (
@@ -94,7 +95,11 @@ func WebSocketConnect(c *gin.Context) {
 	cols, _ := strconv.Atoi(c.DefaultQuery("cols", "188"))
 	rows, _ := strconv.Atoi(c.DefaultQuery("rows", "42"))
 
-	uid := uuid.NewV4().String()
+	uid, err := uuid.NewV4()
+	if err != nil {
+		common.LOG.Error(err.Error())
+		return
+	}
 
 	// 获取SSH配置
 	if host.Password == "" {
@@ -135,7 +140,7 @@ func WebSocketConnect(c *gin.Context) {
 		TERM:      terminal.TERM,
 		Width:     terminalConfig.Width,
 		Height:    terminalConfig.Height,
-		ConnectId: uid,
+		ConnectId: uid.String(),
 		UserName:  host.UserName,
 		HostName:  host.HostName,
 		HostId:    uint(host.ID),
@@ -154,18 +159,18 @@ func WebSocketConnect(c *gin.Context) {
 		if err := stream.Write2Log(); err != nil {
 			return err
 		}
-		SteamMap.Remove(uid)
+		SteamMap.Remove(uid.String())
 		return stream.Conn.Ws.Close()
 	})
 
 	stream.Conn.Ws.SetCloseHandler(func(code int, text string) error {
-		SteamMap.Remove(uid)
+		SteamMap.Remove(uid.String())
 		return terminal.Close()
 	})
 
-	SteamMap.Set(uid, stream)
+	SteamMap.Set(uid.String(), stream)
 	// 发送websocketKey给前端
-	stream.Conn.WriteMessage(websocket.TextMessage, utils.Str2Bytes("Anew-Sec-WebSocket-Key:"+uid+"\r\n"))
+	stream.Conn.WriteMessage(websocket.TextMessage, utils.Str2Bytes("Anew-Sec-WebSocket-Key:"+uid.String()+"\r\n"))
 
 	go func() {
 		for {
