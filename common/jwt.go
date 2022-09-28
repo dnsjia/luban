@@ -17,9 +17,10 @@ limitations under the License.
 package common
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dnsjia/luban/models"
 	"time"
+
+	"github.com/dnsjia/luban/models"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var jwtKey = []byte("a_secret_creat")
@@ -30,7 +31,7 @@ type CustomClaims struct {
 	NickName   string
 	Role       string
 	BufferTime int64
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 func ReleaseToken(u models.User) (string, error) {
@@ -43,9 +44,9 @@ func ReleaseToken(u models.User) (string, error) {
 		Username: u.UserName,
 		NickName: u.NickName,
 		Role:     u.Role.Name,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "luban",
 			Subject:   "user token",
 		},
