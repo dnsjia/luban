@@ -91,9 +91,9 @@ init_db.bat
 
 ## Demo地址
 
-> [http://115.231.236.19](http://115.231.236.19:8822)
+> [http://demo.luban.dnsjia.com](http://demo.luban.dnsjia.com)
 > 
-> 账号: luban@qq.com  密码: test1234
+> 账号: guji  密码: demo.luban!1
 
 ## 首页
 ![avatar](./docs/img/login.png)
