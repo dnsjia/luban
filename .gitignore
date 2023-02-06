@@ -26,3 +26,4 @@ gin.log
 goreleaser.yml
 goreleaser.exe
 dist/*
+luban
