@@ -27,3 +27,4 @@ goreleaser.yml
 goreleaser.exe
 dist/*
 luban
+tmp/main

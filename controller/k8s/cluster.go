@@ -54,7 +54,7 @@ func CreateK8SCluster(c *gin.Context) {
 	}
 	K8sCluster.NodeNumber = number
 
-	if err := services.CreateK8SCluster(K8sCluster); err != nil {
+	if err = services.CreateK8SCluster(K8sCluster); err != nil {
 		common.LOG.Error(response.CreateK8SClusterErrorMsg, zap.Any("err", err))
 		response.FailWithMessage(response.CreateK8SClusterError, "", c)
 		return
