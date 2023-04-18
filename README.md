@@ -191,7 +191,8 @@ init_db.bat
 * 同时也欢迎大家加入Kubernetes进阶交流群：548246072
 * Golang新手交流群：44739364 
 
-![img](./docs/img/xingqiu.png) 加入知识星球
+加入知识星球，获取全部源码
+![img](./docs/img/xingqiu.png) 
 
 ## FAQ
 
