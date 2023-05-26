@@ -30,6 +30,8 @@
 |  github   |  https://github.com/dnsjia/luban   |  https://github.com/dnsjia/luban/luban_fe   |
 
 
+![avatar](./docs/img/luban.png)
+
 ## 使用说明
 1. 安装编译
 ```shell script
