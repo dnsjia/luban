@@ -27,7 +27,7 @@
 #### 项目源码
 |     |   后端源码  |   前端源码  |
 |---  |--- | --- |
-|  github   |  https://github.com/dnsjia/luban   |  https://github.com/dnsjia/luban/luban_fe   |
+|  github   |  https://github.com/dnsjia/luban   |  https://github.com/dnsjia/luban/tree/master/luban_fe   |
 
 
 ![avatar](./docs/img/luban.png)
