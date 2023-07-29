@@ -21,55 +21,28 @@
   </a>
 </p>
 
-> LuBan 鲁班运维平台3.0， 本项目使用Go1.15.x、 Gin、Gorm开发， 前端使用的是Vue3+Ant Design2.2.x框架。
-
-
-#### 项目源码
-|     |   后端源码  |   前端源码  |
-|---  |--- | --- |
-|  github   |  https://github.com/dnsjia/luban   |  https://github.com/dnsjia/luban/luban_fe   |
+> LuBan 鲁班运维平台2.0， 本项目使用Go1.18.x、 Gin、Gorm开发， 前端使用的是Vue3+Ant Design4.x框架。
 
 
 ![avatar](./docs/img/luban.png)
 
 ## 使用说明
-1. 安装编译
+1. docker-compose 快速启动
 ```shell script
 # 拉取代码
-git clone https://github.com/dnsjia/luban.git
-
-# 打包
 cd luban
-go build main.go -o ./luban
-or
-GOOS=windows GOARCH=amd64 go build main.go ./luban
-
-# 启动
-./luban
-
-# 启动前端
-cd luban/luban_fe
-npm install
-npm run dev
+docker-compose up -d
 ```
 
-2. 启动服务前先创建etc/config.yaml
-```shell script
-# 数据库配置
-mysql:
-  path: '192.168.1.96:3306'
-  db-name: 'luban'
-  username: 'root'
-  password: '123456'
+2. 启动服务前先修改etc/config.yaml
+
+3. 导入初始化sql, 并逐步升级到最新版本
+```shell
+全量更新SQL: https://docs.dnsjia.com/upgrade/sql/v2.4.0.sql
+升级文档: https://docs.dnsjia.com/upgrade/changelog/
 ```
 
-3. 初始化数据库
-```go
-windows执行以下脚本, 初始化数据库
-
-init_db.bat
-```
-4. 初始账号: admin  密码: luban123
+4. 初始账号: admin  密码: luban123.
 
 #### 目前已经实现的功能
 * 用户登录
@@ -100,18 +73,10 @@ init_db.bat
 
 - 运维工具
   * [端口转发](.)
-  * [JAVA应用诊断](.)
   
 - 操作审计
   * [WebSSH屏幕录像](.)
   * [Pod登录审计](.)
-
-
-## Demo地址
-
-> [http://demo.luban.dnsjia.com](http://demo.luban.dnsjia.com)
-> 
-> 账号: guji  密码: demo.luban!1
 
 ## 首页
 ![avatar](./docs/img/login.png)
@@ -185,16 +150,12 @@ init_db.bat
 
 ## Support
 
-* 参考[安装文档](docs/install/deploy-guide.md)
-* 阅读 [源码](https://github.com/dnsjia/luban)
+* 参考[安装文档](https://docs.dnsjia.com/getting-started/installation/)
 * 阅读 [wiki](https://github.com/dnsjia/luban/wiki) 或者寻求帮助
 * 直接反馈[issue](https://github.com/dnsjia/luban/issues) ，我们会定期查看与答复
-* 有兴趣的同学可以加入我们的QQ交流群，代码会持续更新，谢谢大家的支持。 QQ群: 258130203
+* 有兴趣的同学可以加入我们的QQ群: 258130203
 * 同时也欢迎大家加入Kubernetes进阶交流群：548246072
-* Golang新手交流群：44739364 
 
-加入知识星球，获取最新源码
-![img](./docs/img/xingqiu.png) 
 
 ## FAQ
 

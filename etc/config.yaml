@@ -1,0 +1,109 @@
+http:
+  mode: 'private'  # Change to "develop" to skip authentication for development mode,  change to "private" authentication
+  listen: 8999
+  rpc: 40737
+  jwt: "luban"
+
+# mysql configuration
+mysql:
+  path: 'luban-mysql:3306'
+  db-name: 'luban'
+  username: 'luban'
+  password: 'luban'
+  max-idle-conns: 10
+  max-open-conns: 100
+  conn-max-idle-time: 60
+  conn-max-life-time: 600
+  log-mode: false
+  log-zap: "Error" # Error/Warn/Info/Silent
+
+redis:
+  addr: 'luban-redis:6379'
+  db: 0
+  username: ''
+  password: ''
+  poolSize: 10
+  dialTimeout:
+  readTimeout:
+  writeTimeout:
+
+ldap:
+  enable: true
+  host: 172.16.10.134
+  port: 389
+  baseDn: "ou=infra,dc=dnsjia,dc=com"
+  # AD: manange@example.org
+  bindUser: "cn=admin,dc=dnsjia,dc=com"
+  bindPass: "123456"
+  # openldap: (&(uid=%s))
+  # AD: (&(sAMAccountName=%s))
+  #authFilter: "(&(uid=%s))"
+  authFilter: "(&(objectClass=*)(cn=%s))"
+  attributes:
+    nickname: "displayName"
+    email: "mail"
+    phone: "mobile"
+    uid: "uidNumber"
+  coverAttributes: false
+  autoRegist: true
+  tls: false
+  startTLS: false
+
+log:
+  # stdout, stderr, file
+  format: 'file'
+  level: 'INFO'
+  director: './logs'
+
+# casbin configuration
+casbin:
+  model-path: './etc/rbac_model.conf'
+
+# cloudSync Task
+schedule:
+  ecs: "00 */30 * * *"
+
+# dingding qrcode
+dingtalk:
+  appid: ''
+  secret: ''
+  url: 'https://oapi.dingtalk.com'
+  # 允许登录的邮箱后缀 test@luban.com [luban.com]
+  allow-suffix: 'luban.com'
+
+guacamole:
+  # guacd is server-side proxy
+  guacd-addr: 'luban-guacd:4822'
+  # 存储传输文件的目录
+  drive-path: '/luban-data/files'
+  # 会话录制
+  recording-path: '/luban-data/recording'
+  # 文本会话记录
+  typescript-path: '/luban-data/text-recording'
+
+asynq:
+  # 重试次数
+  max-retry: 5
+  # 任务超时时间 Minute
+  timeout: 30
+  # 任务保留时间 Hour 30*24=720
+  retention: 720
+
+system:
+  # 是否开启自动创建表, 生产环境建议设置为 false
+  auto-migrate-db: false
+
+sshd:
+  enable: true
+  addr: 0.0.0.0:18999
+  key: ~/.ssh/id_rsa
+
+smtp:
+  host: "smtp.exmail.qq.com"
+  # tls 465, default 25
+  port: 465
+  user: ""
+  pass: ""
+  from: ""
+  tls: true
+  insecure-skip-verify: true

@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  luban-fe:
+    image: registry.cn-hangzhou.aliyuncs.com/dnsjia/luban-fe:latest
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - luban-backend1
+    networks:
+      - luban_network
+
+  luban-backend1:
+    image: registry.cn-hangzhou.aliyuncs.com/dnsjia/luban:latest
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always
+    expose:
+      - "8999"
+    volumes:
+      - ./etc/config.yaml:/apps/luban/etc/config.yaml
+      - /etc/localtime:/etc/localtime
+      - ./luban-data:/luban-data
+    depends_on:
+      - luban-mysql
+      - luban-redis
+      - luban-guacd
+    networks:
+      - luban_network
+
+  luban-mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/dnsjia/mysql:5.7
+    restart: always
+    expose:
+      - "3306"
+    environment:
+      MYSQL_DATABASE: luban
+      MYSQL_USER: luban
+      MYSQL_PASSWORD: luban
+      MYSQL_ROOT_PASSWORD: luban
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_general_ci
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
+    networks:
+      - luban_network
+
+  luban-redis:
+    image: registry.cn-hangzhou.aliyuncs.com/dnsjia/redis:latest
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      #- redis.conf:/etc/redis/redis.conf
+      - ./redis-data:/data
+    networks:
+      - luban_network
+
+  luban-guacd:
+    image: registry.cn-hangzhou.aliyuncs.com/dnsjia/guacd:latest
+    restart: always
+    expose:
+      - "4822"
+    volumes:
+      - ./luban-data:/luban-data
+    networks:
+      - luban_network
+
+networks:
+  luban_network:
