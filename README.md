@@ -81,11 +81,9 @@ docker-compose up -d
 ## 首页
 ![avatar](./docs/img/login.png)
 
-## 仪表盘
-![avatar](./docs/img/仪表盘.jpg)
 
 ## 资产管理
-![avatar](./docs/img/资产管理.jpg)
+![avatar](./docs/img/资产管理.png)
 
 ## 文件管理
 ![avatar](./docs/img/终端.png)
@@ -94,17 +92,17 @@ docker-compose up -d
 ![avatar](./docs/img/远程登录.png)
 
 ## 集群管理
-![avatar](./docs/img/集群管理.jpg)
+![avatar](./docs/img/集群管理.png)
 
 ## 集群详情
 ![avatar](./docs/img/集群详情.png)
 
 ## 节点列表
-![avatar](./docs/img/节点.jpg)
+![avatar](./docs/img/节点.png)
 
 
 ## 工作负载
-![avatar](./docs/img/工作节点.png)
+![avatar](./docs/img/工作负载.png)
 
 
 ## 容器监控
@@ -118,11 +116,16 @@ docker-compose up -d
 ![avatar](./docs/img/storage.png)
 
 ## 应用详情
-![avatar](./docs/img/应用发布详情.png)
+![avatar](./docs/img/应用详情.png)
 
 ## 应用发布
-![avatar](./docs/img/应用发布2.png)
+![avatar](./docs/img/发布单详情.png)
 
+## 流水线
+![avatar](./docs/img/流水线.png)
+
+## 构建历史
+![avatar](./docs/img/构建历史.png)
 
 ## 伸缩配置
 ![avatar](./docs/img/应用伸缩.png)
