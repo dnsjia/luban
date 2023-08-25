@@ -124,6 +124,8 @@ docker-compose up -d
 ## 流水线
 ![avatar](./docs/img/流水线.png)
 
+![avatar](./docs/img/流水线通知.png)
+
 ## 构建历史
 ![avatar](./docs/img/构建历史.png)
 
