@@ -38,7 +38,7 @@ docker-compose up -d
 
 3. 导入初始化sql, 并逐步升级到最新版本
 ```shell
-全量更新SQL: https://docs.dnsjia.com/upgrade/sql/v2.4.0.sql
+全量更新SQL: https://docs.dnsjia.com/upgrade/sql/v2.7.0.sql
 升级文档: https://docs.dnsjia.com/upgrade/changelog/
 ```
 
