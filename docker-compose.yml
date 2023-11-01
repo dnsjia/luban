@@ -20,8 +20,9 @@ services:
       - "8999"
     volumes:
       - ./etc/config.yaml:/apps/luban/etc/config.yaml
-      - /etc/localtime:/etc/localtime
       - ./luban-data:/luban-data
+      - /etc/localtime:/etc/localtime
+      - /etc/machine-id:/etc/machine-id
     depends_on:
       - luban-mysql
       - luban-redis
