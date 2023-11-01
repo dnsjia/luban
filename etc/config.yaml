@@ -61,7 +61,7 @@ casbin:
 
 # cloudSync Task
 schedule:
-  ecs: "00 */30 * * *"
+  ecs: "*/15 * * * *"
 
 # dingding qrcode
 dingtalk:
@@ -70,7 +70,14 @@ dingtalk:
   url: 'https://oapi.dingtalk.com'
   # 允许登录的邮箱后缀 test@luban.com [luban.com]
   allow-suffix: 'luban.com'
-
+  agentId: 123456
+  # 审批模版
+  processCode: ''
+  # 事件回调签名token
+  signToken: ''
+  # 事件回调加解密密钥
+  aesKey: ''
+  
 guacamole:
   # guacd is server-side proxy
   guacd-addr: 'luban-guacd:4822'
@@ -85,7 +92,7 @@ asynq:
   # 重试次数
   max-retry: 5
   # 任务超时时间 Minute
-  timeout: 30
+  timeout: 5
   # 任务保留时间 Hour 30*24=720
   retention: 720
 
@@ -99,7 +106,7 @@ sshd:
   key: ~/.ssh/id_rsa
 
 smtp:
-  host: "smtp.exmail.qq.com"
+  host: 'smtp.exmail.qq.com'
   # tls 465, default 25
   port: 465
   user: ""
@@ -107,6 +114,6 @@ smtp:
   from: ""
   tls: true
   insecure-skip-verify: true
-
+# License 授权码
 license:
-  key:
+  key: ''
