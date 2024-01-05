@@ -114,6 +114,6 @@ smtp:
   from: ""
   tls: true
   insecure-skip-verify: true
-# License 授权码
-license:
-  key: ''
+# 应用部署通知钉钉webhook
+deploy:
+  webhook: 'https://oapi.dingtalk.com/robot/send?access_token=your dingtalk robot token'
