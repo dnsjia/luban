@@ -22,7 +22,6 @@ services:
       - ./etc/config.yaml:/apps/luban/etc/config.yaml
       - ./luban-data:/luban-data
       - /etc/localtime:/etc/localtime
-      - /etc/machine-id:/etc/machine-id
     depends_on:
       - luban-mysql
       - luban-redis
