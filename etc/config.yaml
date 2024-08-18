@@ -117,3 +117,10 @@ smtp:
 # 应用部署通知钉钉webhook
 deploy:
   webhook: 'https://oapi.dingtalk.com/robot/send?access_token=your dingtalk robot token'
+# 阿里云DMS数据库管理
+dms:
+  access-key: ""
+  secret-key: ""
+  region-id: "cn-hangzhou"
+  # 租户id
+  tid:
