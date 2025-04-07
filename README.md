@@ -92,6 +92,7 @@ http://localhost
   * [配置管理](.)
   * [事件中心](.)
   * [容器监控](.)
+  * [AI诊断](.)
 
 - 资产管理
   * [远程连接](.)
@@ -141,7 +142,7 @@ http://localhost
 ## 工作负载
 ![avatar](./docs/img/工作负载.png)
 
-
+![avatar](./docs/img/AI.png)
 ## 容器监控
 ![avatar](./docs/img/容器监控.png)
 
@@ -152,11 +153,10 @@ http://localhost
 ## 应用管理
 ![avatar](./docs/img/应用管理.png)
 
-## 应用详情
-![avatar](./docs/img/应用详情.png)
+## 应用制品库
+![avatar](./docs/img/制品库.png)
 
 ## 应用发布
-![avatar](./docs/img/应用发布单.png)
 
 ![avatar](./docs/img/发布单详情.png)
 
